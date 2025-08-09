@@ -28,3 +28,11 @@ INFO:     127.0.0.1:51206 - "GET /tasks/a4c2f33b-android HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51206 - "GET /tasks/a4c2f33b-android HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51206 - "GET /tasks/a4c2f33b-android HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51206 - "GET /tasks/a4c2f33b-android/artifacts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42776 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43018 - "GET /tasks/b23d357f-listener/artifacts HTTP/1.1" 200 OK
