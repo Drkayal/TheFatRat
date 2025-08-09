@@ -165,8 +165,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     token = BOT_TOKEN
-    if not token or OWNER_ID == 0:
-        print("Please set TELEGRAM_BOT_TOKEN and TELEGRAM_OWNER_ID in environment.")
+    if not token:
+        print("Please set TELEGRAM_BOT_TOKEN in environment.")
         return
     application = Application.builder().token(token).build()
     conv = ConversationHandler(
