@@ -1,0 +1,52 @@
+          ________
+         / ______ \
+         || _  _ ||
+         ||| || |||          AAAAAA   PPPPPPP   KKK  KKK
+         |||_||_|||         AAA  AAA  PPP  PPP  KKK KKK
+         || _  _o|| (o)     AAA  AAA  PPP  PPP  KKKKKK
+         ||| || |||         AAAAAAAA  PPPPPPPP  KKK KKK
+         |||_||_|||         AAA  AAA  PPP       KKK  KKK
+         ||______||         AAA  AAA  PPP       KKK  KKK
+        /__________\
+________|__________|__________________________________________
+       /____________\
+       |____________|            Dana James Traversie
+
+[*] Running backdoor-apk.sh v0.2.4a on Sat Aug  9 02:05:50 AM UTC 2025
+[+] Android manifest permission options:
+1) Keep original
+2) Merge with payload and shuffle
+[?] Please select an Android manifest permission option: [*] Decompiling original APK file...done.
+[*] Locating smali file to hook in original project...done.
+[+] Package where RAT smali files will be injected: com/adobe/reader
+[+] Smali file to hook RAT payload: com/adobe/reader/misc/ARApp.smali
+[*] Generating RAT APK file...done.
+[*] Decompiling RAT APK file...done.
+[+] Keeping permissions of original project
+[*] Injecting helpful Java classes in RAT APK file...done.
+[*] Creating new directory in original package for RAT smali files...done.
+[+] Inject package path: com/adobe/reader/czaen
+[+] Generated new smali class name for MainBroadcastReceiver.smali: Vpstn
+[+] Generated new smali class name for MainService.smali: Bhfbf
+[+] Generated new smali class name for Payload.smali: Adurt
+[+] Generated new smali class name for StringObfuscator.smali: Dktjw
+[+] Generated new smali method name for StringObfuscator.obfuscate method: fxjgo
+[+] Generated new smali method name for StringObfuscator.unobfuscate method: rcetb
+[*] Copying RAT smali files to new directories in original project...done.
+[*] Fixing RAT smali files...done.
+[*] Obfuscating const-string values in RAT smali files...done.
+[*] Adding hook in original smali file...done.
+[+] Unable to add persistence hook due to missing permission
+[*] Recompiling original project with backdoor...done.
+
+Warning:
+The certificate uses the SHA1withRSA signature algorithm which is considered a security risk.
+
+Warning:
+The certificate uses the SHA1withRSA signature algorithm which is considered a security risk.
+[*] Generating RSA key for signing...done.
+[*] Signing recompiled APK...done.
+[*] Verifying signed artifacts...done.
+[*] Aligning recompiled APK...done.
+[1;31m There was a problem in the creation of your Rat apk file ,
+check /workspace/logs/apk.log for more information about the error .
