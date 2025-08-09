@@ -1,0 +1,17 @@
+
+
+
+unzip
+/usr/bin/jarsigner
+unzip
+/usr/bin/keytool
+/workspace/tools/android-sdk/zipalign
+/workspace/tools/android-sdk/dx
+/workspace/tools/android-sdk/aapt
+/workspace/tools/apktool/apktool
+/workspace/tools/baksmali233/baksmali
+/usr/bin/msfconsole
+/usr/bin/msfvenom
+/workspace/backdoor_apk
+searchsploit
+/workspace/tasks/20250809/a4c2f33b-android/output

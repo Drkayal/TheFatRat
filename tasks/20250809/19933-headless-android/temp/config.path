@@ -1,0 +1,17 @@
+msfvenom
+tools/baksmali233/baksmali
+unzip
+keytool
+jarsigner
+tools/apktool/apktool
+tools/android-sdk/dx
+tools/android-sdk/zipalign
+tools/android-sdk/aapt
+/usr/bin/msfconsole
+/usr/bin/msfvenom
+tools/baksmali233/baksmali
+tools/apktool/apktool
+keytool
+jarsigner
+tools/android-sdk/aapt
+/workspace/tasks/20250809/19933-headless-android/output

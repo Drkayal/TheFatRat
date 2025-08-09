@@ -1,0 +1,1735 @@
+Running backdoor-apk at Sat Aug  9 03:16:01 AM UTC 2025
+/usr/bin/msfvenom
+/workspace/tools/baksmali233/baksmali
+/usr/bin/unzip
+/usr/bin/keytool
+/usr/bin/jarsigner
+/workspace/tools/apktool/apktool
+/workspace/tools/android-string-obfuscator/lib/aso
+/workspace/tools/android-sdk/dx
+/workspace/tools/android-sdk/zipalign
+Archive:  /workspace/tasks/20250809/a4c2f33b-android/input/original.apk
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+    20348  2015-11-08 23:59   AndroidManifest.xml
+      948  2015-11-08 23:59   assets/ADBMobileConfigProd.json
+      947  2015-11-08 23:59   assets/ADBMobileConfigQA.json
+    28024  2015-11-08 23:59   assets/fonts/AdobeSansF2-Regular.otf
+    57137  2015-11-08 23:59   assets/getting_started.pdf
+    48687  2015-11-08 23:59   assets/javascript/AForm.js
+     3488  2015-11-08 23:59   assets/javascript/App.js
+     8256  2015-11-08 23:59   assets/javascript/Doc.js
+     1206  2015-11-08 23:59   assets/javascript/EScriptString.js
+     7675  2015-11-08 23:59   assets/javascript/Event.js
+     7129  2015-11-08 23:59   assets/javascript/Field.js
+    19504  2015-11-08 23:59   assets/javascript/Util.js
+      758  2015-11-08 23:59   assets/javascript/index.html
+    16503  2015-11-08 23:59   assets/javascript/sprintf.js
+     2013  2015-11-08 23:59   assets/javascript/utils.js
+      352  2015-11-08 23:59   res/anim/context_menu_fade_in.xml
+      352  2015-11-08 23:59   res/anim/context_menu_fade_out.xml
+      284  2015-11-08 23:59   res/anim/cycles.xml
+      352  2015-11-08 23:59   res/anim/fade_out.xml
+      400  2015-11-08 23:59   res/anim/shake.xml
+      640  2015-11-08 23:59   res/anim/toolbar_slide_in_bottom.xml
+      640  2015-11-08 23:59   res/anim/toolbar_slide_in_top.xml
+      640  2015-11-08 23:59   res/anim/toolbar_slide_out_bottom.xml
+      640  2015-11-08 23:59   res/anim/toolbar_slide_out_top.xml
+      720  2015-11-08 23:59   res/color/account_entry_subscribe_text_color_selector.xml
+      844  2015-11-08 23:59   res/drawable-hdpi-v4/a12_addfile.png
+      771  2015-11-08 23:59   res/drawable-hdpi-v4/a12_createpdfpack.png
+      663  2015-11-08 23:59   res/drawable-hdpi-v4/a12_createpdfpack_select.png
+      469  2015-11-08 23:59   res/drawable-hdpi-v4/a12_deletetextdyn.png
+      473  2015-11-08 23:59   res/drawable-hdpi-v4/a12_deletetextdyn_selected.png
+     1454  2015-11-08 23:59   res/drawable-hdpi-v4/a12_documentcloud.png
+     1114  2015-11-08 23:59   res/drawable-hdpi-v4/a12_documentcloud_select.png
+      454  2015-11-08 23:59   res/drawable-hdpi-v4/a12_editpdfdc.png
+      412  2015-11-08 23:59   res/drawable-hdpi-v4/a12_editpdfdc_select.png
+     1192  2015-11-08 23:59   res/drawable-hdpi-v4/a12_exportpdf.png
+     1127  2015-11-08 23:59   res/drawable-hdpi-v4/a12_exportpdf_disabled.png
+      957  2015-11-08 23:59   res/drawable-hdpi-v4/a12_exportpdf_select.png
+      281  2015-11-08 23:59   res/drawable-hdpi-v4/a12_folder_back.png
+     1010  2015-11-08 23:59   res/drawable-hdpi-v4/a12_handbook.png
+      865  2015-11-08 23:59   res/drawable-hdpi-v4/a12_handbook_select.png
+      793  2015-11-08 23:59   res/drawable-hdpi-v4/a12_menucheckmark.png
+      240  2015-11-08 23:59   res/drawable-hdpi-v4/a12_menucheckmark_disabled.png
+      691  2015-11-08 23:59   res/drawable-hdpi-v4/a12_menucheckmarkdisabled.png
+     1036  2015-11-08 23:59   res/drawable-hdpi-v4/a12_mobilelinkoff.png
+     1016  2015-11-08 23:59   res/drawable-hdpi-v4/a12_mobilelinkoffline.png
+      909  2015-11-08 23:59   res/drawable-hdpi-v4/a12_mobilelinkon.png
+      856  2015-11-08 23:59   res/drawable-hdpi-v4/a12_nextfield.png
+      827  2015-11-08 23:59   res/drawable-hdpi-v4/a12_nextfield_disabled.png
+     1226  2015-11-08 23:59   res/drawable-hdpi-v4/a12_onlinesupportforum.png
+     1557  2015-11-08 23:59   res/drawable-hdpi-v4/a12_onlinesupportforum_select.png
+      193  2015-11-08 23:59   res/drawable-hdpi-v4/a12_opacity.png
+     1025  2015-11-08 23:59   res/drawable-hdpi-v4/a12_organize.png
+      885  2015-11-08 23:59   res/drawable-hdpi-v4/a12_organize_select.png
+      863  2015-11-08 23:59   res/drawable-hdpi-v4/a12_previousfield.png
+      837  2015-11-08 23:59   res/drawable-hdpi-v4/a12_previousfield_disabled.png
+     1365  2015-11-08 23:59   res/drawable-hdpi-v4/a12_resetfield.png
+     1254  2015-11-08 23:59   res/drawable-hdpi-v4/a12_resetfield_disabled.png
+     1490  2015-11-08 23:59   res/drawable-hdpi-v4/a12_toc.png
+     1003  2015-11-08 23:59   res/drawable-hdpi-v4/a12_uplevel.png
+     1457  2015-11-08 23:59   res/drawable-hdpi-v4/a12_whatsnew.png
+     1203  2015-11-08 23:59   res/drawable-hdpi-v4/a12_whatsnew_select.png
+     3000  2015-11-08 23:59   res/drawable-hdpi-v4/acrobat_dc_android.png
+     3332  2015-11-08 23:59   res/drawable-hdpi-v4/acrobat_dc_intune_android.png
+     3661  2015-11-08 23:59   res/drawable-hdpi-v4/acrobat_reader_android_launch.png
+     4533  2015-11-08 23:59   res/drawable-hdpi-v4/acrobat_reader_intune_android_launch.png
+      588  2015-11-08 23:59   res/drawable-hdpi-v4/android_annotate.png
+      214  2015-11-08 23:59   res/drawable-hdpi-v4/android_gripper.png
+      775  2015-11-08 23:59   res/drawable-hdpi-v4/android_textselection_right.png
+      204  2015-11-08 23:59   res/drawable-hdpi-v4/bottom_action_bar_background.9.png
+      319  2015-11-08 23:59   res/drawable-hdpi-v4/c_addtext.png
+      324  2015-11-08 23:59   res/drawable-hdpi-v4/c_addtext_selected.png
+      197  2015-11-08 23:59   res/drawable-hdpi-v4/c_checkmark.png
+     1275  2015-11-08 23:59   res/drawable-hdpi-v4/c_draw.png
+     1420  2015-11-08 23:59   res/drawable-hdpi-v4/c_highlighttool.png
+     1631  2015-11-08 23:59   res/drawable-hdpi-v4/c_highlighttool_selected.png
+      426  2015-11-08 23:59   res/drawable-hdpi-v4/c_linethickness.png
+      970  2015-11-08 23:59   res/drawable-hdpi-v4/c_redo.png
+      953  2015-11-08 23:59   res/drawable-hdpi-v4/c_redo_disabled.png
+     1526  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign.png
+      666  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_camera.png
+      609  2015-11-08 23:56   res/drawable-hdpi-v4/c_sign_cameradisabled.png
+      512  2015-11-08 23:56   res/drawable-hdpi-v4/c_sign_croparea.9.png
+      656  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_gallery.png
+      579  2015-11-08 23:56   res/drawable-hdpi-v4/c_sign_gallerydisabled.png
+     1140  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_knob_off.png
+     1193  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_knoboff.png
+     1209  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_knobon.png
+     2627  2015-11-08 23:56   res/drawable-hdpi-v4/c_sign_redtab.png
+     1594  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_selected.png
+      233  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_track_off.png
+      233  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_trackoff.png
+      238  2015-11-08 23:59   res/drawable-hdpi-v4/c_sign_trackon.png
+     1544  2015-11-08 23:59   res/drawable-hdpi-v4/c_sticky.png
+     1604  2015-11-08 23:59   res/drawable-hdpi-v4/c_sticky_selected.png
+     1243  2015-11-08 23:59   res/drawable-hdpi-v4/c_textnotedyn.png
+      469  2015-11-08 23:59   res/drawable-hdpi-v4/c_underline.png
+      474  2015-11-08 23:59   res/drawable-hdpi-v4/c_underline_selected.png
+      900  2015-11-08 23:59   res/drawable-hdpi-v4/c_undo.png
+      942  2015-11-08 23:59   res/drawable-hdpi-v4/c_undo_disabled.png
+      215  2015-11-08 23:59   res/drawable-hdpi-v4/chevron_left.png
+     1370  2015-11-08 23:59   res/drawable-hdpi-v4/cloud_file_indicator_badge.png
+     1751  2015-11-08 23:59   res/drawable-hdpi-v4/context.9.png
+     1437  2015-11-08 23:59   res/drawable-hdpi-v4/context_dark.9.png
+     2837  2015-11-08 23:59   res/drawable-hdpi-v4/createpdf_android.png
+      720  2015-11-08 23:59   res/drawable-hdpi-v4/createpdf_disabled.png
+      776  2015-11-08 23:59   res/drawable-hdpi-v4/createpdf_enabled.png
+     5888  2015-11-08 23:59   res/drawable-hdpi-v4/fab_bg_normal.png
+      554  2015-11-08 23:59   res/drawable-hdpi-v4/file_docgeneric.png
+     1450  2015-11-08 23:59   res/drawable-hdpi-v4/file_docgeneric_large.png
+      389  2015-11-08 23:59   res/drawable-hdpi-v4/file_excel.png
+     1517  2015-11-08 23:59   res/drawable-hdpi-v4/file_excel_large.png
+      839  2015-11-08 23:59   res/drawable-hdpi-v4/file_graphic.png
+     1541  2015-11-08 23:59   res/drawable-hdpi-v4/file_graphic_large.png
+     1467  2015-11-08 23:59   res/drawable-hdpi-v4/file_lockedpdf.png
+     8000  2015-11-08 23:59   res/drawable-hdpi-v4/file_lockedpdf_large.png
+     1884  2015-11-08 23:59   res/drawable-hdpi-v4/file_pdf.png
+     6777  2015-11-08 23:59   res/drawable-hdpi-v4/file_pdf_large.png
+      705  2015-11-08 23:59   res/drawable-hdpi-v4/file_presentation.png
+     2069  2015-11-08 23:59   res/drawable-hdpi-v4/file_presentation_large.png
+      593  2015-11-08 23:59   res/drawable-hdpi-v4/file_text.png
+     1433  2015-11-08 23:59   res/drawable-hdpi-v4/file_text_large.png
+      658  2015-11-08 23:59   res/drawable-hdpi-v4/file_word.png
+     1561  2015-11-08 23:59   res/drawable-hdpi-v4/file_word_large.png
+      547  2015-11-08 23:59   res/drawable-hdpi-v4/file_word_select.png
+      748  2015-11-08 23:59   res/drawable-hdpi-v4/h_back.png
+      670  2015-11-08 23:59   res/drawable-hdpi-v4/h_cancelsearch.png
+     1512  2015-11-08 23:59   res/drawable-hdpi-v4/h_folder_big.png
+      769  2015-11-08 23:59   res/drawable-hdpi-v4/h_folder_small.png
+      308  2015-11-08 23:59   res/drawable-hdpi-v4/h_overflow.png
+      822  2015-11-08 23:59   res/drawable-hdpi-v4/h_promoted_open_white.png
+      651  2015-11-08 23:59   res/drawable-hdpi-v4/h_promoted_upload_white.png
+      991  2015-11-08 23:59   res/drawable-hdpi-v4/h_search.png
+     1515  2015-11-08 23:59   res/drawable-hdpi-v4/h_searchback.png
+      845  2015-11-08 23:59   res/drawable-hdpi-v4/h_uploadpermanentlyfailed.png
+     1051  2015-11-08 23:59   res/drawable-hdpi-v4/h_uploadsuccessful.png
+      795  2015-11-08 23:59   res/drawable-hdpi-v4/h_uploadunsuccessful.png
+     3966  2015-11-08 23:43   res/drawable-hdpi-v4/ic_launcher.png
+      161  2015-11-08 23:59   res/drawable-hdpi-v4/menulist_md_n_dk.png
+      778  2015-11-08 23:59   res/drawable-hdpi-v4/mp_autoenhance_md_s_dk.png
+      778  2015-11-08 23:59   res/drawable-hdpi-v4/mp_autoenhance_off_md_n_dk.png
+      778  2015-11-08 23:59   res/drawable-hdpi-v4/mp_autoenhance_on_md_n_dk.png
+     1976  2015-11-08 23:59   res/drawable-hdpi-v4/mp_blue_folder_xl_n_lt.png
+      660  2015-11-08 23:59   res/drawable-hdpi-v4/mp_cancelsearch_cu_n.png
+     1005  2015-11-08 23:59   res/drawable-hdpi-v4/mp_cancelsearch_cu_s.png
+      238  2015-11-08 23:59   res/drawable-hdpi-v4/mp_cancelsearch_md_n_lt.png
+      257  2015-11-08 23:59   res/drawable-hdpi-v4/mp_checkmarkgreen_lt.png
+      331  2015-11-08 23:59   res/drawable-hdpi-v4/mp_checkmarkgreen_md_d_dk.png
+      336  2015-11-08 23:59   res/drawable-hdpi-v4/mp_checkmarkgreen_md_d_lt.png
+      402  2015-11-08 23:59   res/drawable-hdpi-v4/mp_clouddoc_lg_n_dk.png
+      336  2015-11-08 23:59   res/drawable-hdpi-v4/mp_clouddoc_md_n_dk.png
+      331  2015-11-08 23:59   res/drawable-hdpi-v4/mp_clouddoc_md_n_lt.png
+      219  2015-11-08 23:59   res/drawable-hdpi-v4/mp_continuousscroll_md_n_dk.png
+      219  2015-11-08 23:59   res/drawable-hdpi-v4/mp_continuousscroll_md_n_lt.png
+      397  2015-11-08 23:59   res/drawable-hdpi-v4/mp_createpdf_md_n_dk.png
+      395  2015-11-08 23:59   res/drawable-hdpi-v4/mp_createpdf_md_n_lt.png
+      166  2015-11-08 23:59   res/drawable-hdpi-v4/mp_document_md_n_dk.png
+      333  2015-11-08 23:59   res/drawable-hdpi-v4/mp_draw_md_n_dk.png
+      288  2015-11-08 23:59   res/drawable-hdpi-v4/mp_draw_md_n_lt.png
+      364  2015-11-08 23:59   res/drawable-hdpi-v4/mp_emailfile_md_n_dk.png
+      364  2015-11-08 23:59   res/drawable-hdpi-v4/mp_emailfile_md_n_lt.png
+      699  2015-11-08 23:59   res/drawable-hdpi-v4/mp_enhance_n_dk.png
+      699  2015-11-08 23:59   res/drawable-hdpi-v4/mp_enhance_n_lt.png
+      162  2015-11-08 23:59   res/drawable-hdpi-v4/mp_enhancement_n_dk.png
+      162  2015-11-08 23:59   res/drawable-hdpi-v4/mp_enhancement_n_lt.png
+     1019  2015-11-08 23:59   res/drawable-hdpi-v4/mp_errorpage_lt.png
+      378  2015-11-08 23:59   res/drawable-hdpi-v4/mp_exportpdf_md_n_dk.png
+      379  2015-11-08 23:59   res/drawable-hdpi-v4/mp_exportpdf_md_n_lt.png
+      257  2015-11-08 23:59   res/drawable-hdpi-v4/mp_failure_lt.png
+      391  2015-11-08 23:59   res/drawable-hdpi-v4/mp_find_disabled_md_n_dk.png
+      863  2015-11-08 23:59   res/drawable-hdpi-v4/mp_find_md_n_dk.png
+      863  2015-11-08 23:59   res/drawable-hdpi-v4/mp_find_md_n_lt.png
+      617  2015-11-08 23:59   res/drawable-hdpi-v4/mp_flash_md_n_dk.png
+     1170  2015-11-08 23:59   res/drawable-hdpi-v4/mp_flash_md_s_dk.png
+      433  2015-11-08 23:59   res/drawable-hdpi-v4/mp_fontsize_md_n_dk.png
+      433  2015-11-08 23:59   res/drawable-hdpi-v4/mp_fontsize_md_n_lt.png
+      362  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_bookmarkarrowleft_n.png
+      362  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_bookmarkarrowleft_s.png
+      363  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_bookmarkarrowright_n.png
+      363  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_bookmarkarrowright_s.png
+      377  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_checkmark_dk.png
+      377  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_checkmark_lt.png
+      887  2015-11-08 23:59   res/drawable-hdpi-v4/mp_g_stickynoteghost_lg_n.png
+      264  2015-11-08 23:59   res/drawable-hdpi-v4/mp_gallery_md_n_dk.png
+      264  2015-11-08 23:59   res/drawable-hdpi-v4/mp_gallery_md_s_dk.png
+     2154  2015-11-08 23:59   res/drawable-hdpi-v4/mp_generic_img_type_xl_n_lt.png
+     2212  2015-11-08 23:59   res/drawable-hdpi-v4/mp_generic_ppt_type_xl_n_lt.png
+     1978  2015-11-08 23:59   res/drawable-hdpi-v4/mp_generic_text_type_xl_n_lt.png
+     1831  2015-11-08 23:59   res/drawable-hdpi-v4/mp_generic_word_type_xl_n_lt.png
+     2142  2015-11-08 23:59   res/drawable-hdpi-v4/mp_generic_xcl_type_xl_n_lt.png
+     3044  2015-11-08 23:59   res/drawable-hdpi-v4/mp_genericdocument_lt.png
+     1719  2015-11-08 23:59   res/drawable-hdpi-v4/mp_genericfile_xl_n_lt.png
+     1755  2015-11-08 23:59   res/drawable-hdpi-v4/mp_genericfolder_xl_n_lt.png
+     3376  2015-11-08 23:59   res/drawable-hdpi-v4/mp_generictextfile_lt.png
+      256  2015-11-08 23:59   res/drawable-hdpi-v4/mp_goback_xl_lt.png
+      325  2015-11-08 23:59   res/drawable-hdpi-v4/mp_googlecloudprint_md_n_dk.png
+      325  2015-11-08 23:59   res/drawable-hdpi-v4/mp_googlecloudprint_md_n_lt.png
+      170  2015-11-08 23:59   res/drawable-hdpi-v4/mp_grid_md_n_dk.png
+      689  2015-11-08 23:59   res/drawable-hdpi-v4/mp_grid_md_s_dk.png
+      251  2015-11-08 23:59   res/drawable-hdpi-v4/mp_grid_off_s_dk.png
+      130  2015-11-08 23:59   res/drawable-hdpi-v4/mp_gridview_md_n_dk.png
+      126  2015-11-08 23:59   res/drawable-hdpi-v4/mp_gridview_md_n_lt.png
+      407  2015-11-08 23:59   res/drawable-hdpi-v4/mp_help_md_n_dk.png
+      403  2015-11-08 23:59   res/drawable-hdpi-v4/mp_highlighttext_md_n_dk.png
+      370  2015-11-08 23:59   res/drawable-hdpi-v4/mp_highlighttext_md_n_lt.png
+     3943  2015-11-08 23:59   res/drawable-hdpi-v4/mp_imagefile_lt.png
+      396  2015-11-08 23:59   res/drawable-hdpi-v4/mp_imagetopdf_md_n_dk.png
+      200  2015-11-08 23:59   res/drawable-hdpi-v4/mp_levelup_md_n_dk.png
+      200  2015-11-08 23:59   res/drawable-hdpi-v4/mp_levelup_md_n_lt.png
+      125  2015-11-08 23:59   res/drawable-hdpi-v4/mp_linestrength_md_n_dk.png
+      125  2015-11-08 23:59   res/drawable-hdpi-v4/mp_linestrength_md_n_lt.png
+      267  2015-11-08 23:59   res/drawable-hdpi-v4/mp_lock_sm_n_dk.png
+      267  2015-11-08 23:59   res/drawable-hdpi-v4/mp_lock_sm_n_lt.png
+     1268  2015-11-08 23:59   res/drawable-hdpi-v4/mp_menuoptionabout_xl_n.png
+     2060  2015-11-08 23:59   res/drawable-hdpi-v4/mp_menuoptionclear_xl_n.png
+     1608  2015-11-08 23:59   res/drawable-hdpi-v4/mp_menuoptioncreatepdf_xl_n.png
+     1458  2015-11-08 23:59   res/drawable-hdpi-v4/mp_menuoptionopen_xl_n.png
+     1828  2015-11-08 23:59   res/drawable-hdpi-v4/mp_menuoptionquestion_xl_n.png
+     1782  2015-11-08 23:59   res/drawable-hdpi-v4/mp_menuoptionsettings_xl_n.png
+      273  2015-11-08 23:59   res/drawable-hdpi-v4/mp_moreinfo_md_n_dk.png
+      271  2015-11-08 23:59   res/drawable-hdpi-v4/mp_moreinfo_md_n_lt.png
+      239  2015-11-08 23:59   res/drawable-hdpi-v4/mp_move_md_n_dk.png
+      255  2015-11-08 23:59   res/drawable-hdpi-v4/mp_moveorduplicate_file_disabled_md_n_dk.png
+      250  2015-11-08 23:59   res/drawable-hdpi-v4/mp_moveorduplicate_file_md_n_dk.png
+      244  2015-11-08 23:59   res/drawable-hdpi-v4/mp_myaccount_md_n_dk.png
+      260  2015-11-08 23:59   res/drawable-hdpi-v4/mp_myaccount_signed_in_md_n_dk.png
+      605  2015-11-08 23:59   res/drawable-hdpi-v4/mp_new_md_n_dk.png
+      605  2015-11-08 23:59   res/drawable-hdpi-v4/mp_new_md_n_lt.png
+     2742  2015-11-08 23:59   res/drawable-hdpi-v4/mp_nextresult_cu_n.png
+     2755  2015-11-08 23:59   res/drawable-hdpi-v4/mp_nextresult_cu_s.png
+      304  2015-11-08 23:59   res/drawable-hdpi-v4/mp_nightmode_md_n_dk.png
+      304  2015-11-08 23:59   res/drawable-hdpi-v4/mp_nightmode_md_n_lt.png
+      286  2015-11-08 23:59   res/drawable-hdpi-v4/mp_opacity_lg_n_dk.png
+      910  2015-11-08 23:59   res/drawable-hdpi-v4/mp_opacity_md_n_dk.png
+      910  2015-11-08 23:59   res/drawable-hdpi-v4/mp_opacity_md_n_lt.png
+      191  2015-11-08 23:59   res/drawable-hdpi-v4/mp_openinotherapp_md_n_dk.png
+      191  2015-11-08 23:59   res/drawable-hdpi-v4/mp_openinotherapp_md_n_lt.png
+      468  2015-11-08 23:59   res/drawable-hdpi-v4/mp_orientationlock_md_n_dk.png
+      468  2015-11-08 23:59   res/drawable-hdpi-v4/mp_orientationlock_md_n_lt.png
+      261  2015-11-08 23:59   res/drawable-hdpi-v4/mp_outbox_lg_n_dk.png
+      231  2015-11-08 23:59   res/drawable-hdpi-v4/mp_outbox_md_n_dk.png
+     6633  2015-11-08 23:59   res/drawable-hdpi-v4/mp_pdf_lt.png
+     3118  2015-11-08 23:59   res/drawable-hdpi-v4/mp_pdffiletype_xl_n_lt.png
+     3423  2015-11-08 23:59   res/drawable-hdpi-v4/mp_pdffiletypelock_xl_n_lt.png
+     3238  2015-11-08 23:59   res/drawable-hdpi-v4/mp_pdffiletypeshadow_xl_n_lt.png
+     7231  2015-11-08 23:59   res/drawable-hdpi-v4/mp_pdflocked_lt.png
+     2376  2015-11-08 23:59   res/drawable-hdpi-v4/mp_portfoliofolder_xl_n_lt.png
+     3930  2015-11-08 23:59   res/drawable-hdpi-v4/mp_presentation_lt.png
+     2674  2015-11-08 23:59   res/drawable-hdpi-v4/mp_prevresult_cu_n.png
+     2738  2015-11-08 23:59   res/drawable-hdpi-v4/mp_prevresult_cu_s.png
+      198  2015-11-08 23:59   res/drawable-hdpi-v4/mp_print_md_n_dk.png
+      198  2015-11-08 23:59   res/drawable-hdpi-v4/mp_print_md_n_lt.png
+      435  2015-11-08 23:59   res/drawable-hdpi-v4/mp_recents_md_n_dk.png
+      349  2015-11-08 23:59   res/drawable-hdpi-v4/mp_redo_disabled_md_n_dk.png
+      349  2015-11-08 23:59   res/drawable-hdpi-v4/mp_redo_md_n_dk.png
+      460  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_disabled_lg_n_dk.png
+      460  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_disabled_lg_n_lt.png
+      389  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_disabled_md_n_dk.png
+      389  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_disabled_md_n_lt.png
+      460  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_lg_n_dk.png
+      460  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_lg_n_lt.png
+      389  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_md_n_dk.png
+      389  2015-11-08 23:59   res/drawable-hdpi-v4/mp_refresh_md_n_lt.png
+      441  2015-11-08 23:59   res/drawable-hdpi-v4/mp_remove_md_n_dk.png
+      458  2015-11-08 23:59   res/drawable-hdpi-v4/mp_remove_md_n_lt.png
+      266  2015-11-08 23:59   res/drawable-hdpi-v4/mp_reply_sm_n_lt.png
+      386  2015-11-08 23:59   res/drawable-hdpi-v4/mp_retry_md_n_dk.png
+      379  2015-11-08 23:59   res/drawable-hdpi-v4/mp_retry_md_n_lt.png
+      510  2015-11-08 23:59   res/drawable-hdpi-v4/mp_rotate_md_n_dk.png
+      530  2015-11-08 23:59   res/drawable-hdpi-v4/mp_rotate_md_s_dk.png
+      249  2015-11-08 23:59   res/drawable-hdpi-v4/mp_saveas_lg_n_dk.png
+      249  2015-11-08 23:59   res/drawable-hdpi-v4/mp_saveas_lg_n_lt.png
+      425  2015-11-08 23:59   res/drawable-hdpi-v4/mp_savetoacrobatcom_lg_n_dk.png
+      344  2015-11-08 23:59   res/drawable-hdpi-v4/mp_savetoacrobatcom_md_n_dk.png
+      344  2015-11-08 23:59   res/drawable-hdpi-v4/mp_savetoacrobatcom_md_n_lt.png
+     1584  2015-11-08 23:59   res/drawable-hdpi-v4/mp_scrubber.png
+      360  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sendforsignature_md_n_dk.png
+      360  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sendforsignature_md_n_lt.png
+      328  2015-11-08 23:59   res/drawable-hdpi-v4/mp_settings_md_n_dk.png
+      308  2015-11-08 23:59   res/drawable-hdpi-v4/mp_share_md_n_dk.png
+      308  2015-11-08 23:59   res/drawable-hdpi-v4/mp_share_md_n_lt.png
+      395  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sharefeedback_file_md_n_dk.png
+      395  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sharefeedback_file_md_n_lt.png
+     1182  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sharelink_md_n_dk.png
+     1182  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sharelink_md_s_dk.png
+      385  2015-11-08 23:59   res/drawable-hdpi-v4/mp_shareonandroid_md_n_dk.png
+      458  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sign_md_d_dk.png
+      461  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sign_md_d_lt.png
+      458  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sign_md_n_dk.png
+      461  2015-11-08 23:59   res/drawable-hdpi-v4/mp_sign_md_n_lt.png
+      201  2015-11-08 23:59   res/drawable-hdpi-v4/mp_singlepageview_md_n_dk.png
+      201  2015-11-08 23:59   res/drawable-hdpi-v4/mp_singlepageview_md_n_lt.png
+     3694  2015-11-08 23:59   res/drawable-hdpi-v4/mp_tablesheet_lt.png
+     1861  2015-11-08 23:59   res/drawable-hdpi-v4/mp_takephoto_md_n_dk.png
+     1880  2015-11-08 23:59   res/drawable-hdpi-v4/mp_takephoto_md_s_dk.png
+     3214  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textfile_lt.png
+      245  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textreflow_md_n_dk.png
+      245  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textreflow_md_n_lt.png
+     1200  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textselection_left.png
+     1201  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textselection_right.png
+      208  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textstrikethrough_md_n_dk.png
+      208  2015-11-08 23:59   res/drawable-hdpi-v4/mp_textstrikethrough_md_n_lt.png
+      229  2015-11-08 23:59   res/drawable-hdpi-v4/mp_transform_md_n_dk.png
+      229  2015-11-08 23:59   res/drawable-hdpi-v4/mp_transform_md_s_dk.png
+      147  2015-11-08 23:59   res/drawable-hdpi-v4/mp_transparency_md_n_dk.png
+      147  2015-11-08 23:59   res/drawable-hdpi-v4/mp_transparency_md_n_lt.png
+      190  2015-11-08 23:59   res/drawable-hdpi-v4/mp_twopageview_md_n_dk.png
+      190  2015-11-08 23:59   res/drawable-hdpi-v4/mp_twopageview_md_n_lt.png
+      228  2015-11-08 23:59   res/drawable-hdpi-v4/mp_underlinetext_md_n_dk.png
+      228  2015-11-08 23:59   res/drawable-hdpi-v4/mp_underlinetext_md_n_lt.png
+      349  2015-11-08 23:59   res/drawable-hdpi-v4/mp_undo_disabled_md_n_dk.png
+      349  2015-11-08 23:59   res/drawable-hdpi-v4/mp_undo_md_n_dk.png
+      201  2015-11-08 23:59   res/drawable-hdpi-v4/mp_viewmodes_disabled_md_n_dk.png
+      201  2015-11-08 23:59   res/drawable-hdpi-v4/mp_viewmodes_md_n_dk.png
+      201  2015-11-08 23:59   res/drawable-hdpi-v4/mp_viewmodes_md_n_lt.png
+      315  2015-11-08 23:59   res/drawable-hdpi-v4/mp_whatsnew_md_n_dk.png
+      328  2015-11-08 23:59   res/drawable-hdpi-v4/mp_whatsnew_md_n_lt.png
+      511  2015-11-08 23:56   res/drawable-hdpi-v4/n_context.9.png
+     1472  2015-11-08 23:59   res/drawable-hdpi-v4/o_delete.png
+     1433  2015-11-08 23:59   res/drawable-hdpi-v4/o_delete_disabled.png
+     2481  2015-11-08 23:59   res/drawable-hdpi-v4/organize_placeholder.png
+     1633  2015-11-08 23:59   res/drawable-hdpi-v4/organize_rotateleft.png
+     1512  2015-11-08 23:59   res/drawable-hdpi-v4/organize_rotateleft_disabled.png
+     1568  2015-11-08 23:59   res/drawable-hdpi-v4/organize_rotateright.png
+     1513  2015-11-08 23:59   res/drawable-hdpi-v4/organize_rotateright_disabled.png
+     1568  2015-11-08 23:56   res/drawable-hdpi-v4/rotateright.png
+      227  2015-11-08 23:59   res/drawable-hdpi-v4/shadow_below_tabstrip.9.png
+     1555  2015-11-08 23:59   res/drawable-hdpi-v4/tool_comment_active.png
+      307  2015-11-08 23:59   res/drawable-hdpi-v4/tool_comment_bg.9.png
+     1606  2015-11-08 23:59   res/drawable-hdpi-v4/tool_commenting.png
+     1110  2015-11-08 23:59   res/drawable-hdpi-v4/tool_create.png
+      737  2015-11-08 23:59   res/drawable-hdpi-v4/tool_createpdf_active.png
+      307  2015-11-08 23:59   res/drawable-hdpi-v4/tool_createpdf_bg.9.png
+     1325  2015-11-08 23:59   res/drawable-hdpi-v4/tool_export.png
+     1042  2015-11-08 23:59   res/drawable-hdpi-v4/tool_exportpdf_active.png
+      307  2015-11-08 23:59   res/drawable-hdpi-v4/tool_exportpdf_bg.9.png
+     1361  2015-11-08 23:59   res/drawable-hdpi-v4/tool_fillsign.png
+     1343  2015-11-08 23:59   res/drawable-hdpi-v4/tool_fillsign_active.png
+      305  2015-11-08 23:59   res/drawable-hdpi-v4/tool_fillsign_bg.9.png
+      989  2015-11-08 23:59   res/drawable-hdpi-v4/tool_home.png
+      942  2015-11-08 23:59   res/drawable-hdpi-v4/tool_home_active.png
+      288  2015-11-08 23:59   res/drawable-hdpi-v4/tool_home_bg.9.png
+     1201  2015-11-08 23:59   res/drawable-hdpi-v4/tool_organizepages.png
+      920  2015-11-08 23:59   res/drawable-hdpi-v4/tool_organizepages_active.png
+      304  2015-11-08 23:59   res/drawable-hdpi-v4/tool_organizepages_bg.9.png
+      778  2015-11-08 23:59   res/drawable-hdpi-v4/tool_viewer.png
+      683  2015-11-08 23:59   res/drawable-hdpi-v4/tool_viewer_active.png
+      307  2015-11-08 23:59   res/drawable-hdpi-v4/tool_viewer_bg.9.png
+      207  2015-11-08 23:59   res/drawable-hdpi-v4/top_action_bar_background.9.png
+     1299  2015-11-08 23:59   res/drawable-hdpi-v4/v_attachments.png
+     1490  2015-11-08 23:59   res/drawable-hdpi-v4/v_bookmarkadded.png
+      927  2015-11-08 23:59   res/drawable-hdpi-v4/v_bookmarks.png
+     1313  2015-11-08 23:59   res/drawable-hdpi-v4/v_comment.png
+      653  2015-11-08 23:59   res/drawable-hdpi-v4/v_horizontal_popover.9.png
+      965  2015-11-08 23:59   res/drawable-hdpi-v4/v_horizontalscrubberbig.png
+      912  2015-11-08 23:59   res/drawable-hdpi-v4/v_horizontalscrubbersmall.png
+      556  2015-11-08 23:59   res/drawable-hdpi-v4/v_lock.png
+     1049  2015-11-08 23:59   res/drawable-hdpi-v4/v_n_horizontalscrubberbig.png
+      985  2015-11-08 23:59   res/drawable-hdpi-v4/v_n_horizontalscrubbersmall.png
+      953  2015-11-08 23:59   res/drawable-hdpi-v4/v_n_verticalscrubberbig.png
+      957  2015-11-08 23:59   res/drawable-hdpi-v4/v_n_verticalscrubbersmall.png
+      436  2015-11-08 23:59   res/drawable-hdpi-v4/v_popover_arrow_down.png
+      445  2015-11-08 23:59   res/drawable-hdpi-v4/v_popover_arrow_right.png
+     1553  2015-11-08 23:59   res/drawable-hdpi-v4/v_search.png
+      592  2015-11-08 23:59   res/drawable-hdpi-v4/v_share.png
+     1193  2015-11-08 23:59   res/drawable-hdpi-v4/v_upload.png
+      645  2015-11-08 23:59   res/drawable-hdpi-v4/v_vertical_popover.9.png
+      963  2015-11-08 23:59   res/drawable-hdpi-v4/v_verticalscrubberbig.png
+      928  2015-11-08 23:59   res/drawable-hdpi-v4/v_verticalscrubbersmall.png
+     1031  2015-11-08 23:59   res/drawable-hdpi-v4/v_viewmodes.png
+      881  2015-11-08 23:59   res/drawable-hdpi-v4/v_viewmodesdisabled.png
+     1537  2015-11-08 23:43   res/drawable-ldpi-v4/ic_launcher.png
+      669  2015-11-08 23:59   res/drawable-mdpi-v4/a12_addfile.png
+      608  2015-11-08 23:59   res/drawable-mdpi-v4/a12_createpdfpack.png
+      554  2015-11-08 23:59   res/drawable-mdpi-v4/a12_createpdfpack_select.png
+      353  2015-11-08 23:59   res/drawable-mdpi-v4/a12_deletetextdyn.png
+      362  2015-11-08 23:59   res/drawable-mdpi-v4/a12_deletetextdyn_selected.png
+      589  2015-11-08 23:59   res/drawable-mdpi-v4/a12_documentcloud.png
+      794  2015-11-08 23:59   res/drawable-mdpi-v4/a12_documentcloud_select.png
+      441  2015-11-08 23:59   res/drawable-mdpi-v4/a12_editpdfdc.png
+      390  2015-11-08 23:59   res/drawable-mdpi-v4/a12_editpdfdc_select.png
+      884  2015-11-08 23:59   res/drawable-mdpi-v4/a12_exportpdf.png
+      748  2015-11-08 23:59   res/drawable-mdpi-v4/a12_exportpdf_disabled.png
+      722  2015-11-08 23:59   res/drawable-mdpi-v4/a12_exportpdf_select.png
+      170  2015-11-08 23:59   res/drawable-mdpi-v4/a12_folder_back.png
+      690  2015-11-08 23:59   res/drawable-mdpi-v4/a12_handbook.png
+      599  2015-11-08 23:59   res/drawable-mdpi-v4/a12_handbook_select.png
+      567  2015-11-08 23:59   res/drawable-mdpi-v4/a12_menucheckmark.png
+      213  2015-11-08 23:59   res/drawable-mdpi-v4/a12_menucheckmark_disabled.png
+      499  2015-11-08 23:59   res/drawable-mdpi-v4/a12_menucheckmarkdisabled.png
+      681  2015-11-08 23:59   res/drawable-mdpi-v4/a12_mobilelinkoff.png
+      642  2015-11-08 23:59   res/drawable-mdpi-v4/a12_mobilelinkoffline.png
+      594  2015-11-08 23:59   res/drawable-mdpi-v4/a12_mobilelinkon.png
+      579  2015-11-08 23:59   res/drawable-mdpi-v4/a12_nextfield.png
+      528  2015-11-08 23:59   res/drawable-mdpi-v4/a12_nextfield_disabled.png
+      733  2015-11-08 23:59   res/drawable-mdpi-v4/a12_onlinesupportforum.png
+      608  2015-11-08 23:59   res/drawable-mdpi-v4/a12_onlinesupportforum_select.png
+      171  2015-11-08 23:59   res/drawable-mdpi-v4/a12_opacity.png
+      730  2015-11-08 23:59   res/drawable-mdpi-v4/a12_organize.png
+      636  2015-11-08 23:59   res/drawable-mdpi-v4/a12_organize_select.png
+      592  2015-11-08 23:59   res/drawable-mdpi-v4/a12_previousfield.png
+      528  2015-11-08 23:59   res/drawable-mdpi-v4/a12_previousfield_disabled.png
+      824  2015-11-08 23:59   res/drawable-mdpi-v4/a12_resetfield.png
+      774  2015-11-08 23:59   res/drawable-mdpi-v4/a12_resetfield_disabled.png
+      920  2015-11-08 23:59   res/drawable-mdpi-v4/a12_toc.png
+      774  2015-11-08 23:59   res/drawable-mdpi-v4/a12_uplevel.png
+      570  2015-11-08 23:59   res/drawable-mdpi-v4/a12_whatsnew.png
+      898  2015-11-08 23:59   res/drawable-mdpi-v4/a12_whatsnew_select.png
+     1760  2015-11-08 23:59   res/drawable-mdpi-v4/acrobat_dc_android.png
+     2021  2015-11-08 23:59   res/drawable-mdpi-v4/acrobat_dc_intune_android.png
+     2780  2015-11-08 23:59   res/drawable-mdpi-v4/acrobat_reader_android_launch.png
+     3517  2015-11-08 23:59   res/drawable-mdpi-v4/acrobat_reader_intune_android_launch.png
+      380  2015-11-08 23:59   res/drawable-mdpi-v4/android_annotate.png
+      155  2015-11-08 23:59   res/drawable-mdpi-v4/android_gripper.png
+      438  2015-11-08 23:59   res/drawable-mdpi-v4/android_textselection_right.png
+     2102  2015-11-08 23:43   res/drawable-mdpi-v4/background_popover.9.png
+      197  2015-11-08 23:59   res/drawable-mdpi-v4/bottom_action_bar_background.9.png
+      265  2015-11-08 23:59   res/drawable-mdpi-v4/c_addtext.png
+      275  2015-11-08 23:59   res/drawable-mdpi-v4/c_addtext_selected.png
+      221  2015-11-08 23:59   res/drawable-mdpi-v4/c_checkmark.png
+      860  2015-11-08 23:59   res/drawable-mdpi-v4/c_draw.png
+      962  2015-11-08 23:59   res/drawable-mdpi-v4/c_highlighttool.png
+     1099  2015-11-08 23:59   res/drawable-mdpi-v4/c_highlighttool_selected.png
+      290  2015-11-08 23:59   res/drawable-mdpi-v4/c_linethickness.png
+      642  2015-11-08 23:59   res/drawable-mdpi-v4/c_redo.png
+      614  2015-11-08 23:59   res/drawable-mdpi-v4/c_redo_disabled.png
+     1109  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign.png
+      542  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_camera.png
+      498  2015-11-08 23:56   res/drawable-mdpi-v4/c_sign_cameradisabled.png
+      347  2015-11-08 23:56   res/drawable-mdpi-v4/c_sign_croparea.9.png
+      470  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_gallery.png
+      448  2015-11-08 23:56   res/drawable-mdpi-v4/c_sign_gallerydisabled.png
+      691  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_knob_off.png
+      701  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_knoboff.png
+      732  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_knobon.png
+     1764  2015-11-08 23:56   res/drawable-mdpi-v4/c_sign_redtab.png
+     1132  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_selected.png
+      196  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_track_off.png
+      196  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_trackoff.png
+      189  2015-11-08 23:59   res/drawable-mdpi-v4/c_sign_trackon.png
+     1112  2015-11-08 23:59   res/drawable-mdpi-v4/c_sticky.png
+     1158  2015-11-08 23:59   res/drawable-mdpi-v4/c_sticky_selected.png
+      916  2015-11-08 23:59   res/drawable-mdpi-v4/c_textnotedyn.png
+      386  2015-11-08 23:59   res/drawable-mdpi-v4/c_underline.png
+      395  2015-11-08 23:59   res/drawable-mdpi-v4/c_underline_selected.png
+      609  2015-11-08 23:59   res/drawable-mdpi-v4/c_undo.png
+      611  2015-11-08 23:59   res/drawable-mdpi-v4/c_undo_disabled.png
+      211  2015-11-08 23:59   res/drawable-mdpi-v4/chevron_left.png
+      509  2015-11-08 23:59   res/drawable-mdpi-v4/cloud_file_indicator_badge.png
+     1115  2015-11-08 23:59   res/drawable-mdpi-v4/context.9.png
+      911  2015-11-08 23:59   res/drawable-mdpi-v4/context_dark.9.png
+     1934  2015-11-08 23:59   res/drawable-mdpi-v4/createpdf_android.png
+      556  2015-11-08 23:59   res/drawable-mdpi-v4/createpdf_disabled.png
+      603  2015-11-08 23:59   res/drawable-mdpi-v4/createpdf_enabled.png
+     3585  2015-11-08 23:59   res/drawable-mdpi-v4/fab_bg_normal.png
+      485  2015-11-08 23:59   res/drawable-mdpi-v4/file_docgeneric.png
+      957  2015-11-08 23:59   res/drawable-mdpi-v4/file_docgeneric_large.png
+      421  2015-11-08 23:59   res/drawable-mdpi-v4/file_excel.png
+     1405  2015-11-08 23:59   res/drawable-mdpi-v4/file_excel_large.png
+      711  2015-11-08 23:59   res/drawable-mdpi-v4/file_graphic.png
+     1232  2015-11-08 23:59   res/drawable-mdpi-v4/file_graphic_large.png
+     1366  2015-11-08 23:59   res/drawable-mdpi-v4/file_lockedpdf.png
+     4745  2015-11-08 23:59   res/drawable-mdpi-v4/file_lockedpdf_large.png
+     1217  2015-11-08 23:59   res/drawable-mdpi-v4/file_pdf.png
+     4015  2015-11-08 23:59   res/drawable-mdpi-v4/file_pdf_large.png
+      667  2015-11-08 23:59   res/drawable-mdpi-v4/file_presentation.png
+     1730  2015-11-08 23:59   res/drawable-mdpi-v4/file_presentation_large.png
+      592  2015-11-08 23:59   res/drawable-mdpi-v4/file_text.png
+     1212  2015-11-08 23:59   res/drawable-mdpi-v4/file_text_large.png
+      647  2015-11-08 23:59   res/drawable-mdpi-v4/file_word.png
+     1348  2015-11-08 23:59   res/drawable-mdpi-v4/file_word_large.png
+      415  2015-11-08 23:59   res/drawable-mdpi-v4/file_word_select.png
+      550  2015-11-08 23:59   res/drawable-mdpi-v4/h_back.png
+      460  2015-11-08 23:59   res/drawable-mdpi-v4/h_cancelsearch.png
+     1126  2015-11-08 23:59   res/drawable-mdpi-v4/h_folder_big.png
+      629  2015-11-08 23:59   res/drawable-mdpi-v4/h_folder_small.png
+      187  2015-11-08 23:59   res/drawable-mdpi-v4/h_overflow.png
+      656  2015-11-08 23:59   res/drawable-mdpi-v4/h_promoted_open_white.png
+      524  2015-11-08 23:59   res/drawable-mdpi-v4/h_promoted_upload_white.png
+      685  2015-11-08 23:59   res/drawable-mdpi-v4/h_search.png
+      876  2015-11-08 23:59   res/drawable-mdpi-v4/h_searchback.png
+      553  2015-11-08 23:59   res/drawable-mdpi-v4/h_uploadpermanentlyfailed.png
+      652  2015-11-08 23:59   res/drawable-mdpi-v4/h_uploadsuccessful.png
+      511  2015-11-08 23:59   res/drawable-mdpi-v4/h_uploadunsuccessful.png
+     2200  2015-11-08 23:43   res/drawable-mdpi-v4/ic_launcher.png
+      215  2015-11-08 23:43   res/drawable-mdpi-v4/icon_popover_arrow_down.png
+      208  2015-11-08 23:43   res/drawable-mdpi-v4/icon_popover_arrow_left.png
+      211  2015-11-08 23:43   res/drawable-mdpi-v4/icon_popover_arrow_right.png
+      210  2015-11-08 23:43   res/drawable-mdpi-v4/icon_popover_arrow_up.png
+      130  2015-11-08 23:59   res/drawable-mdpi-v4/menulist_md_n_dk.png
+     1173  2015-11-08 23:59   res/drawable-mdpi-v4/mp_androidbanner_n_dk.png
+      479  2015-11-08 23:59   res/drawable-mdpi-v4/mp_autoenhance_md_s_dk.png
+      479  2015-11-08 23:59   res/drawable-mdpi-v4/mp_autoenhance_off_md_n_dk.png
+      479  2015-11-08 23:59   res/drawable-mdpi-v4/mp_autoenhance_on_md_n_dk.png
+     1475  2015-11-08 23:59   res/drawable-mdpi-v4/mp_blue_folder_xl_n_lt.png
+      522  2015-11-08 23:59   res/drawable-mdpi-v4/mp_camera_md_n_dk.png
+      523  2015-11-08 23:59   res/drawable-mdpi-v4/mp_camera_md_n_lt.png
+      479  2015-11-08 23:59   res/drawable-mdpi-v4/mp_cancelsearch_cu_n.png
+      738  2015-11-08 23:59   res/drawable-mdpi-v4/mp_cancelsearch_cu_s.png
+      185  2015-11-08 23:59   res/drawable-mdpi-v4/mp_cancelsearch_md_n_lt.png
+      255  2015-11-08 23:59   res/drawable-mdpi-v4/mp_clouddoc_disabled_n_lt.png
+      307  2015-11-08 23:59   res/drawable-mdpi-v4/mp_clouddoc_lg_n_dk.png
+      261  2015-11-08 23:59   res/drawable-mdpi-v4/mp_clouddoc_md_n_dk.png
+      268  2015-11-08 23:59   res/drawable-mdpi-v4/mp_clouddoc_md_n_lt.png
+      180  2015-11-08 23:59   res/drawable-mdpi-v4/mp_continuousscroll_md_n_dk.png
+      180  2015-11-08 23:59   res/drawable-mdpi-v4/mp_continuousscroll_md_n_lt.png
+      308  2015-11-08 23:59   res/drawable-mdpi-v4/mp_createpdf_md_n_dk.png
+      309  2015-11-08 23:59   res/drawable-mdpi-v4/mp_createpdf_md_n_lt.png
+      150  2015-11-08 23:59   res/drawable-mdpi-v4/mp_document_md_n_dk.png
+      308  2015-11-08 23:59   res/drawable-mdpi-v4/mp_exportpdf_md_n_dk.png
+      308  2015-11-08 23:59   res/drawable-mdpi-v4/mp_exportpdf_md_n_lt.png
+      405  2015-11-08 23:59   res/drawable-mdpi-v4/mp_flash_md_n_dk.png
+      711  2015-11-08 23:59   res/drawable-mdpi-v4/mp_flash_md_s_dk.png
+      314  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_bookmarkarrowleft_n.png
+      314  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_bookmarkarrowleft_s.png
+      306  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_bookmarkarrowright_n.png
+      306  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_bookmarkarrowright_s.png
+      702  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btn_blue_n.png
+      693  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btn_blue_pressed_n.png
+      702  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btn_gray_n.png
+      702  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btn_gray_pressed_n.png
+      866  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btnbackopaque_black_n.png
+      418  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btnbackopaquemini_black_n.png
+      827  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btnbacktranslucent_black_n.png
+      378  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btnbacktranslucentmini_black_n.png
+      396  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btncreateid_blacke_n.png
+      574  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btndefault_blue_n.png
+      485  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btndefaultmini_blue_n.png
+      568  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btndone_blue_n.png
+      462  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btndonemini_blue_n.png
+      474  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btnopaque_black_n.png
+      281  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btnopaquemini_black_n.png
+      442  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btntranslucent_black_n.png
+      408  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_btntranslucentmini_black_n.png
+      338  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_buttonlandscape_n.png
+      354  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_buttonportrait_n.png
+      303  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_checkmark_dk.png
+      303  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_checkmark_lt.png
+      745  2015-11-08 23:59   res/drawable-mdpi-v4/mp_g_stickynoteghost_lg_n.png
+      187  2015-11-08 23:59   res/drawable-mdpi-v4/mp_gallery_md_n_dk.png
+      187  2015-11-08 23:59   res/drawable-mdpi-v4/mp_gallery_md_s_dk.png
+     1716  2015-11-08 23:59   res/drawable-mdpi-v4/mp_generic_img_type_xl_n_lt.png
+     1565  2015-11-08 23:59   res/drawable-mdpi-v4/mp_generic_ppt_type_xl_n_lt.png
+     1586  2015-11-08 23:59   res/drawable-mdpi-v4/mp_generic_text_type_xl_n_lt.png
+     1329  2015-11-08 23:59   res/drawable-mdpi-v4/mp_generic_word_type_xl_n_lt.png
+     1437  2015-11-08 23:59   res/drawable-mdpi-v4/mp_generic_xcl_type_xl_n_lt.png
+     1221  2015-11-08 23:59   res/drawable-mdpi-v4/mp_genericfile_xl_n_lt.png
+     1194  2015-11-08 23:59   res/drawable-mdpi-v4/mp_genericfolder_xl_n_lt.png
+      130  2015-11-08 23:59   res/drawable-mdpi-v4/mp_grid_md_n_dk.png
+      424  2015-11-08 23:59   res/drawable-mdpi-v4/mp_grid_md_s_dk.png
+      319  2015-11-08 23:59   res/drawable-mdpi-v4/mp_help_md_n_dk.png
+      288  2015-11-08 23:59   res/drawable-mdpi-v4/mp_highlighttext_md_n_lt.png
+      156  2015-11-08 23:59   res/drawable-mdpi-v4/mp_levelup_md_n_lt.png
+      216  2015-11-08 23:59   res/drawable-mdpi-v4/mp_lock_sm_n_dk.png
+      217  2015-11-08 23:59   res/drawable-mdpi-v4/mp_lock_sm_n_lt.png
+      916  2015-11-08 23:59   res/drawable-mdpi-v4/mp_menuoptionabout_xl_n.png
+     1273  2015-11-08 23:59   res/drawable-mdpi-v4/mp_menuoptionsettings_xl_n.png
+      205  2015-11-08 23:59   res/drawable-mdpi-v4/mp_moreinfo_md_n_dk.png
+      205  2015-11-08 23:59   res/drawable-mdpi-v4/mp_moreinfo_md_n_lt.png
+      204  2015-11-08 23:59   res/drawable-mdpi-v4/mp_moveorduplicate_file_md_n_dk.png
+      201  2015-11-08 23:59   res/drawable-mdpi-v4/mp_myaccount_md_n_dk.png
+      422  2015-11-08 23:59   res/drawable-mdpi-v4/mp_new_md_n_dk.png
+      422  2015-11-08 23:59   res/drawable-mdpi-v4/mp_new_md_n_lt.png
+      259  2015-11-08 23:59   res/drawable-mdpi-v4/mp_nightmode_md_n_dk.png
+      259  2015-11-08 23:59   res/drawable-mdpi-v4/mp_nightmode_md_n_lt.png
+      244  2015-11-08 23:59   res/drawable-mdpi-v4/mp_opacity_lg_n_dk.png
+      475  2015-11-08 23:59   res/drawable-mdpi-v4/mp_pdf_editable_md_n_dk.png
+      475  2015-11-08 23:59   res/drawable-mdpi-v4/mp_pdf_editable_md_n_lt.png
+      362  2015-11-08 23:59   res/drawable-mdpi-v4/mp_pdf_flattened_md_n_dk.png
+      362  2015-11-08 23:59   res/drawable-mdpi-v4/mp_pdf_flattened_md_n_lt.png
+     1894  2015-11-08 23:59   res/drawable-mdpi-v4/mp_pdffiletype_xl_n_lt.png
+      344  2015-11-08 23:59   res/drawable-mdpi-v4/mp_picture_md_n_dk.png
+      344  2015-11-08 23:59   res/drawable-mdpi-v4/mp_picture_md_n_lt.png
+      170  2015-11-08 23:59   res/drawable-mdpi-v4/mp_print_md_n_dk.png
+      167  2015-11-08 23:59   res/drawable-mdpi-v4/mp_print_md_n_lt.png
+      343  2015-11-08 23:59   res/drawable-mdpi-v4/mp_recents_md_n_dk.png
+      225  2015-11-08 23:59   res/drawable-mdpi-v4/mp_reply_sm_n_lt.png
+      349  2015-11-08 23:59   res/drawable-mdpi-v4/mp_rotate_md_n_dk.png
+      361  2015-11-08 23:59   res/drawable-mdpi-v4/mp_rotate_md_s_dk.png
+       75  2015-11-08 23:59   res/drawable-mdpi-v4/mp_rowheader_n.png
+      929  2015-11-08 23:59   res/drawable-mdpi-v4/mp_scrubber.png
+       78  2015-11-08 23:59   res/drawable-mdpi-v4/mp_selectedrow_n.png
+      348  2015-11-08 23:59   res/drawable-mdpi-v4/mp_settings_md_n_dk.png
+      324  2015-11-08 23:59   res/drawable-mdpi-v4/mp_sharefeedback_file_md_n_dk.png
+      324  2015-11-08 23:59   res/drawable-mdpi-v4/mp_sharefeedback_file_md_n_lt.png
+      691  2015-11-08 23:59   res/drawable-mdpi-v4/mp_sharelink_md_n_dk.png
+      287  2015-11-08 23:59   res/drawable-mdpi-v4/mp_shareonandroid_md_n_dk.png
+      189  2015-11-08 23:59   res/drawable-mdpi-v4/mp_singlepageview_md_n_dk.png
+      169  2015-11-08 23:59   res/drawable-mdpi-v4/mp_singlepageview_md_n_lt.png
+      110  2015-11-08 23:59   res/drawable-mdpi-v4/mp_slider_vertical_n_lt.png
+     1406  2015-11-08 23:59   res/drawable-mdpi-v4/mp_takephoto_md_n_dk.png
+     2428  2015-11-08 23:59   res/drawable-mdpi-v4/mp_takephoto_md_s_dk.png
+      196  2015-11-08 23:59   res/drawable-mdpi-v4/mp_textreflow_md_n_dk.png
+      196  2015-11-08 23:59   res/drawable-mdpi-v4/mp_textreflow_md_n_lt.png
+     1200  2015-11-08 23:59   res/drawable-mdpi-v4/mp_textselection_left.png
+     1201  2015-11-08 23:59   res/drawable-mdpi-v4/mp_textselection_right.png
+      213  2015-11-08 23:59   res/drawable-mdpi-v4/mp_textstrikethrough_md_n_dk.png
+      209  2015-11-08 23:59   res/drawable-mdpi-v4/mp_textstrikethrough_md_n_lt.png
+      186  2015-11-08 23:59   res/drawable-mdpi-v4/mp_transform_md_n_dk.png
+      186  2015-11-08 23:59   res/drawable-mdpi-v4/mp_transform_md_s_dk.png
+      273  2015-11-08 23:59   res/drawable-mdpi-v4/mp_whatsnew_md_n_dk.png
+      281  2015-11-08 23:59   res/drawable-mdpi-v4/mp_whatsnew_md_n_lt.png
+      392  2015-11-08 23:56   res/drawable-mdpi-v4/n_context.9.png
+      914  2015-11-08 23:59   res/drawable-mdpi-v4/o_delete.png
+      863  2015-11-08 23:59   res/drawable-mdpi-v4/o_delete_disabled.png
+     1176  2015-11-08 23:59   res/drawable-mdpi-v4/organize_placeholder.png
+      631  2015-11-08 23:59   res/drawable-mdpi-v4/organize_rotateleft.png
+      998  2015-11-08 23:59   res/drawable-mdpi-v4/organize_rotateleft_disabled.png
+      642  2015-11-08 23:59   res/drawable-mdpi-v4/organize_rotateright.png
+      959  2015-11-08 23:59   res/drawable-mdpi-v4/organize_rotateright_disabled.png
+      642  2015-11-08 23:56   res/drawable-mdpi-v4/rotateright.png
+      220  2015-11-08 23:59   res/drawable-mdpi-v4/shadow_below_tabstrip.9.png
+     1118  2015-11-08 23:59   res/drawable-mdpi-v4/tool_comment_active.png
+      251  2015-11-08 23:59   res/drawable-mdpi-v4/tool_comment_bg.9.png
+     1373  2015-11-08 23:59   res/drawable-mdpi-v4/tool_commenting.png
+      784  2015-11-08 23:59   res/drawable-mdpi-v4/tool_create.png
+      779  2015-11-08 23:59   res/drawable-mdpi-v4/tool_createpdf_active.png
+      252  2015-11-08 23:59   res/drawable-mdpi-v4/tool_createpdf_bg.9.png
+     1117  2015-11-08 23:59   res/drawable-mdpi-v4/tool_export.png
+      908  2015-11-08 23:59   res/drawable-mdpi-v4/tool_exportpdf_active.png
+      253  2015-11-08 23:59   res/drawable-mdpi-v4/tool_exportpdf_bg.9.png
+      941  2015-11-08 23:59   res/drawable-mdpi-v4/tool_fillsign.png
+      919  2015-11-08 23:59   res/drawable-mdpi-v4/tool_fillsign_active.png
+      251  2015-11-08 23:59   res/drawable-mdpi-v4/tool_fillsign_bg.9.png
+      784  2015-11-08 23:59   res/drawable-mdpi-v4/tool_home.png
+      772  2015-11-08 23:59   res/drawable-mdpi-v4/tool_home_active.png
+      237  2015-11-08 23:59   res/drawable-mdpi-v4/tool_home_bg.9.png
+      828  2015-11-08 23:59   res/drawable-mdpi-v4/tool_organizepages.png
+      850  2015-11-08 23:59   res/drawable-mdpi-v4/tool_organizepages_active.png
+      252  2015-11-08 23:59   res/drawable-mdpi-v4/tool_organizepages_bg.9.png
+      602  2015-11-08 23:59   res/drawable-mdpi-v4/tool_viewer.png
+      731  2015-11-08 23:59   res/drawable-mdpi-v4/tool_viewer_active.png
+      252  2015-11-08 23:59   res/drawable-mdpi-v4/tool_viewer_bg.9.png
+      197  2015-11-08 23:59   res/drawable-mdpi-v4/top_action_bar_background.9.png
+      761  2015-11-08 23:59   res/drawable-mdpi-v4/v_attachments.png
+      602  2015-11-08 23:59   res/drawable-mdpi-v4/v_bookmarkadded.png
+      682  2015-11-08 23:59   res/drawable-mdpi-v4/v_bookmarks.png
+      915  2015-11-08 23:59   res/drawable-mdpi-v4/v_comment.png
+      398  2015-11-08 23:59   res/drawable-mdpi-v4/v_horizontal_popover.9.png
+      667  2015-11-08 23:59   res/drawable-mdpi-v4/v_horizontalscrubberbig.png
+      649  2015-11-08 23:59   res/drawable-mdpi-v4/v_horizontalscrubbersmall.png
+      322  2015-11-08 23:59   res/drawable-mdpi-v4/v_lock.png
+      688  2015-11-08 23:59   res/drawable-mdpi-v4/v_n_horizontalscrubberbig.png
+      670  2015-11-08 23:59   res/drawable-mdpi-v4/v_n_horizontalscrubbersmall.png
+      628  2015-11-08 23:59   res/drawable-mdpi-v4/v_n_verticalscrubberbig.png
+      654  2015-11-08 23:59   res/drawable-mdpi-v4/v_n_verticalscrubbersmall.png
+      330  2015-11-08 23:59   res/drawable-mdpi-v4/v_popover_arrow_down.png
+      323  2015-11-08 23:59   res/drawable-mdpi-v4/v_popover_arrow_right.png
+      624  2015-11-08 23:59   res/drawable-mdpi-v4/v_search.png
+      341  2015-11-08 23:59   res/drawable-mdpi-v4/v_share.png
+      721  2015-11-08 23:59   res/drawable-mdpi-v4/v_upload.png
+      442  2015-11-08 23:59   res/drawable-mdpi-v4/v_vertical_popover.9.png
+      664  2015-11-08 23:59   res/drawable-mdpi-v4/v_verticalscrubberbig.png
+      663  2015-11-08 23:59   res/drawable-mdpi-v4/v_verticalscrubbersmall.png
+      729  2015-11-08 23:59   res/drawable-mdpi-v4/v_viewmodes.png
+      622  2015-11-08 23:59   res/drawable-mdpi-v4/v_viewmodesdisabled.png
+     1103  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_addfile.png
+      860  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_createpdfpack.png
+      717  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_createpdfpack_select.png
+      410  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_deletetextdyn.png
+      408  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_deletetextdyn_selected.png
+     1788  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_documentcloud.png
+     1310  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_documentcloud_select.png
+      446  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_editpdfdc.png
+      377  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_editpdfdc_select.png
+     1508  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_exportpdf.png
+     1429  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_exportpdf_disabled.png
+     1160  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_exportpdf_select.png
+      240  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_folder_back.png
+     1115  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_handbook.png
+      888  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_handbook_select.png
+      974  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_menucheckmark.png
+      270  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_menucheckmark_disabled.png
+      822  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_menucheckmarkdisabled.png
+     1267  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_mobilelinkoff.png
+     1100  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_mobilelinkoffline.png
+     1066  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_mobilelinkon.png
+     1043  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_nextfield.png
+      986  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_nextfield_disabled.png
+     1767  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_onlinesupportforum.png
+     1912  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_onlinesupportforum_select.png
+      192  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_opacity.png
+     1143  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_organize.png
+      953  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_organize_select.png
+     1060  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_previousfield.png
+      987  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_previousfield_disabled.png
+     1685  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_resetfield.png
+     1569  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_resetfield_disabled.png
+     1700  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_toc.png
+     1367  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_uplevel.png
+     1203  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_whatsnew.png
+     1527  2015-11-08 23:59   res/drawable-xhdpi-v4/a12_whatsnew_select.png
+     4477  2015-11-08 23:59   res/drawable-xhdpi-v4/acrobat_dc_android.png
+     4846  2015-11-08 23:59   res/drawable-xhdpi-v4/acrobat_dc_intune_android.png
+     5122  2015-11-08 23:59   res/drawable-xhdpi-v4/acrobat_reader_android_launch.png
+     6743  2015-11-08 23:59   res/drawable-xhdpi-v4/acrobat_reader_intune_android_launch.png
+      761  2015-11-08 23:59   res/drawable-xhdpi-v4/android_annotate.png
+      218  2015-11-08 23:59   res/drawable-xhdpi-v4/android_gripper.png
+     1230  2015-11-08 23:59   res/drawable-xhdpi-v4/android_textselection_right.png
+      232  2015-11-08 23:59   res/drawable-xhdpi-v4/bottom_action_bar_background.9.png
+      353  2015-11-08 23:59   res/drawable-xhdpi-v4/c_addtext.png
+      350  2015-11-08 23:59   res/drawable-xhdpi-v4/c_addtext_selected.png
+      275  2015-11-08 23:59   res/drawable-xhdpi-v4/c_checkmark.png
+     1654  2015-11-08 23:59   res/drawable-xhdpi-v4/c_draw.png
+     1810  2015-11-08 23:59   res/drawable-xhdpi-v4/c_highlighttool.png
+     2467  2015-11-08 23:59   res/drawable-xhdpi-v4/c_highlighttool_selected.png
+      287  2015-11-08 23:59   res/drawable-xhdpi-v4/c_linethickness.png
+     1175  2015-11-08 23:59   res/drawable-xhdpi-v4/c_redo.png
+     1198  2015-11-08 23:59   res/drawable-xhdpi-v4/c_redo_disabled.png
+     2052  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign.png
+      841  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_camera.png
+      727  2015-11-08 23:56   res/drawable-xhdpi-v4/c_sign_cameradisabled.png
+      444  2015-11-08 23:56   res/drawable-xhdpi-v4/c_sign_croparea.9.png
+      777  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_gallery.png
+      687  2015-11-08 23:56   res/drawable-xhdpi-v4/c_sign_gallerydisabled.png
+     1678  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_knob_off.png
+     1693  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_knoboff.png
+     1820  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_knobon.png
+     3738  2015-11-08 23:56   res/drawable-xhdpi-v4/c_sign_redtab.png
+     2462  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_selected.png
+      265  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_track_off.png
+      265  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_trackoff.png
+      280  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sign_trackon.png
+     2000  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sticky.png
+     2201  2015-11-08 23:59   res/drawable-xhdpi-v4/c_sticky_selected.png
+     1487  2015-11-08 23:59   res/drawable-xhdpi-v4/c_textnotedyn.png
+      481  2015-11-08 23:59   res/drawable-xhdpi-v4/c_underline.png
+      494  2015-11-08 23:59   res/drawable-xhdpi-v4/c_underline_selected.png
+     1134  2015-11-08 23:59   res/drawable-xhdpi-v4/c_undo.png
+     1212  2015-11-08 23:59   res/drawable-xhdpi-v4/c_undo_disabled.png
+      253  2015-11-08 23:59   res/drawable-xhdpi-v4/chevron_left.png
+     1111  2015-11-08 23:59   res/drawable-xhdpi-v4/cloud_file_indicator_badge.png
+     2423  2015-11-08 23:59   res/drawable-xhdpi-v4/context.9.png
+     2076  2015-11-08 23:59   res/drawable-xhdpi-v4/context_dark.9.png
+     3978  2015-11-08 23:59   res/drawable-xhdpi-v4/createpdf_android.png
+      832  2015-11-08 23:59   res/drawable-xhdpi-v4/createpdf_disabled.png
+      854  2015-11-08 23:59   res/drawable-xhdpi-v4/createpdf_enabled.png
+     8499  2015-11-08 23:59   res/drawable-xhdpi-v4/fab_bg_normal.png
+      333  2015-11-08 23:59   res/drawable-xhdpi-v4/file_docgeneric.png
+     1808  2015-11-08 23:59   res/drawable-xhdpi-v4/file_docgeneric_large.png
+      193  2015-11-08 23:59   res/drawable-xhdpi-v4/file_excel.png
+     1788  2015-11-08 23:59   res/drawable-xhdpi-v4/file_excel_large.png
+      631  2015-11-08 23:59   res/drawable-xhdpi-v4/file_graphic.png
+     1978  2015-11-08 23:59   res/drawable-xhdpi-v4/file_graphic_large.png
+     2253  2015-11-08 23:59   res/drawable-xhdpi-v4/file_lockedpdf.png
+    11459  2015-11-08 23:59   res/drawable-xhdpi-v4/file_lockedpdf_large.png
+     1937  2015-11-08 23:59   res/drawable-xhdpi-v4/file_pdf.png
+     9655  2015-11-08 23:59   res/drawable-xhdpi-v4/file_pdf_large.png
+      447  2015-11-08 23:59   res/drawable-xhdpi-v4/file_presentation.png
+     2580  2015-11-08 23:59   res/drawable-xhdpi-v4/file_presentation_large.png
+      335  2015-11-08 23:59   res/drawable-xhdpi-v4/file_text.png
+     1718  2015-11-08 23:59   res/drawable-xhdpi-v4/file_text_large.png
+      335  2015-11-08 23:59   res/drawable-xhdpi-v4/file_word.png
+     1988  2015-11-08 23:59   res/drawable-xhdpi-v4/file_word_large.png
+      508  2015-11-08 23:59   res/drawable-xhdpi-v4/file_word_select.png
+     1022  2015-11-08 23:59   res/drawable-xhdpi-v4/h_back.png
+      878  2015-11-08 23:59   res/drawable-xhdpi-v4/h_cancelsearch.png
+     1965  2015-11-08 23:59   res/drawable-xhdpi-v4/h_folder_big.png
+      983  2015-11-08 23:59   res/drawable-xhdpi-v4/h_folder_small.png
+      266  2015-11-08 23:59   res/drawable-xhdpi-v4/h_overflow.png
+      978  2015-11-08 23:59   res/drawable-xhdpi-v4/h_promoted_open_white.png
+      892  2015-11-08 23:59   res/drawable-xhdpi-v4/h_promoted_upload_white.png
+     1229  2015-11-08 23:59   res/drawable-xhdpi-v4/h_search.png
+     1920  2015-11-08 23:59   res/drawable-xhdpi-v4/h_searchback.png
+     1131  2015-11-08 23:59   res/drawable-xhdpi-v4/h_uploadpermanentlyfailed.png
+     1409  2015-11-08 23:59   res/drawable-xhdpi-v4/h_uploadsuccessful.png
+     1082  2015-11-08 23:59   res/drawable-xhdpi-v4/h_uploadunsuccessful.png
+      168  2015-11-08 23:59   res/drawable-xhdpi-v4/menulist_md_n_dk.png
+     2144  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_androidbanner_n_dk.png
+      426  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_annotation_disabled_md_n_dk.png
+      426  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_annotation_md_n_dk.png
+      423  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_annotation_md_n_lt.png
+      569  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_attach_md_n_dk.png
+      573  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_attach_md_n_lt.png
+      954  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_autoenhance_off_md_n_dk.png
+      954  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_autoenhance_on_md_n_dk.png
+     2431  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_blue_folder_xl_n_lt.png
+      708  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_cancelsearch_cu_n.png
+     1219  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_cancelsearch_cu_s.png
+      879  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_cancelsearch_md_n_lt.png
+     1243  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_checkmarkgreen_md_d_lt.png
+      339  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_cloud_md_n_dk.png
+      472  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_clouddoc_lg_n_dk.png
+      402  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_clouddoc_md_n_dk.png
+      404  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_clouddoc_md_n_lt.png
+      170  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_continuousscroll_md_n_dk.png
+      500  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_createpdf_disabled_md_n_dk.png
+      476  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_createpdf_md_n_dk.png
+      476  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_createpdf_md_n_lt.png
+      178  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_document_md_n_dk.png
+      457  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_exportpdf_md_n_dk.png
+      457  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_exportpdf_md_n_lt.png
+      786  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_flash_md_n_dk.png
+     1479  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_flash_md_s_dk.png
+      426  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_bookmarkarrowleft_n.png
+      426  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_bookmarkarrowleft_s.png
+      433  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_bookmarkarrowright_n.png
+      433  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_bookmarkarrowright_s.png
+      693  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_checkmark_dk.png
+      717  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_checkmark_lt.png
+     1016  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_g_stickynoteghost_lg_n.png
+      259  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_gallery_md_n_dk.png
+      259  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_gallery_md_s_dk.png
+     3118  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_generic_img_type_xl_n_lt.png
+     2986  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_generic_ppt_type_xl_n_lt.png
+     2823  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_generic_text_type_xl_n_lt.png
+     2707  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_generic_word_type_xl_n_lt.png
+     3062  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_generic_xcl_type_xl_n_lt.png
+     2564  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_genericfile_xl_n_lt.png
+      155  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_grid_md_n_dk.png
+      831  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_grid_md_s_dk.png
+      495  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_help_md_n_dk.png
+      432  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_highlighttext_md_n_lt.png
+      218  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_levelup_md_n_lt.png
+      327  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_lock_sm_n_dk.png
+      327  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_lock_sm_n_lt.png
+     1736  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_menuoptionabout_xl_n.png
+     2180  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_menuoptionsettings_xl_n.png
+      318  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_moreinfo_md_n_dk.png
+      318  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_moreinfo_md_n_lt.png
+      343  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_myaccount_md_n_dk.png
+      756  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_new_md_n_dk.png
+      756  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_new_md_n_lt.png
+      371  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_nightmode_md_n_dk.png
+      371  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_nightmode_md_n_lt.png
+      299  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_opacity_lg_n_dk.png
+     4320  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_pdffiletype_xl_n_lt.png
+      205  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_print_md_n_dk.png
+      201  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_print_md_n_lt.png
+      555  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_recents_md_n_dk.png
+      336  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_remove_md_n_lt.png
+      330  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_reply_sm_n_lt.png
+      638  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_rotate_md_n_dk.png
+      653  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_rotate_md_s_dk.png
+     2247  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_scrubber.png
+      417  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_settings_md_n_dk.png
+      332  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_share_md_n_lt.png
+      463  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_sharefeedback_file_md_n_dk.png
+      463  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_sharefeedback_file_md_n_lt.png
+     1632  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_sharelink_md_n_dk.png
+      389  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_shareonandroid_md_n_dk.png
+      178  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_singlepageview_md_n_dk.png
+      178  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_singlepageview_md_n_lt.png
+     2657  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_takephoto_md_n_dk.png
+     2674  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_takephoto_md_s_dk.png
+      294  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_textreflow_md_n_dk.png
+      285  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_textreflow_md_n_lt.png
+     2084  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_textselection_left.png
+     2081  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_textselection_right.png
+      249  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_textstrikethrough_md_n_dk.png
+      249  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_textstrikethrough_md_n_lt.png
+      269  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_transform_md_n_dk.png
+      264  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_transform_md_s_dk.png
+      419  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_undo_md_n_dk.png
+      406  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_whatsnew_md_n_dk.png
+      437  2015-11-08 23:59   res/drawable-xhdpi-v4/mp_whatsnew_md_n_lt.png
+      652  2015-11-08 23:56   res/drawable-xhdpi-v4/n_context.9.png
+     1722  2015-11-08 23:59   res/drawable-xhdpi-v4/o_delete.png
+     1646  2015-11-08 23:59   res/drawable-xhdpi-v4/o_delete_disabled.png
+     3631  2015-11-08 23:59   res/drawable-xhdpi-v4/organize_placeholder.png
+     1364  2015-11-08 23:59   res/drawable-xhdpi-v4/organize_rotateleft.png
+     1317  2015-11-08 23:59   res/drawable-xhdpi-v4/organize_rotateleft_disabled.png
+     1406  2015-11-08 23:59   res/drawable-xhdpi-v4/organize_rotateright.png
+     1358  2015-11-08 23:59   res/drawable-xhdpi-v4/organize_rotateright_disabled.png
+     1406  2015-11-08 23:56   res/drawable-xhdpi-v4/rotateright.png
+      227  2015-11-08 23:59   res/drawable-xhdpi-v4/shadow_below_tabstrip.9.png
+     2006  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_comment_active.png
+      370  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_comment_bg.9.png
+     2143  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_commenting.png
+     1279  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_create.png
+     1128  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_createpdf_active.png
+      370  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_createpdf_bg.9.png
+     1840  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_export.png
+     1405  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_exportpdf_active.png
+      370  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_exportpdf_bg.9.png
+     1670  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_fillsign.png
+     1620  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_fillsign_active.png
+      370  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_fillsign_bg.9.png
+     1384  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_home.png
+     1282  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_home_active.png
+      346  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_home_bg.9.png
+     1374  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_organizepages.png
+     1324  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_organizepages_active.png
+      371  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_organizepages_bg.9.png
+      893  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_viewer.png
+     1146  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_viewer_active.png
+      370  2015-11-08 23:59   res/drawable-xhdpi-v4/tool_viewer_bg.9.png
+      224  2015-11-08 23:59   res/drawable-xhdpi-v4/top_action_bar_background.9.png
+     1851  2015-11-08 23:59   res/drawable-xhdpi-v4/v_attachments.png
+     1231  2015-11-08 23:59   res/drawable-xhdpi-v4/v_bookmarkadded.png
+     1373  2015-11-08 23:59   res/drawable-xhdpi-v4/v_bookmarks.png
+     1592  2015-11-08 23:59   res/drawable-xhdpi-v4/v_comment.png
+      717  2015-11-08 23:59   res/drawable-xhdpi-v4/v_horizontal_popover.9.png
+     1021  2015-11-08 23:59   res/drawable-xhdpi-v4/v_horizontalscrubberbig.png
+     1084  2015-11-08 23:59   res/drawable-xhdpi-v4/v_horizontalscrubbersmall.png
+      620  2015-11-08 23:59   res/drawable-xhdpi-v4/v_lock.png
+     1357  2015-11-08 23:59   res/drawable-xhdpi-v4/v_n_horizontalscrubberbig.png
+     1278  2015-11-08 23:59   res/drawable-xhdpi-v4/v_n_horizontalscrubbersmall.png
+     1234  2015-11-08 23:59   res/drawable-xhdpi-v4/v_n_verticalscrubberbig.png
+     1200  2015-11-08 23:59   res/drawable-xhdpi-v4/v_n_verticalscrubbersmall.png
+      562  2015-11-08 23:59   res/drawable-xhdpi-v4/v_popover_arrow_down.png
+      547  2015-11-08 23:59   res/drawable-xhdpi-v4/v_popover_arrow_right.png
+     1328  2015-11-08 23:59   res/drawable-xhdpi-v4/v_search.png
+      663  2015-11-08 23:59   res/drawable-xhdpi-v4/v_share.png
+     1691  2015-11-08 23:59   res/drawable-xhdpi-v4/v_upload.png
+      777  2015-11-08 23:59   res/drawable-xhdpi-v4/v_vertical_popover.9.png
+     1052  2015-11-08 23:59   res/drawable-xhdpi-v4/v_verticalscrubberbig.png
+     1090  2015-11-08 23:59   res/drawable-xhdpi-v4/v_verticalscrubbersmall.png
+      984  2015-11-08 23:59   res/drawable-xhdpi-v4/v_viewmodes.png
+      825  2015-11-08 23:59   res/drawable-xhdpi-v4/v_viewmodesdisabled.png
+     1108  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_camera.png
+      967  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_cameradisabled.png
+     1167  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_croparea.9.png
+     1068  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_gallery.png
+      892  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_gallerydisabled.png
+     2046  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_knoboff.png
+     3036  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_knobon.png
+     5948  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_redtab.png
+      358  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_trackoff.png
+      384  2015-11-08 23:56   res/drawable-xxhdpi-v4/c_sign_trackon.png
+      840  2015-11-08 23:56   res/drawable-xxhdpi-v4/n_context.9.png
+     1671  2015-11-08 23:56   res/drawable-xxhdpi-v4/rotateright.png
+      476  2015-11-08 23:59   res/drawable/about_dlg_background.xml
+      412  2015-11-08 23:59   res/drawable/bookmark_button_selected_background.xml
+      412  2015-11-08 23:59   res/drawable/bookmark_button_unselected_background.xml
+      620  2015-11-08 23:59   res/drawable/bookmark_entry_background_color_selector.xml
+      660  2015-11-08 23:59   res/drawable/bookmark_next_level_image_selector.xml
+      660  2015-11-08 23:59   res/drawable/bookmark_prev_level_image_selector.xml
+      476  2015-11-08 23:59   res/drawable/bookmark_selected_row.xml
+      660  2015-11-08 23:59   res/drawable/bookmark_tab_indicator.xml
+      692  2015-11-08 23:59   res/drawable/bookmark_title_text_color_selector.xml
+      776  2015-11-08 23:59   res/drawable/camera_button_icon_selector.xml
+      660  2015-11-08 23:59   res/drawable/cancel_search_image_selector.xml
+      556  2015-11-08 23:59   res/drawable/cellular_data_text_color_selector.xml
+     1016  2015-11-08 23:59   res/drawable/coachmark_arrow_indicator.xml
+     1016  2015-11-08 23:59   res/drawable/coachmark_arrow_indicator_dark.xml
+      680  2015-11-08 23:59   res/drawable/coachmarks_background.xml
+      584  2015-11-08 23:59   res/drawable/color_picker_item_background.xml
+      540  2015-11-08 23:59   res/drawable/convert_button_default_disabled_background.xml
+      540  2015-11-08 23:59   res/drawable/convert_button_default_enabled_background.xml
+      540  2015-11-08 23:59   res/drawable/convert_button_selected_background.xml
+      776  2015-11-08 23:59   res/drawable/create_pdf_image_selector.xml
+     1068  2015-11-08 23:59   res/drawable/current_ink_color_selector.xml
+      616  2015-11-08 23:59   res/drawable/current_page_indicator_background.xml
+      776  2015-11-08 23:59   res/drawable/delete_image_selector.xml
+      780  2015-11-08 23:59   res/drawable/directory_entry_background_color_selector.xml
+      696  2015-11-08 23:59   res/drawable/dotted_line.xml
+     6928  2015-11-08 23:59   res/drawable/dummy_icon.png
+      580  2015-11-08 23:59   res/drawable/edit_mode_button_icon_selector.xml
+      760  2015-11-08 23:59   res/drawable/enhance_button_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/export_pdf_image_selector.xml
+      840  2015-11-08 23:59   res/drawable/file_entry_background_color_selector.xml
+      832  2015-11-08 23:59   res/drawable/file_entry_second_layer_text_color_selector.xml
+      832  2015-11-08 23:59   res/drawable/file_entry_text_color_selector.xml
+      476  2015-11-08 23:59   res/drawable/file_item_pressed.xml
+      660  2015-11-08 23:59   res/drawable/file_list_panel_border.xml
+      584  2015-11-08 23:59   res/drawable/flash_button_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/forms_next_button_image_selector.xml
+      776  2015-11-08 23:59   res/drawable/forms_previous_button_image_selector.xml
+      540  2015-11-08 23:59   res/drawable/framework_drawable_list_divider_dark.xml
+      540  2015-11-08 23:59   res/drawable/framework_drawer_list_divider.xml
+      976  2015-11-08 23:59   res/drawable/framework_services_button_background_selector.xml
+      556  2015-11-08 23:59   res/drawable/freetext_popup_widget_outer_border.xml
+      776  2015-11-08 23:59   res/drawable/gallery_button_icon_selector.xml
+      584  2015-11-08 23:59   res/drawable/grid_button_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/help_how_to_icon_selector.xml
+      840  2015-11-08 23:59   res/drawable/help_row_background_color_selector.xml
+      840  2015-11-08 23:59   res/drawable/help_share_feedback_color_selector.xml
+      776  2015-11-08 23:59   res/drawable/help_share_feedback_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/help_whats_new_icon_selector.xml
+      856  2015-11-08 23:59   res/drawable/inksign_image_selector.xml
+      856  2015-11-08 23:59   res/drawable/lcrm_moreinfo_button.xml
+      856  2015-11-08 23:59   res/drawable/lcrm_moreinfo_button_honeycomb.xml
+      776  2015-11-08 23:59   res/drawable/myaccount_acrobatpro_service_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/myaccount_blueheron_service_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/myaccount_cpdf_service_icon_selector.xml
+      776  2015-11-08 23:59   res/drawable/myaccount_epdf_service_icon_selector.xml
+      844  2015-11-08 23:59   res/drawable/offline_startup_app_icon_container.xml
+      776  2015-11-08 23:59   res/drawable/organize_pages_rotate_left_image_selector.xml
+      776  2015-11-08 23:59   res/drawable/organize_pages_rotate_right_image_selector.xml
+     1424  2015-11-08 23:59   res/drawable/organize_pages_thumbnail_background_selector.xml
+      476  2015-11-08 23:59   res/drawable/page_gutter.xml
+      476  2015-11-08 23:59   res/drawable/page_gutter_dark.xml
+      600  2015-11-08 23:59   res/drawable/page_indicator_horizontal_separator.xml
+      600  2015-11-08 23:59   res/drawable/page_number_overlay_background.xml
+      752  2015-11-08 23:59   res/drawable/popup_note_button_color_selector.xml
+      556  2015-11-08 23:59   res/drawable/popup_widget_outer_border.xml
+      476  2015-11-08 23:59   res/drawable/portfolio_selector.xml
+     1556  2015-11-08 23:59   res/drawable/progress_bar_states.xml
+      992  2015-11-08 23:59   res/drawable/rfe_banner_activate_now_background_selector.xml
+      580  2015-11-08 23:59   res/drawable/rotate_button_icon_selector.xml
+      564  2015-11-08 23:59   res/drawable/scrubber_drawable.xml
+      436  2015-11-08 23:59   res/drawable/signature_button_background.xml
+      580  2015-11-08 23:59   res/drawable/signature_button_background_selector.xml
+      436  2015-11-08 23:59   res/drawable/signature_button_pressed_background.xml
+      704  2015-11-08 23:59   res/drawable/splash_screen_background.xml
+      704  2015-11-08 23:59   res/drawable/splash_screen_intune_background.xml
+      560  2015-11-08 23:59   res/drawable/switch_bg.xml
+     1248  2015-11-08 23:59   res/drawable/tab_selected.xml
+     1248  2015-11-08 23:59   res/drawable/tab_unselected.xml
+      412  2015-11-08 23:59   res/drawable/thumbnail_button_unselected_background.xml
+      600  2015-11-08 23:59   res/drawable/toast_background.xml
+      580  2015-11-08 23:59   res/drawable/toolbar.xml
+      660  2015-11-08 23:59   res/drawable/toolbar_backbutton.xml
+      476  2015-11-08 23:59   res/drawable/toolbar_backbutton_normal.xml
+      476  2015-11-08 23:59   res/drawable/toolbar_backbutton_pressed.xml
+      660  2015-11-08 23:59   res/drawable/toolbar_imagebutton.xml
+      660  2015-11-08 23:59   res/drawable/toolbar_imagebutton_background.xml
+      476  2015-11-08 23:59   res/drawable/toolbar_imagebutton_normal.xml
+      476  2015-11-08 23:59   res/drawable/toolbar_imagebutton_normal_background.xml
+      476  2015-11-08 23:59   res/drawable/toolbar_imagebutton_pressed.xml
+      476  2015-11-08 23:59   res/drawable/toolbar_imagebutton_pressed_backgroound.xml
+      700  2015-11-08 23:59   res/drawable/toolbar_textbutton.xml
+      600  2015-11-08 23:59   res/drawable/toolbar_textbutton_disabled.xml
+      744  2015-11-08 23:59   res/drawable/toolbar_textbutton_normal.xml
+      600  2015-11-08 23:59   res/drawable/toolbar_textbutton_pressed.xml
+      560  2015-11-08 23:59   res/drawable/track_bg.xml
+      680  2015-11-08 23:59   res/drawable/widget_background.xml
+      680  2015-11-08 23:59   res/drawable/widget_background_dark.xml
+     1592  2015-11-08 23:59   res/layout-v16/organize_pages_grid_item.xml
+     4808  2015-11-08 23:59   res/layout-v16/signature_creation_view.xml
+     1224  2015-11-08 23:59   res/layout-v17/context_menu_item.xml
+     1868  2015-11-08 23:59   res/layout-v17/intune_dialog.xml
+     1688  2015-11-08 23:59   res/layout-v17/organize_pages_grid_item.xml
+     1212  2015-11-08 23:59   res/layout-v17/row_help.xml
+     4848  2015-11-08 23:59   res/layout-v21/signature_creation_view.xml
+      604  2015-11-08 23:59   res/layout-xlarge-v4/bookmark_panel.xml
+      692  2015-11-08 23:59   res/layout-xlarge-v4/mobile_link_visibility_banner.xml
+      564  2015-11-08 23:59   res/layout-xlarge-v4/snippet_panel.xml
+     2012  2015-11-08 23:59   res/layout/about_layout.xml
+     2064  2015-11-08 23:59   res/layout/account_entries.xml
+     6016  2015-11-08 23:59   res/layout/adobereader.xml
+     1696  2015-11-08 23:59   res/layout/author_dialog_box_layout.xml
+      608  2015-11-08 23:59   res/layout/automation_list_layout.xml
+     1408  2015-11-08 23:59   res/layout/bookmark_entries.xml
+      548  2015-11-08 23:59   res/layout/bookmark_panel.xml
+     2584  2015-11-08 23:59   res/layout/bookmark_panel_common.xml
+      684  2015-11-08 23:59   res/layout/bookmark_tab_layout.xml
+     1488  2015-11-08 23:59   res/layout/child_entries.xml
+      472  2015-11-08 23:59   res/layout/cloud_file_entries.xml
+     1460  2015-11-08 23:59   res/layout/cloud_file_share_activity_layout.xml
+      584  2015-11-08 23:59   res/layout/cloud_login_popup_layout.xml
+      828  2015-11-08 23:59   res/layout/cloud_share_options_entry.xml
+      800  2015-11-08 23:59   res/layout/cloud_share_options_list_header.xml
+     1468  2015-11-08 23:59   res/layout/coachmark_layout.xml
+      516  2015-11-08 23:59   res/layout/color_picker_item.xml
+     1824  2015-11-08 23:59   res/layout/comment_row.xml
+     1176  2015-11-08 23:59   res/layout/context_menu_item.xml
+     3564  2015-11-08 23:59   res/layout/convert_services_base_fragment.xml
+      576  2015-11-08 23:59   res/layout/dialog_list_view.xml
+      916  2015-11-08 23:59   res/layout/dialog_list_view_row_item.xml
+      608  2015-11-08 23:59   res/layout/export_options_entries.xml
+     2316  2015-11-08 23:59   res/layout/export_pdf_options_fragment.xml
+      512  2015-11-08 23:59   res/layout/file_entries.xml
+     2716  2015-11-08 23:59   res/layout/file_entries_common.xml
+     1788  2015-11-08 23:59   res/layout/file_transfer_activity_layout.xml
+      476  2015-11-08 23:59   res/layout/fill_and_sign_fragment.xml
+      716  2015-11-08 23:59   res/layout/framework_activity_base_switcher.xml
+     2608  2015-11-08 23:59   res/layout/framework_document_cloud_list_fragment.xml
+     1252  2015-11-08 23:59   res/layout/framework_local_file_list_fragment.xml
+     1748  2015-11-08 23:59   res/layout/framework_local_folder_and_document_list_fragment.xml
+     1776  2015-11-08 23:59   res/layout/framework_navdrawer_layout.xml
+     1036  2015-11-08 23:59   res/layout/framework_outbox_list_fragment.xml
+      964  2015-11-08 23:59   res/layout/framework_recents_list_fragment.xml
+     1404  2015-11-08 23:59   res/layout/framework_switcher_entry.xml
+     1112  2015-11-08 23:59   res/layout/framework_tabs_fragment_layout.xml
+      436  2015-11-08 23:59   res/layout/gap_view.xml
+     2984  2015-11-08 23:59   res/layout/goto_page_dialog.xml
+      404  2015-11-08 23:59   res/layout/grey_background.xml
+     2004  2015-11-08 23:59   res/layout/help.xml
+     1720  2015-11-08 23:59   res/layout/ink_actionbar.xml
+      624  2015-11-08 23:59   res/layout/intent_filter_activity.xml
+     1732  2015-11-08 23:59   res/layout/intune_dialog.xml
+     2604  2015-11-08 23:59   res/layout/lcrm_anon_dialog_layout.xml
+     4108  2015-11-08 23:59   res/layout/lcrm_auth_dialog_layout.xml
+     1700  2015-11-08 23:59   res/layout/lcrm_auth_input_merge.xml
+     1224  2015-11-08 23:59   res/layout/lcrm_basic_auth_dialog_layout.xml
+      944  2015-11-08 23:59   res/layout/loading_page_layout.xml
+      472  2015-11-08 23:59   res/layout/local_file_entries.xml
+      724  2015-11-08 23:59   res/layout/local_folder_path_entry.xml
+     2256  2015-11-08 23:59   res/layout/main.xml
+      744  2015-11-08 23:59   res/layout/mobile_link_actionview_layout.xml
+     1040  2015-11-08 23:59   res/layout/mobile_link_coach_mark_layout.xml
+      692  2015-11-08 23:59   res/layout/mobile_link_visibility_banner.xml
+      908  2015-11-08 23:59   res/layout/mobile_link_visibility_layout.xml
+     3228  2015-11-08 23:59   res/layout/mobile_link_visibility_ui_common.xml
+     2236  2015-11-08 23:59   res/layout/move_cloud_files_layout.xml
+     6972  2015-11-08 23:59   res/layout/myaccounts.xml
+      356  2015-11-08 23:59   res/layout/onboarding.xml
+      676  2015-11-08 23:59   res/layout/opacity_picker_item_container.xml
+     1352  2015-11-08 23:59   res/layout/organize_pages.xml
+     1536  2015-11-08 23:59   res/layout/organize_pages_grid_item.xml
+     1400  2015-11-08 23:59   res/layout/organize_pages_toolbar.xml
+     4440  2015-11-08 23:59   res/layout/outbox_file_entries.xml
+      436  2015-11-08 23:59   res/layout/pageview_fragment.xml
+     1696  2015-11-08 23:59   res/layout/password_dialog_box_layout.xml
+      820  2015-11-08 23:59   res/layout/popover_showed_view.xml
+     1108  2015-11-08 23:59   res/layout/popup_menu_item.xml
+      816  2015-11-08 23:59   res/layout/popup_menu_title.xml
+     4060  2015-11-08 23:59   res/layout/popup_note_widget_layout.xml
+      480  2015-11-08 23:59   res/layout/print_dialog.xml
+     3076  2015-11-08 23:59   res/layout/recent_file_entries.xml
+     1132  2015-11-08 23:59   res/layout/recently_converted_file_list_header.xml
+      764  2015-11-08 23:59   res/layout/recently_converted_files_list_fragment.xml
+     1968  2015-11-08 23:59   res/layout/reply_entries.xml
+     1128  2015-11-08 23:59   res/layout/row_help.xml
+      928  2015-11-08 23:59   res/layout/scrubber_popover_view.xml
+     4712  2015-11-08 23:59   res/layout/signature_creation_view.xml
+      840  2015-11-08 23:59   res/layout/signature_crop_layout.xml
+     1904  2015-11-08 23:59   res/layout/snippet_layout.xml
+      508  2015-11-08 23:59   res/layout/snippet_panel.xml
+     2112  2015-11-08 23:59   res/layout/snippet_row.xml
+     1856  2015-11-08 23:59   res/layout/split_pane.xml
+     3040  2015-11-08 23:59   res/layout/thumbnail.xml
+     1024  2015-11-08 23:59   res/layout/thumbnail_tile.xml
+      824  2015-11-08 23:59   res/layout/toast.xml
+     1500  2015-11-08 23:59   res/layout/toolbar_commenting.xml
+     1076  2015-11-08 23:59   res/layout/toolbar_fill_and_sign.xml
+      832  2015-11-08 23:59   res/layout/typewriter_toolbar.xml
+      772  2015-11-08 23:59   res/layout/user_bookmark_entry.xml
+     1480  2015-11-08 23:59   res/layout/viewer_bottom_toolbar.xml
+      948  2015-11-08 23:59   res/layout/wg_offline_startup_blocked.xml
+     1488  2015-11-08 23:59   res/layout/widget_top_toolbar.xml
+      692  2015-11-08 23:59   res/menu/base_menu.xml
+      640  2015-11-08 23:59   res/menu/crop_menu.xml
+      508  2015-11-08 23:59   res/menu/document_cloud_menu.xml
+     1804  2015-11-08 23:59   res/menu/document_view_menu.xml
+      416  2015-11-08 23:59   res/menu/help_menu.xml
+      536  2015-11-08 23:59   res/menu/organize_pages_contextual_menu.xml
+      508  2015-11-08 23:59   res/menu/outbox_menu.xml
+      508  2015-11-08 23:59   res/menu/recents_menu.xml
+     1332  2015-11-08 23:59   res/menu/split_pane_context_menu.xml
+     1060  2015-11-08 23:59   res/menu/split_pane_menu.xml
+      416  2015-11-08 23:59   res/menu/user_accounts_menu.xml
+     9303  2015-11-08 23:59   res/raw-cs/adc_readermobile_getstarted.html
+     1012  2015-11-08 23:59   res/raw-cs/fillsign.html
+     4670  2015-11-08 23:59   res/raw-cs/fs_android.css
+    98651  2015-11-08 23:59   res/raw-cs/getting_started.pdf
+     2406  2015-11-08 23:59   res/raw-cs/index.html
+    10781  2015-11-08 23:59   res/raw-cs/whatsnew.html
+     9222  2015-11-08 23:59   res/raw-da/adc_readermobile_getstarted.html
+      948  2015-11-08 23:59   res/raw-da/fillsign.html
+     4670  2015-11-08 23:59   res/raw-da/fs_android.css
+    99391  2015-11-08 23:59   res/raw-da/getting_started.pdf
+     2286  2015-11-08 23:59   res/raw-da/index.html
+    10152  2015-11-08 23:59   res/raw-da/whatsnew.html
+     9287  2015-11-08 23:59   res/raw-de/adc_readermobile_getstarted.html
+      996  2015-11-08 23:59   res/raw-de/fillsign.html
+     4670  2015-11-08 23:59   res/raw-de/fs_android.css
+    96388  2015-11-08 23:59   res/raw-de/getting_started.pdf
+     2341  2015-11-08 23:59   res/raw-de/index.html
+    11138  2015-11-08 23:59   res/raw-de/whatsnew.html
+     9219  2015-11-08 23:59   res/raw-en/adc_readermobile_getstarted.html
+      904  2015-11-08 23:59   res/raw-en/fillsign.html
+     4670  2015-11-08 23:59   res/raw-en/fs_android.css
+    96669  2015-11-08 23:59   res/raw-en/getting_started.pdf
+     2232  2015-11-08 23:59   res/raw-en/index.html
+     9690  2015-11-08 23:59   res/raw-en/whatsnew.html
+     9284  2015-11-08 23:59   res/raw-es/adc_readermobile_getstarted.html
+      989  2015-11-08 23:59   res/raw-es/fillsign.html
+     4670  2015-11-08 23:59   res/raw-es/fs_android.css
+    83165  2015-11-08 23:59   res/raw-es/getting_started.pdf
+     2359  2015-11-08 23:59   res/raw-es/index.html
+    11107  2015-11-08 23:59   res/raw-es/whatsnew.html
+     9263  2015-11-08 23:59   res/raw-fi/adc_readermobile_getstarted.html
+     1006  2015-11-08 23:59   res/raw-fi/fillsign.html
+     4711  2015-11-08 23:59   res/raw-fi/fs_android.css
+   100268  2015-11-08 23:59   res/raw-fi/getting_started.pdf
+     2352  2015-11-08 23:59   res/raw-fi/index.html
+    10521  2015-11-08 23:59   res/raw-fi/whatsnew.html
+     9298  2015-11-08 23:59   res/raw-fr/adc_readermobile_getstarted.html
+      985  2015-11-08 23:59   res/raw-fr/fillsign.html
+     4670  2015-11-08 23:59   res/raw-fr/fs_android.css
+    83702  2015-11-08 23:59   res/raw-fr/getting_started.pdf
+     2422  2015-11-08 23:59   res/raw-fr/index.html
+    11699  2015-11-08 23:59   res/raw-fr/whatsnew.html
+     9262  2015-11-08 23:59   res/raw-it/adc_readermobile_getstarted.html
+      970  2015-11-08 23:59   res/raw-it/fillsign.html
+     4670  2015-11-08 23:59   res/raw-it/fs_android.css
+    87079  2015-11-08 23:59   res/raw-it/getting_started.pdf
+     2354  2015-11-08 23:59   res/raw-it/index.html
+    11004  2015-11-08 23:59   res/raw-it/whatsnew.html
+     9773  2015-11-08 23:59   res/raw-ja/adc_readermobile_getstarted.html
+     1005  2015-11-08 23:59   res/raw-ja/fillsign.html
+     4670  2015-11-08 23:59   res/raw-ja/fs_android.css
+    79314  2015-11-08 23:59   res/raw-ja/getting_started.pdf
+     2398  2015-11-08 23:59   res/raw-ja/index.html
+    11865  2015-11-08 23:59   res/raw-ja/whatsnew.html
+     9683  2015-11-08 23:59   res/raw-ko/adc_readermobile_getstarted.html
+      977  2015-11-08 23:59   res/raw-ko/fillsign.html
+     4670  2015-11-08 23:59   res/raw-ko/fs_android.css
+   119716  2015-11-08 23:59   res/raw-ko/getting_started.pdf
+     2369  2015-11-08 23:59   res/raw-ko/index.html
+    10730  2015-11-08 23:59   res/raw-ko/whatsnew.html
+     9254  2015-11-08 23:59   res/raw-nb/adc_readermobile_getstarted.html
+      946  2015-11-08 23:59   res/raw-nb/fillsign.html
+     4670  2015-11-08 23:59   res/raw-nb/fs_android.css
+   100025  2015-11-08 23:59   res/raw-nb/getting_started.pdf
+     2346  2015-11-08 23:59   res/raw-nb/index.html
+     9939  2015-11-08 23:59   res/raw-nb/whatsnew.html
+     9243  2015-11-08 23:59   res/raw-nl/adc_readermobile_getstarted.html
+      973  2015-11-08 23:59   res/raw-nl/fillsign.html
+     4670  2015-11-08 23:59   res/raw-nl/fs_android.css
+    82308  2015-11-08 23:59   res/raw-nl/getting_started.pdf
+     2346  2015-11-08 23:59   res/raw-nl/index.html
+    11136  2015-11-08 23:59   res/raw-nl/whatsnew.html
+     9314  2015-11-08 23:59   res/raw-pl/adc_readermobile_getstarted.html
+      983  2015-11-08 23:59   res/raw-pl/fillsign.html
+     4670  2015-11-08 23:59   res/raw-pl/fs_android.css
+    99619  2015-11-08 23:59   res/raw-pl/getting_started.pdf
+     2412  2015-11-08 23:59   res/raw-pl/index.html
+    10453  2015-11-08 23:59   res/raw-pl/whatsnew.html
+     9263  2015-11-08 23:59   res/raw-pt/adc_readermobile_getstarted.html
+     1020  2015-11-08 23:59   res/raw-pt/fillsign.html
+     4670  2015-11-08 23:59   res/raw-pt/fs_android.css
+    95374  2015-11-08 23:59   res/raw-pt/getting_started.pdf
+     2311  2015-11-08 23:59   res/raw-pt/index.html
+    10748  2015-11-08 23:59   res/raw-pt/whatsnew.html
+     9426  2015-11-08 23:59   res/raw-ru/adc_readermobile_getstarted.html
+     1167  2015-11-08 23:59   res/raw-ru/fillsign.html
+     4670  2015-11-08 23:59   res/raw-ru/fs_android.css
+   102215  2015-11-08 23:59   res/raw-ru/getting_started.pdf
+     2865  2015-11-08 23:59   res/raw-ru/index.html
+    15694  2015-11-08 23:59   res/raw-ru/whatsnew.html
+     9243  2015-11-08 23:59   res/raw-sv/adc_readermobile_getstarted.html
+      977  2015-11-08 23:59   res/raw-sv/fillsign.html
+     4670  2015-11-08 23:59   res/raw-sv/fs_android.css
+   100162  2015-11-08 23:59   res/raw-sv/getting_started.pdf
+     2295  2015-11-08 23:59   res/raw-sv/index.html
+     9965  2015-11-08 23:59   res/raw-sv/whatsnew.html
+     9298  2015-11-08 23:59   res/raw-tr/adc_readermobile_getstarted.html
+     1003  2015-11-08 23:59   res/raw-tr/fillsign.html
+     4670  2015-11-08 23:59   res/raw-tr/fs_android.css
+    97679  2015-11-08 23:59   res/raw-tr/getting_started.pdf
+     2395  2015-11-08 23:59   res/raw-tr/index.html
+    10825  2015-11-08 23:59   res/raw-tr/whatsnew.html
+     9634  2015-11-08 23:59   res/raw-zh-rCN/adc_readermobile_getstarted.html
+      933  2015-11-08 23:59   res/raw-zh-rCN/fillsign.html
+     4670  2015-11-08 23:59   res/raw-zh-rCN/fs_android.css
+   130780  2015-11-08 23:59   res/raw-zh-rCN/getting_started.pdf
+     2242  2015-11-08 23:59   res/raw-zh-rCN/index.html
+     8996  2015-11-08 23:59   res/raw-zh-rCN/whatsnew.html
+     9638  2015-11-08 23:59   res/raw-zh-rTW/adc_readermobile_getstarted.html
+      904  2015-11-08 23:59   res/raw-zh-rTW/fillsign.html
+     4670  2015-11-08 23:59   res/raw-zh-rTW/fs_android.css
+    87032  2015-11-08 23:59   res/raw-zh-rTW/getting_started.pdf
+     2288  2015-11-08 23:59   res/raw-zh-rTW/index.html
+     9112  2015-11-08 23:59   res/raw-zh-rTW/whatsnew.html
+     2481  2015-11-08 23:59   res/raw/actionbar2.png
+    35621  2015-11-08 23:59   res/raw/actionbardocument.png
+     6966  2015-11-08 23:59   res/raw/adc_errorpage.html
+     3296  2015-11-08 23:59   res/raw/adc_ipm.png
+     6391  2015-11-08 23:59   res/raw/adc_ipm_2x.png
+     9219  2015-11-08 23:59   res/raw/adc_readermobile_getstarted.html
+     1522  2015-11-08 23:28   res/raw/adobe_spinner.gif
+     2652  2015-11-08 23:59   res/raw/android_welcome.png
+    36698  2015-11-08 23:59   res/raw/androidcopydoc.png
+    52864  2015-11-08 23:59   res/raw/androidcreatepdf.png
+    43859  2015-11-08 23:59   res/raw/androidexportpdf.png
+    74479  2015-11-08 23:59   res/raw/androidmultiwindow.png
+    35535  2015-11-08 23:59   res/raw/androidmyaccount.png
+    32388  2015-11-08 23:59   res/raw/androidreadonly.png
+    75276  2015-11-08 23:59   res/raw/androidsearch.png
+      914  2015-11-08 23:59   res/raw/annots.png
+    13027  2015-11-08 23:59   res/raw/bookmarks.png
+     4545  2015-11-08 23:59   res/raw/bottommenu.png
+    14380  2015-11-08 23:59   res/raw/cpdf_modal_tablet.css
+    17232  2015-11-08 23:59   res/raw/cpdf_phone.css
+      617  2015-11-08 23:59   res/raw/cpdf_processing_purchase.html
+      628  2015-11-08 23:59   res/raw/cpdf_processing_purchase_app_pane.html
+    15892  2015-11-08 23:59   res/raw/cpdf_rightpane_tablet.css
+     1218  2015-11-08 23:59   res/raw/cpdf_wait.html
+     1229  2015-11-08 23:59   res/raw/cpdf_wait_app_pane.html
+    14831  2015-11-08 23:59   res/raw/dc.png
+     1572  2015-11-08 23:59   res/raw/echosigntemplate.xml
+     6753  2015-11-08 23:59   res/raw/eco.png
+    33488  2015-11-08 23:59   res/raw/enterpriseid.png
+      628  2015-11-08 23:59   res/raw/epdf_processing_purchase.html
+      639  2015-11-08 23:59   res/raw/epdf_processing_purchase_app_pane.html
+     1226  2015-11-08 23:59   res/raw/epdf_wait.html
+     1237  2015-11-08 23:59   res/raw/epdf_wait_app_pane.html
+    15225  2015-11-08 23:28   res/raw/fab.jpg
+    47055  2015-11-08 23:59   res/raw/fillandsign.png
+      904  2015-11-08 23:59   res/raw/fillsign.html
+    73168  2015-11-08 23:59   res/raw/fillsign_appimage_android_l.png
+   174711  2015-11-08 23:59   res/raw/fillsign_appimage_android_p.png
+    82996  2015-11-08 23:59   res/raw/fillsign_appimage_android_phone.png
+    23389  2015-11-08 23:59   res/raw/freehandmenu.png
+     4670  2015-11-08 23:59   res/raw/fs_android.css
+    13301  2015-11-08 23:59   res/raw/fte.js
+    24604  2015-11-08 23:59   res/raw/fte_all.css
+    59704  2015-11-08 23:59   res/raw/getting_started.pdf
+     1275  2015-11-08 23:28   res/raw/iconorganize.jpg
+       93  2015-11-08 23:59   res/raw/intune_mam_manifest.xml
+     2534  2015-11-08 23:59   res/raw/iphone_welcome.png
+     5466  2015-11-08 23:59   res/raw/laptop_welcome.png
+      825  2015-11-08 23:59   res/raw/m5.css
+   124990  2015-11-08 23:28   res/raw/mlenable.jpg
+   176028  2015-11-08 23:28   res/raw/organize.jpg
+   179899  2015-11-08 23:28   res/raw/rotatepage.jpg
+   207542  2015-11-08 23:28   res/raw/screen2_phone.gif
+   266107  2015-11-08 23:28   res/raw/screen2_tablet.gif
+    12493  2015-11-08 23:59   res/raw/screen3_android_phone.png
+    13945  2015-11-08 23:59   res/raw/screen3_android_tablet.png
+    36274  2015-11-08 23:59   res/raw/scrubber.png
+    40094  2015-11-08 23:28   res/raw/searchhome.jpg
+    38335  2015-11-08 23:59   res/raw/select.png
+     1081  2015-11-08 23:28   res/raw/shareicon.jpg
+   206396  2015-11-08 23:28   res/raw/showmenus.jpg
+    99460  2015-11-08 23:59   res/raw/signature.png
+    62395  2015-11-08 23:59   res/raw/signdialog.png
+      527  2015-11-08 23:59   res/raw/sticky.png
+    58621  2015-11-08 23:28   res/raw/toolswitcher.jpg
+      341  2015-11-08 23:59   res/raw/v_share.png
+      487  2015-11-08 23:59   res/raw/v_viewmodes.png
+    22932  2015-11-08 23:59   res/raw/viewmode.png
+     2452  2015-11-08 23:59   res/raw/welcome_iphone.png
+     6895  2015-11-08 23:59   res/raw/welcome_laptop.png
+     2871  2015-11-08 23:59   res/raw/welcome_tablet.png
+     9653  2015-11-08 23:59   res/raw/whatsnew.html
+      724  2015-11-08 23:59   res/xml-v21/app_restrictions.xml
+      236  2015-11-08 23:59   res/xml/app_restrictions.xml
+      928  2015-11-08 23:59   res/xml/file_paths.xml
+  1563204  2015-11-08 23:59   resources.arsc
+  2420080  2015-11-08 23:59   classes.dex
+      176  2015-11-08 23:59   main/AndroidManifest.xml
+      905  2015-11-08 23:59   org/apache/http/entity/mime/version.properties
+  5964040  2015-11-08 23:59   lib/armeabi-v7a/libAdobeReader.so
+   124091  2015-11-08 23:59   META-INF/MANIFEST.MF
+   124144  2015-11-08 23:59   META-INF/CERT.SF
+     1457  2015-11-08 23:59   META-INF/CERT.RSA
+---------                     -------
+ 16560990                     1330 files
+mkdir: cannot create directory ‘/workspace/temp’: File exists
+Working on original APK: original.apk
+I: Using Apktool 2.6.0 on original.apk
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+I: Loading resource table from file: /home/ubuntu/.local/share/apktool/framework/1.apk
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...
+Value of android_name: com/adobe/reader/misc/ARApp
+Value of android_class: com/adobe/reader/misc/ARApp
+The smali file to hook: /workspace/temp/original/smali/com/adobe/reader/misc/ARApp.smali
+No encoder specified, outputting raw payload
+Payload size: 10231 bytes
+Saved as: /workspace/tasks/20250809/a4c2f33b-android/output/app_backdoor.apk
+I: Using Apktool 2.6.0 on app_backdoor.apk
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+I: Loading resource table from file: /home/ubuntu/.local/share/apktool/framework/1.apk
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...
+placeholder value: wdyyvhgsfjimlsnlfjesfrfzggtoizjw
+mkdir: created directory '/workspace/temp/bin'
+mkdir: created directory '/workspace/temp/bin/classes'
+mkdir: created directory '/workspace/temp/libs'
+'/workspace/temp/bin/classes/smali/net' -> '/workspace/temp/payload/smali/net'
+'/workspace/temp/bin/classes/smali/net/dirtybox' -> '/workspace/temp/payload/smali/net/dirtybox'
+'/workspace/temp/bin/classes/smali/net/dirtybox/util' -> '/workspace/temp/payload/smali/net/dirtybox/util'
+'/workspace/temp/bin/classes/smali/net/dirtybox/util/obfuscation' -> '/workspace/temp/payload/smali/net/dirtybox/util/obfuscation'
+'/workspace/temp/bin/classes/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali' -> '/workspace/temp/payload/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali'
+mkdir: created directory '/workspace/temp/original/smali/com/adobe/reader/lhacq'
+renamed '/workspace/temp/payload/smali/com/metasploit/stage/MainBroadcastReceiver.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/Aevvr.smali'
+renamed '/workspace/temp/payload/smali/com/metasploit/stage/MainService.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/Hjfbf.smali'
+renamed '/workspace/temp/payload/smali/com/metasploit/stage/Payload.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/a.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/b.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/b.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/c.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/c.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/d.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/d.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/e.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/e.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/f.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/g.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/g.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/MainActivity.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/MainActivity.smali'
+removed '/workspace/temp/original/smali/com/adobe/reader/lhacq/MainActivity.smali'
+'/workspace/temp/payload/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali' -> '/workspace/temp/original/smali/com/adobe/reader/lhacq/Kgkml.smali'
+StringObfuscator class: com/adobe/reader/lhacq/Kgkml
+StringObfuscator class suffix: Kgkml.smali
+/usr/bin/openssl
+Injected new key into StringObufscator class
+StringObfuscator key: i1x4HGgSuUV7fSIl4JZ0dQ==
+Placeholder: jdkqlyuaaxulkjjzxxobwslhgprwviol
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Aevvr.smali:19
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Aevvr.smali
+Line num: 19
+Target: "android.intent.action.BOOT_COMPLETED"
+Reg: v0
+Stripped target: android.intent.action.BOOT_COMPLETED
+Replacement: SzWmiGytksl/xnyZZd5pV3jaC6XpQOxR6yma/zyQ7q7D/0+nfDSobtcf/8dMdEP7Z8GNrA==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/jdkqlyuaaxulkjjzxxobwslhgprwviol.stub'
+Placeholder: jqfparanywvefnkfjgdwgzeriwzspijm
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali:45
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali
+Line num: 45
+Target: "User-Agent"
+Reg: v0
+Stripped target: User-Agent
+Replacement: omvQD0KHdrenyPuJkz6SihaBuCqNckHxNRA=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/jqfparanywvefnkfjgdwgzeriwzspijm.stub'
+Placeholder: bfsqhlteflccksagzcbszgkspezuecmt
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali:50
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali
+Line num: 50
+Target: "\r\n"
+Reg: v0
+Stripped target: \r\n
+Replacement: /4JtQ0o6V6VFfV/tD3cuu1WZgv8=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/bfsqhlteflccksagzcbszgkspezuecmt.stub'
+Placeholder: zgsxmqlybjsipuxsiqedqjbhjmgvnjla
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali:71
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali
+Line num: 71
+Target: ":"
+Reg: v5
+Stripped target: :
+Replacement: ex/1zLaXxOpoOwoGQONCgL8=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/zgsxmqlybjsipuxsiqedqjbhjmgvnjla.stub'
+Placeholder: jsjinqjovdipatumzwwtvseenlkmixdh
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali:117
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/a.smali
+Line num: 117
+Target: ""
+Reg: v0
+Stripped target: 
+Replacement: 6/QWNnSpZQpY5Qqq7qVmBA==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/jsjinqjovdipatumzwwtvseenlkmixdh.stub'
+Placeholder: vsccgxhukilxzidavztbgpjpwockpqjs
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/b.smali:167
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/b.smali
+Line num: 167
+Target: "http"
+Reg: v5
+Stripped target: http
+Replacement: WRfTC0WeL8NGN3AMJ3CQyw8Q29E=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/vsccgxhukilxzidavztbgpjpwockpqjs.stub'
+Placeholder: miufdgwsyaikftwvmucpwcwcjpafpqcm
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/b.smali:289
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/b.smali
+Line num: 289
+Target: "ISO-8859-1"
+Reg: v2
+Stripped target: ISO-8859-1
+Replacement: 0FWUbxLzXU0mxbl01UAjbtPbQC9NWtC9NTs=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/miufdgwsyaikftwvmucpwcwcjpafpqcm.stub'
+Placeholder: fyqtfljpyidlifluvtueycwdaphemaki
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali:37
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali
+Line num: 37
+Target: "SSL"
+Reg: v1
+Stripped target: SSL
+Replacement: NVF6Lo35MSHkOBbnTcn8jxMS8g==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/fyqtfljpyidlifluvtueycwdaphemaki.stub'
+Placeholder: egvuqsaqaobqkaqldnqkmewoxmoqmbpq
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali:114
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali
+Line num: 114
+Target: "SHA-1"
+Reg: v3
+Stripped target: SHA-1
+Replacement: 5alnvkcea9HVsfEkcheKyMT6v6oL
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/egvuqsaqaobqkaqldnqkmewoxmoqmbpq.stub'
+Placeholder: donbgkqjtuvvuruqubryxlkytguaxydx
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali:140
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/f.smali
+Line num: 140
+Target: "Invalid certificate"
+Reg: v1
+Stripped target: Invalid certificate
+Replacement: EmvJV1VGvhxxzHZEnU6wko67jS1jDsTo78fuk6LT5M1Rg7g=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/donbgkqjtuvvuruqubryxlkytguaxydx.stub'
+Placeholder: pbhjxuvtlypkzumjdxepnxpfyrwrzxut
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Hjfbf.smali:18
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Hjfbf.smali
+Line num: 18
+Target: "android.app.ActivityThread"
+Reg: v0
+Stripped target: android.app.ActivityThread
+Replacement: EXd9vUuAzw5cVe8RxjaFDwUnq1hrTH3AI1hsO1/Z9mzRE79WrN6m69gb
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/pbhjxuvtlypkzumjdxepnxpfyrwrzxut.stub'
+Placeholder: bxeuuuflrugiwgcgggykmsltzphofsqy
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Hjfbf.smali:28
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Hjfbf.smali
+Line num: 28
+Target: "currentApplication"
+Reg: v1
+Stripped target: currentApplication
+Replacement: T1F5Hja3GmbMrMyeqqLi89M/l9HHO9IUkIAqGbNZQBsI8Q==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/bxeuuuflrugiwgcgggykmsltzphofsqy.stub'
+Placeholder: mksztsqegviarvtkdwiqdkllglzdpkob
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8271
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8271
+Target: "android.intent.action.MAIN"
+Reg: v3
+Stripped target: android.intent.action.MAIN
+Replacement: 6T4fpDfgMrHHNzpi1mnbACyboKSEMMGWHIl3IsHP62/rkof/7fat/jAC
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/mksztsqegviarvtkdwiqdkllglzdpkob.stub'
+Placeholder: kzojyliaqxgokhrbjlgmkuruonkzkogi
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8277
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8277
+Target: "android.intent.category.LAUNCHER"
+Reg: v3
+Stripped target: android.intent.category.LAUNCHER
+Replacement: 22AMlbhwW5ScpFvG/i+K5rx9I58DC7sUMXqn5uKK77J5EellA/a22V8h4tHuzZ4j
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/kzojyliaqxgokhrbjlgmkuruonkzkogi.stub'
+Placeholder: uqxkhezmqbggscpxyakcvdsfdkbypfpl
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8457
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8457
+Target: ".jar"
+Reg: v3
+Stripped target: .jar
+Replacement: yqIzBhh3PYlUZgMl6kAGxFVHDB4=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/uqxkhezmqbggscpxyakcvdsfdkbypfpl.stub'
+Placeholder: djqqcxkmpuijnezxseovgpvhqetsocab
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8475
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8475
+Target: ".dex"
+Reg: v3
+Stripped target: .dex
+Replacement: VIYQjLK5S2OK/9t00fJMQclQDH4=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/djqqcxkmpuijnezxseovgpvhqetsocab.stub'
+Placeholder: ppuaeguurwvtbaketisoojpocdoitvti
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8546
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8546
+Target: "start"
+Reg: v1
+Stripped target: start
+Replacement: 9tMAIOcVojHUaCWody40B5M8Bj6v
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/ppuaeguurwvtbaketisoojpocdoitvti.stub'
+Placeholder: czonvengkxellvjmyslelelxwvtdniby
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8629
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8629
+Target: "."
+Reg: v1
+Stripped target: .
+Replacement: ilc+w+y6gY9cTKwDJsipQU8=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/czonvengkxellvjmyslelelxwvtdniby.stub'
+Placeholder: oafmddjnjqojlbeyxgkrchqydinhxxco
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8685
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8685
+Target: "power"
+Reg: v1
+Stripped target: power
+Replacement: Sgj2QNa3lBXMcyVwZhFqvMxPEeB7
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/oafmddjnjqojlbeyxgkrchqydinhxxco.stub'
+Placeholder: rihynrfoqfiajlvfnddqamllvvyqklwa
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8773
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8773
+Target: "tcp"
+Reg: v0
+Stripped target: tcp
+Replacement: E7QdcqUta13Q5rXV8e9F+DQDUQ==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/rihynrfoqfiajlvfnddqamllvvyqklwa.stub'
+Placeholder: tynyvndnujamhjycdyocsokhjrnchaof
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8781
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8781
+Target: ":"
+Reg: v0
+Stripped target: :
+Replacement: 1If3ItorZvFEzH0zn1lGfY0=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/tynyvndnujamhjycdyocsokhjrnchaof.stub'
+Placeholder: ijjkyudkluvydcqbrdazjitlxjjaqqgc
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8799
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8799
+Target: "/"
+Reg: v3
+Stripped target: /
+Replacement: 2NXd1M9RX8k68zyMhx+p5Ec=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/ijjkyudkluvydcqbrdazjitlxjjaqqgc.stub'
+Placeholder: prjhfgzjcohbfunqyumpaihcutqieaod
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8809
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8809
+Target: ""
+Reg: v0
+Stripped target: 
+Replacement: f5kUSdKbISK9ujWnpv9Aeg==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/prjhfgzjcohbfunqyumpaihcutqieaod.stub'
+Placeholder: mpprqifpyxcqgmvvvujubqxppmqfddoi
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8909
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8909
+Target: "https"
+Reg: v2
+Stripped target: https
+Replacement: Lzcbw30O0fP+KXH46OOXX2mKjwkp
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/mpprqifpyxcqgmvvvujubqxppmqfddoi.stub'
+Placeholder: jwhwiygnmnbjckhxfdwzmczqraulqmkj
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8975
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8975
+Target: "android.app.ActivityThread"
+Reg: v0
+Stripped target: android.app.ActivityThread
+Replacement: eD6/WCZSd7RUY25PUwRiRnHkDyRBvUZxgfCC2R3waK+rg+gSKK0dagQ0
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/jwhwiygnmnbjckhxfdwzmczqraulqmkj.stub'
+Placeholder: ozkydumdgadmhvglkoiytzxmjipvpxdd
+File with line num: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali:8985
+File: /workspace/temp/original/smali/com/adobe/reader/lhacq/Nybop.smali
+Line num: 8985
+Target: "currentApplication"
+Reg: v1
+Stripped target: currentApplication
+Replacement: 9x/6m2yhYY4QSIiNimDvYwXZMiRqvwSyBpTSONAYsXJN9A==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/ozkydumdgadmhvglkoiytzxmjipvpxdd.stub'
+removed '/workspace/temp/bfsqhlteflccksagzcbszgkspezuecmt.stub'
+removed '/workspace/temp/bxeuuuflrugiwgcgggykmsltzphofsqy.stub'
+removed '/workspace/temp/czonvengkxellvjmyslelelxwvtdniby.stub'
+removed '/workspace/temp/djqqcxkmpuijnezxseovgpvhqetsocab.stub'
+removed '/workspace/temp/donbgkqjtuvvuruqubryxlkytguaxydx.stub'
+removed '/workspace/temp/egvuqsaqaobqkaqldnqkmewoxmoqmbpq.stub'
+removed '/workspace/temp/fyqtfljpyidlifluvtueycwdaphemaki.stub'
+removed '/workspace/temp/ijjkyudkluvydcqbrdazjitlxjjaqqgc.stub'
+removed '/workspace/temp/jdkqlyuaaxulkjjzxxobwslhgprwviol.stub'
+removed '/workspace/temp/jqfparanywvefnkfjgdwgzeriwzspijm.stub'
+removed '/workspace/temp/jsjinqjovdipatumzwwtvseenlkmixdh.stub'
+removed '/workspace/temp/jwhwiygnmnbjckhxfdwzmczqraulqmkj.stub'
+removed '/workspace/temp/kzojyliaqxgokhrbjlgmkuruonkzkogi.stub'
+removed '/workspace/temp/miufdgwsyaikftwvmucpwcwcjpafpqcm.stub'
+removed '/workspace/temp/mksztsqegviarvtkdwiqdkllglzdpkob.stub'
+removed '/workspace/temp/mpprqifpyxcqgmvvvujubqxppmqfddoi.stub'
+removed '/workspace/temp/oafmddjnjqojlbeyxgkrchqydinhxxco.stub'
+removed '/workspace/temp/ozkydumdgadmhvglkoiytzxmjipvpxdd.stub'
+removed '/workspace/temp/pbhjxuvtlypkzumjdxepnxpfyrwrzxut.stub'
+removed '/workspace/temp/ppuaeguurwvtbaketisoojpocdoitvti.stub'
+removed '/workspace/temp/prjhfgzjcohbfunqyumpaihcutqieaod.stub'
+removed '/workspace/temp/rihynrfoqfiajlvfnddqamllvvyqklwa.stub'
+removed '/workspace/temp/tynyvndnujamhjycdyocsokhjrnchaof.stub'
+removed '/workspace/temp/uqxkhezmqbggscpxyakcvdsfdkbypfpl.stub'
+removed '/workspace/temp/vsccgxhukilxzidavztbgpjpwockpqjs.stub'
+removed '/workspace/temp/zgsxmqlybjsipuxsiqedqjbhjmgvnjla.stub'
+removed '/workspace/temp/placeholders.txt'
+    sput-boolean v0, Lcom/adobe/reader/misc/ARApp;->sIsModal:Z
+
+    invoke-static {}, Lcom/adobe/reader/lhacq/Hjfbf;->start()V
+The smali file was hooked successfully
+I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+W: warning: string 'IDS_CAMERA_ACCESSIBILITY_STR' has no default translation.
+W: warning: string 'IDS_CAMERA_UNAVAILABLE_MESSAGE_STR' has no default translation.
+W: warning: string 'IDS_CLEAR_BUTTON' has no default translation.
+W: warning: string 'IDS_CROP_ROTATE_ACTION_STR' has no default translation.
+W: warning: string 'IDS_CROP_SCREEN_TITLE' has no default translation.
+W: warning: string 'IDS_GALLERY_ACCESSIBILITY_STR' has no default translation.
+W: warning: string 'IDS_INVALID_IMAGE_ERROR_MESSAGE_STR' has no default translation.
+W: warning: string 'IDS_SAVE_BUTTON' has no default translation.
+W: warning: string 'IDS_SIGNATURE_PANEL_TITLE' has no default translation.
+W: warning: string 'IDS_SWITCH_SAVE_SIGN_ACCESSIBILITY_STR' has no default translation.
+W: warning: string 'IDS_SWITCH_SAVE_SIGN_OFF_ACCESSIBILITY_STR' has no default translation.
+W: warning: string 'IDS_SWITCH_SAVE_SIGN_ON_ACCESSIBILITY_STR' has no default translation.
+I: Copying libs... (/lib)
+I: Building apk file...
+I: Copying unknown files/dir...
+I: Built apk...
+Original dname value: CN=Adobe Systems Incorporated, OU=Adobe Reader, O=Adobe Systems Incorporated, L=San Jose, ST=California, C=US
+Original valid from line: Valid from: Tue May 04 18:00:23 UTC 2010 until: Sat Sep 19 18:00:23 UTC 2037
+Original from date: Tue May 04 18:00:23 UTC 2010
+Normalized from date: Tue May 04 18:00:23 2010
+Original to date: Sat Sep 19 18:00:23 UTC 2037
+Normalized to date: Sat Sep 19 18:00:23 2037
+Value of from_date_str: 2010/05/04 18:00:23
+Value of validity: 10000
+Generating 2,048 bit RSA key pair and self-signed certificate (SHA384withRSA) with a validity of 10,000 days
+	for: CN=Adobe Systems Incorporated, OU=Adobe Reader, O=Adobe Systems Incorporated, L=San Jose, ST=California, C=US
+jar signed.
+
+Warning: 
+The signer's certificate is self-signed.
+The SHA1 algorithm specified for the -digestalg option is considered a security risk and is disabled.
+The SHA1withRSA algorithm specified for the -sigalg option is considered a security risk and is disabled.
+
+The jar will be treated as unsigned, because it is signed with a weak algorithm that is now disabled.
+
+Re-run jarsigner with the -verbose option for more details.
