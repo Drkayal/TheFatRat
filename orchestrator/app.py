@@ -730,6 +730,16 @@ def run_postex_task(task_id: str, base: Path, params: Dict[str, str]):
     _finalize_task(t, base, succeeded=True, err=None)
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.get("/version")
+def version():
+    return {"app": "orchestrator", "version": app.version}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)
