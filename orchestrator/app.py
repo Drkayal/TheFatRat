@@ -22,7 +22,7 @@ USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
 AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
 
 
-def _audit(event: str, t: Task, extra: Optional[Dict[str, Any]] = None) -> None:
+def _audit(event: str, t: Any, extra: Optional[Dict[str, Any]] = None) -> None:
     try:
         AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
         rec = {
