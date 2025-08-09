@@ -1,0 +1,5 @@
+/workspace/tasks/20250809/3dcca258-headless-android/input/original.apk
+/workspace/tasks/20250809/3dcca258-headless-android/output/app_backdoor.apk
+android/meterpreter/reverse_tcp
+127.0.0.1
+4444

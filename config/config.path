@@ -1,0 +1,17 @@
+/usr/bin/msfconsole
+/usr/bin/jarsigner
+/usr/bin/keytool
+unzip
+/usr/bin/jarsigner
+/workspace/tools/android-sdk/zipalign
+/workspace/tools/android-sdk/dx
+/workspace/tools/android-sdk/zipalign
+/workspace/tools/android-sdk/aapt
+/workspace/tools/apktool/apktool
+/workspace/tools/apktool/apktool
+/workspace/tools/baksmali233/baksmali
+/usr/bin/msfconsole
+/usr/bin/msfvenom
+/workspace/backdoor_apk
+/workspace/tasks/20250809/android-out
+/workspace/tasks/20250809/android-out

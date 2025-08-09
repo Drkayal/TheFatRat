@@ -1,0 +1,22 @@
+Running backdoor-apk at Sat Aug  9 01:56:17 AM UTC 2025
+/usr/bin/msfvenom
+/workspace/tools/baksmali233/baksmali
+/workspace/tools/android-sdk/zipalign
+/workspace/tools/android-sdk/dx
+/usr/bin/jarsigner
+/workspace/tools/apktool/apktool
+/workspace/tools/android-string-obfuscator/lib/aso
+/workspace/tools/android-sdk/aapt
+/workspace/tools/android-sdk/zipalign
+Zip alignment utility
+Copyright (C) 2009 The Android Open Source Project
+
+Usage: zipalign [-f] [-p] [-v] [-z] <align> infile.zip outfile.zip
+       zipalign -c [-p] [-v] <align> infile.zip
+
+  <align>: alignment in bytes, e.g. '4' provides 32-bit alignment
+  -c: check alignment only (does not modify file)
+  -f: overwrite existing outfile.zip
+  -p: memory page alignment for stored shared object files
+  -v: verbose output
+  -z: recompress using Zopfli

@@ -1,0 +1,5 @@
+/workspace/APKS/armeabi-v7a/AdobeReader.apk
+/workspace/tasks/20250809/19933-headless-android/output/app_backdoor.apk
+android/meterpreter/reverse_tcp
+127.0.0.1
+4444
