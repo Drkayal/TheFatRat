@@ -4,20 +4,42 @@ import subprocess
 import threading
 import time
 import uuid
+import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from hashlib import sha256
-import json
 
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 
 DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
 USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
+
+AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
+
+
+def _audit(event: str, t: Task, extra: Optional[Dict[str, Any]] = None) -> None:
+    try:
+        AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        rec = {
+            "ts": time.time(),
+            "event": event,
+            "id": t.id,
+            "date": t.date,
+            "kind": t.kind,
+            "state": t.state,
+            "params": t.params,
+        }
+        if extra:
+            rec.update(extra)
+        with AUDIT_LOG.open("a") as f:
+            f.write(json.dumps(rec) + "\n")
+    except Exception:
+        pass
 
 
 class Artifact(BaseModel):
@@ -117,6 +139,7 @@ def _prepare_task(kind: str, params: Dict[str, str]) -> (Task, Path):
     t = Task(id=task_id, date=date, kind=kind, state=TaskStatus.SUBMITTED, created_at=time.time(), params=params, logs={})
     tasks[task_id] = t
     locks[task_id] = threading.Lock()
+    _audit("submitted", t)
     return t, base
 
 
@@ -124,6 +147,12 @@ def _finalize_task(t: Task, base: Path, succeeded: bool, err: Optional[str] = No
     t.finished_at = time.time()
     t.state = TaskStatus.SUCCEEDED if succeeded else TaskStatus.FAILED
     t.error = err
+    duration = None
+    if t.started_at and t.finished_at:
+        try:
+            duration = round(t.finished_at - t.started_at, 3)
+        except Exception:
+            duration = None
     # collect artifacts
     artifacts: List[Artifact] = []
     for p in sorted((base / "output").glob("**/*")):
@@ -131,7 +160,11 @@ def _finalize_task(t: Task, base: Path, succeeded: bool, err: Optional[str] = No
             artifacts.append(Artifact(name=p.name, path=str(p), size_bytes=p.stat().st_size, sha256=_sha256sum(p)))
     t.artifacts = artifacts
     # write status.json
-    _write_file(base / "logs" / "status.json", t.model_dump_json(indent=2))
+    status = json.loads(t.model_dump_json())
+    if duration is not None:
+        status["duration_sec"] = duration
+    _write_file(base / "logs" / "status.json", json.dumps(status, indent=2))
+    _audit("finished", t, {"succeeded": succeeded, "duration_sec": duration, "error": err, "artifacts": [a.name for a in artifacts]})
 
 
 # Background runners for three kinds
