@@ -39,14 +39,20 @@ class Session:
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("Access denied.")
+        if update.message:
+            await update.message.reply_text("Access denied.")
+        elif update.callback_query:
+            await update.callback_query.answer("Access denied.", show_alert=True)
         return ConversationHandler.END
     kb = [
         [InlineKeyboardButton("Windows Payload", callback_data="kind:payload")],
         [InlineKeyboardButton("Listener", callback_data="kind:listener")],
         [InlineKeyboardButton("Android APK", callback_data="kind:android")],
     ]
-    await update.message.reply_text("Select task type:", reply_markup=InlineKeyboardMarkup(kb))
+    if update.message:
+        await update.message.reply_text("Select task type:", reply_markup=InlineKeyboardMarkup(kb))
+    else:
+        await update.callback_query.edit_message_text("Select task type:", reply_markup=InlineKeyboardMarkup(kb))
     context.user_data["session"] = Session(kind=None, params={})
     return MENU
 
@@ -55,18 +61,21 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     data = query.data
+    if data == "back":
+        return await start(update, context)
     if not data.startswith("kind:"):
         return MENU
     kind = data.split(":", 1)[1]
     sess: Session = context.user_data.get("session")
     sess.kind = kind
     sess.params = {}
+    back_kb = InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ Back", callback_data="back")]])
     if kind == "payload":
-        await query.edit_message_text("Send parameters as: lhost lport output_name (payload fixed)")
+        await query.edit_message_text("Send parameters as: lhost lport output_name (payload fixed)", reply_markup=back_kb)
     elif kind == "listener":
-        await query.edit_message_text("Send parameters as: lhost lport")
+        await query.edit_message_text("Send parameters as: lhost lport", reply_markup=back_kb)
     elif kind == "android":
-        await query.edit_message_text("Send parameters as: lhost lport (APK sample will be used)")
+        await query.edit_message_text("Send parameters as: lhost lport (APK sample will be used)", reply_markup=back_kb)
     else:
         await query.edit_message_text("Unsupported kind")
         return ConversationHandler.END
@@ -170,12 +179,17 @@ def main():
         return
     application = Application.builder().token(token).build()
     conv = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
+        entry_points=[CommandHandler("start", start), CommandHandler("menu", start)],
         states={
             MENU: [CallbackQueryHandler(menu_handler)],
-            PARAMS: [MessageHandler(filters.TEXT & (~filters.COMMAND), params_handler)],
+            PARAMS: [
+                MessageHandler(filters.TEXT & (~filters.COMMAND), params_handler),
+                CommandHandler("start", start),
+                CommandHandler("menu", start),
+                CallbackQueryHandler(menu_handler),
+            ],
         },
-        fallbacks=[],
+        fallbacks=[CommandHandler("start", start), CommandHandler("menu", start)],
         per_message=False,
         per_user=True,
         per_chat=True,
