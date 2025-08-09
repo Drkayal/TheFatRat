@@ -42,6 +42,7 @@ class Session:
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info("/start received from user_id=%s", getattr(update.effective_user, "id", None))
     if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
         if update.message:
             await update.message.reply_text("تم رفض الوصول.")
@@ -65,6 +66,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.callback_query.edit_message_text(intro, reply_markup=InlineKeyboardMarkup(kb))
     context.user_data["session"] = Session(kind=None, params={})
     return MENU
+
+
+async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("pong ✅")
+
+
+async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("أمر غير معروف. استخدم /start لفتح القائمة.")
 
 
 async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -223,9 +232,11 @@ def main():
     )
     application.add_handler(conv)
     application.add_handler(CommandHandler("cancel", cancel))
+    application.add_handler(CommandHandler("ping", ping))
+    application.add_handler(MessageHandler(filters.COMMAND, unknown))
     logger.info("Starting polling...")
     try:
-        application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+        application.run_polling(allowed_updates=("message","callback_query"), drop_pending_updates=True)
     except Exception as e:
         logger.exception("Bot crashed: %s", e)
 
