@@ -1,0 +1,27 @@
+{
+  "id": "22fadcdb-payload",
+  "date": "20250809",
+  "kind": "payload",
+  "state": "SUCCEEDED",
+  "created_at": 1754705543.009004,
+  "started_at": 1754705543.0092702,
+  "finished_at": 1754705545.0793192,
+  "params": {
+    "payload": "windows/meterpreter/reverse_tcp",
+    "lhost": "127.0.0.1",
+    "lport": "4444",
+    "output_name": "api_payload"
+  },
+  "artifacts": [
+    {
+      "name": "api_payload.exe",
+      "path": "/workspace/tasks/20250809/22fadcdb-payload/output/api_payload.exe",
+      "size_bytes": 73802,
+      "sha256": "f556859904284de62e2bda406acfc58c1f6e9feaa3e7c796620421d9050bff14"
+    }
+  ],
+  "logs": {
+    "build": "/workspace/tasks/20250809/22fadcdb-payload/logs/build.log"
+  },
+  "error": null
+}

