@@ -6,3 +6,11 @@
 2025-08-09 03:03:46,249 INFO Application started
 2025-08-09 03:03:56,514 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
 2025-08-09 03:04:06,600 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
+2025-08-09 03:04:16,054 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
+2025-08-09 03:04:16,437 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/sendMessage "HTTP/1.1 200 OK"
+2025-08-09 03:04:18,096 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
+2025-08-09 03:04:18,186 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/answerCallbackQuery "HTTP/1.1 200 OK"
+2025-08-09 03:04:18,287 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/editMessageText "HTTP/1.1 200 OK"
+2025-08-09 03:04:28,185 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
+2025-08-09 03:04:38,271 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
+2025-08-09 03:04:48,359 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
