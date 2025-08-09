@@ -1,2 +1,8 @@
-/workspace/bot/bot.py:172: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+/workspace/bot/bot.py:185: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
   conv = ConversationHandler(
+2025-08-09 03:03:45,901 INFO Starting polling...
+2025-08-09 03:03:46,165 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getMe "HTTP/1.1 200 OK"
+2025-08-09 03:03:46,249 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/deleteWebhook "HTTP/1.1 200 OK"
+2025-08-09 03:03:46,249 INFO Application started
+2025-08-09 03:03:56,514 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"
+2025-08-09 03:04:06,600 INFO HTTP Request: POST https://api.telegram.org/bot7744986521:AAGNwbXza2iKAFjd528XfSkoZPrakw1dr9w/getUpdates "HTTP/1.1 200 OK"

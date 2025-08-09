@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import logging
 from dataclasses import dataclass
 from typing import Dict, Any, Optional
 
@@ -23,6 +24,9 @@ from telegram.ext import (
 )
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 ORCH_URL = os.environ.get("ORCH_URL", "http://127.0.0.1:8000")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -196,7 +200,11 @@ def main():
     )
     application.add_handler(conv)
     application.add_handler(CommandHandler("cancel", cancel))
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    logger.info("Starting polling...")
+    try:
+        application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+    except Exception as e:
+        logger.exception("Bot crashed: %s", e)
 
 
 if __name__ == "__main__":
