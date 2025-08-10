@@ -637,3 +637,4 @@ INFO:     127.0.0.1:53658 - "GET /tasks/323aabe5-upload_apk HTTP/1.1" 200 OK
 	at brut.apktool.Main.main(Main.java:78)
 
 INFO:     127.0.0.1:53658 - "GET /tasks/323aabe5-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34176 - "GET /tasks/323aabe5-upload_apk/logs/build HTTP/1.1" 200 OK
