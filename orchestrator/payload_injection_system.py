@@ -15,6 +15,12 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
 import base64
+try:
+    from PIL import Image  # type: ignore
+    _HAVE_PIL = True
+except Exception:
+    Image = None  # type: ignore
+    _HAVE_PIL = False
 
 @dataclass
 class InjectionPoint:
@@ -1154,9 +1160,18 @@ class MultiVectorInjector:
         fixed = 0
         for p in res_dir.rglob("*.png"):
             try:
+                # First: signature check
                 with open(p, "rb") as f:
                     header = f.read(8)
-                if header != png_sig:
+                bad = header != png_sig
+                # Second: decode verification via Pillow if available
+                if not bad and _HAVE_PIL:
+                    try:
+                        with Image.open(p) as im:  # type: ignore
+                            im.verify()
+                    except Exception:
+                        bad = True
+                if bad:
                     # Backup original
                     try:
                         backup = p.with_suffix(p.suffix + ".orig")

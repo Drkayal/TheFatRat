@@ -73,3 +73,11 @@ W: /workspace/tasks/20250810/e72d5add-upload_apk/injection_20250810_051748/extra
 W: /workspace/tasks/20250810/e72d5add-upload_apk/injection_20250810_051748/extracted/res/drawable-mdpi-v4/ic_application.png: error: file failed to compile.
 brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_14393094420234991052648558063849845990.tmp, compile, --dir, /workspace/tasks/20250810/e72d5add-upload_apk/injection_20250810_051748/extracted/res, --legacy, -o, /workspace/tasks/20250810/e72d5add-upload_apk/injection_20250810_051748/extracted/build/resources.zip]
 INFO:     127.0.0.1:59356 - "GET /tasks/e72d5add-upload_apk HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'payload_injection_system.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [51756]
+INFO:     Started server process [52367]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
