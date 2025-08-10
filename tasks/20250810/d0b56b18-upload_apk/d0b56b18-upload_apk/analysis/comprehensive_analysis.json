@@ -1,0 +1,73 @@
+{
+  "analysis_timestamp": "2025-08-10T04:53:17.402491",
+  "apk_path": "/workspace/uploads/20250810_045310_3dc6328c_base.apk",
+  "manifest_analysis": {
+    "parsed": false,
+    "package_name": null,
+    "version_code": null,
+    "version_name": null,
+    "min_sdk": null,
+    "target_sdk": null,
+    "permissions": [],
+    "activities": [],
+    "services": [],
+    "receivers": [],
+    "providers": [],
+    "application": {},
+    "uses_features": [],
+    "intents": [],
+    "binary_parsed": true
+  },
+  "permission_analysis": {},
+  "code_structure": {
+    "dex_files": [
+      "classes.dex"
+    ],
+    "total_classes": 0,
+    "total_methods": 0,
+    "total_strings": 0,
+    "obfuscation_score": 0,
+    "encryption_indicators": [],
+    "reflection_usage": [],
+    "dynamic_loading": [],
+    "native_methods": [],
+    "suspicious_patterns": []
+  },
+  "security_analysis": {
+    "anti_debug": [],
+    "anti_emulator": [
+      "generic"
+    ],
+    "root_detection": [],
+    "integrity_checks": [
+      "PackageManager"
+    ],
+    "obfuscation_techniques": [
+      "invoke",
+      "newInstance"
+    ],
+    "packing_indicators": [],
+    "overall_protection_score": 30
+  },
+  "risk_assessment": {
+    "overall_risk_score": 7,
+    "risk_level": "MINIMAL",
+    "risk_factors": [],
+    "security_concerns": [],
+    "injection_difficulty": "MEDIUM"
+  },
+  "injection_recommendations": {
+    "recommended_injection_points": [],
+    "evasion_techniques_needed": [
+      "emulator_evasion"
+    ],
+    "payload_modifications": [
+      "add_internet_permission",
+      "add_boot_receiver"
+    ],
+    "stealth_requirements": [
+      "medium",
+      "code_obfuscation"
+    ]
+  }
+}

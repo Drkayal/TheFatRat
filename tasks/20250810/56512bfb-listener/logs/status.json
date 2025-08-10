@@ -1,0 +1,25 @@
+{
+  "id": "56512bfb-listener",
+  "date": "20250810",
+  "kind": "listener",
+  "state": "SUCCEEDED",
+  "created_at": 1754796817.1140683,
+  "started_at": 1754796817.1168783,
+  "finished_at": 1754796817.116886,
+  "params": {
+    "payload": "windows/meterpreter/reverse_tcp"
+  },
+  "artifacts": [
+    {
+      "name": "handler.rc",
+      "path": "/workspace/tasks/20250810/56512bfb-listener/output/handler.rc",
+      "size_bytes": 143,
+      "sha256": "75dfed6651a134ec9d678b62ca2e9b13baf9795a140774d49fa77421ad71455f"
+    }
+  ],
+  "logs": {
+    "run": "/workspace/tasks/20250810/56512bfb-listener/logs/run.log"
+  },
+  "error": null,
+  "duration_sec": 0.0
+}

