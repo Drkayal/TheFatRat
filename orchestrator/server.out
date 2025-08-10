@@ -954,3 +954,19 @@ pydantic_core._pydantic_core.ValidationError: 1 validation error for Task
 params.file_info
   Input should be a valid string [type=string_type, input_value={'file_id': '9fb982ca', '... 'file_size': 8135671}}}, input_type=dict]
     For further information visit https://errors.pydantic.dev/2.8/v/string_type
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [36596]
+INFO:     Started server process [37710]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [37710]
+INFO:     Started server process [37986]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

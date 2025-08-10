@@ -827,8 +827,8 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
             t.logs["build"] = str(build_log)
-        # Persist running status
-        if DB_ENABLED and DB:
+        # Persist running status (best-effort)
+        if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
             try:
                 DB.update_task_status(task_id, "running")
             except Exception:
@@ -1498,7 +1498,7 @@ class Task(BaseModel):
     created_at: float
     started_at: Optional[float] = None
     finished_at: Optional[float] = None
-    params: Dict[str, str] = {}
+    params: Dict[str, Any] = {}
     artifacts: List[Artifact] = []
     logs: Dict[str, str] = {}
     error: Optional[str] = None
@@ -2581,7 +2581,7 @@ def _retention_cycle():
     _rotate_audit_log()
     _cleanup_uploads_and_tasks()
     # Optional: DB cleanup (best-effort)
-    if DB_ENABLED and DB:
+    if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
         try:
             DB.cleanup_old_records(days=max(RETAIN_TASK_DAYS, 7))
         except Exception:
