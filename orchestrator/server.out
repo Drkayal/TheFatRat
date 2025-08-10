@@ -445,3 +445,5 @@ INFO:     Finished server process [17617]
 INFO:     Started server process [17791]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:35198 - "GET /tasks/57f77879-listener HTTP/1.1" 404 Not Found
