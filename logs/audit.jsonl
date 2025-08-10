@@ -11,3 +11,5 @@
 {"ts": 1754796556.4537525, "event": "submitted", "id": "d4856db8-listener", "date": "20250810", "kind": "listener", "state": "SUBMITTED", "params": {"payload": "windows/meterpreter/reverse_tcp"}}
 {"ts": 1754796817.1141627, "event": "submitted", "id": "56512bfb-listener", "date": "20250810", "kind": "listener", "state": "SUBMITTED", "params": {"payload": "windows/meterpreter/reverse_tcp"}}
 {"ts": 1754796817.119133, "event": "finished", "id": "56512bfb-listener", "date": "20250810", "kind": "listener", "state": "SUCCEEDED", "params": {"payload": "windows/meterpreter/reverse_tcp"}, "succeeded": true, "duration_sec": 0.0, "error": null, "artifacts": ["handler.rc"]}
+{"ts": 1754797363.4358938, "event": "submitted", "id": "36d4e20a-listener", "date": "20250810", "kind": "listener", "state": "SUBMITTED", "params": {"payload": "windows/meterpreter/reverse_tcp"}}
+{"ts": 1754797363.4400468, "event": "finished", "id": "36d4e20a-listener", "date": "20250810", "kind": "listener", "state": "SUCCEEDED", "params": {"payload": "windows/meterpreter/reverse_tcp"}, "succeeded": true, "duration_sec": 0.0, "error": null, "artifacts": ["handler.rc"]}
