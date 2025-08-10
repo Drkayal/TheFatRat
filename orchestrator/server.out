@@ -638,3 +638,226 @@ INFO:     127.0.0.1:53658 - "GET /tasks/323aabe5-upload_apk HTTP/1.1" 200 OK
 
 INFO:     127.0.0.1:53658 - "GET /tasks/323aabe5-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:34176 - "GET /tasks/323aabe5-upload_apk/logs/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37540 - "POST /tasks HTTP/1.1" 200 OK
+2025-08-10 07:29:43,855 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_072932_38aa08d5_(كيبورد سِســِيف).apk
+2025-08-10 07:29:43,855 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_072932_38aa08d5_(كيبورد سِســِيف).apk
+2025-08-10 07:29:43,855 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_072932_38aa08d5_(كيبورد سِســِيف).apk
+2025-08-10 07:29:43,855 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943
+2025-08-10 07:29:43,855 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943
+2025-08-10 07:29:43,855 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943
+[2025-08-10 07:29:43] [INFO] Starting payload injection for: 20250810_072932_38aa08d5_(كيبورد سِســِيف).apk
+[2025-08-10 07:29:43] [INFO] Created workspace: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943
+INFO:     127.0.0.1:37554 - "GET /tasks/e3b5d06a-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:29:45,937 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:29:45,937 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:29:45,937 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:29:45,938 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:29:45,938 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:29:45,938 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:29:45,940 - MultiVectorInjector - INFO - Fixed 0 critical icons and 0 general PNGs
+2025-08-10 07:29:45,940 - MultiVectorInjector - INFO - Fixed 0 critical icons and 0 general PNGs
+2025-08-10 07:29:45,940 - MultiVectorInjector - INFO - Fixed 0 critical icons and 0 general PNGs
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+2025-08-10 07:29:45,941 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+[2025-08-10 07:29:45] [INFO] APK extraction completed
+[2025-08-10 07:29:45] [INFO] Starting PNG repair process
+[2025-08-10 07:29:45] [INFO] Fixed 0 critical icons and 0 general PNGs
+[2025-08-10 07:29:45] [INFO] Manifest modifications completed
+[2025-08-10 07:29:45] [INFO] Starting APK rebuild process
+[2025-08-10 07:29:45] [INFO] Rebuild attempt 1: with aapt2
+[2025-08-10 07:29:45] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted -o /workspace/tasks/20250810/e3b5d06a-upload_apk/temp/injected.apk --use-aapt2
+INFO:     127.0.0.1:37554 - "GET /tasks/e3b5d06a-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:29:46,635 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_50240448259204025237617647600457666199.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+2025-08-10 07:29:46,635 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_50240448259204025237617647600457666199.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+2025-08-10 07:29:46,635 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_50240448259204025237617647600457666199.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+2025-08-10 07:29:46,635 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:29:46,635 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:29:46,635 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:29:46,635 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+2025-08-10 07:29:46,635 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+2025-08-10 07:29:46,635 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+2025-08-10 07:29:46,806 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_142640267238701947871490268618244061229.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+2025-08-10 07:29:46,806 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_142640267238701947871490268618244061229.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+2025-08-10 07:29:46,806 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_142640267238701947871490268618244061229.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+2025-08-10 07:29:46,806 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:29:46,806 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:29:46,806 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:29:46,806 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+2025-08-10 07:29:46,806 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+2025-08-10 07:29:46,806 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+2025-08-10 07:29:47,498 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_3915775724578802961644966728804693264.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+2025-08-10 07:29:47,498 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_3915775724578802961644966728804693264.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+2025-08-10 07:29:47,498 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_3915775724578802961644966728804693264.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+2025-08-10 07:29:47,498 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:29:47,498 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:29:47,498 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:29:47,498 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:29:47,498 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:29:47,498 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:29:47,500 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+2025-08-10 07:29:47,500 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+2025-08-10 07:29:47,500 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+[2025-08-10 07:29:46] [ERROR] Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_50240448259204025237617647600457666199.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+[2025-08-10 07:29:46] [WARNING] Rebuild failed on attempt 1
+[2025-08-10 07:29:46] [INFO] Rebuild attempt 2: without aapt2
+[2025-08-10 07:29:46] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted -o /workspace/tasks/20250810/e3b5d06a-upload_apk/temp/injected.apk
+[2025-08-10 07:29:46] [ERROR] Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_142640267238701947871490268618244061229.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+[2025-08-10 07:29:46] [WARNING] Rebuild failed on attempt 2
+[2025-08-10 07:29:46] [INFO] Rebuild attempt 3: forcing all
+[2025-08-10 07:29:46] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted -o /workspace/tasks/20250810/e3b5d06a-upload_apk/temp/injected.apk --force-all
+[2025-08-10 07:29:47] [ERROR] Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml:3: error: unknown resource type 'a'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/as.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml:3: error: unknown resource type 'b'.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values-ar/bs.xml: error: file failed to compile.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:3: error: invalid resource type 'a' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml:4: error: invalid resource type 'b' in <public>.
+W: /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res/values/public.xml: error: file failed to compile.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_3915775724578802961644966728804693264.tmp, compile, --dir, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/res, --legacy, -o, /workspace/tasks/20250810/e3b5d06a-upload_apk/injection_20250810_072943/extracted/build/resources.zip]
+[2025-08-10 07:29:47] [WARNING] Rebuild failed on attempt 3
+[2025-08-10 07:29:47] [ERROR] Rebuild failed after 3 attempts
+[2025-08-10 07:29:47] [INFO] Temporary workspace cleaned up
+INFO:     127.0.0.1:37554 - "GET /tasks/e3b5d06a-upload_apk HTTP/1.1" 200 OK
