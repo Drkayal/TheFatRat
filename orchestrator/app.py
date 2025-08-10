@@ -1628,6 +1628,16 @@ def run_listener_task(task_id: str, base: Path, params: Dict[str, str]):
     t = tasks[task_id]
     with locks[task_id]:
         t.state = TaskStatus.PREPARING
+    run_log = base / "logs" / "run.log"
+    # Tool preflight: msfconsole required
+    try:
+        msfconsole_path = shutil.which("msfconsole")
+    except Exception:
+        msfconsole_path = None
+    if not msfconsole_path and not USE_DOCKER:
+        _write_file(run_log, "Preflight failed: msfconsole not found in PATH. Install Metasploit or enable USE_DOCKER.\n")
+        _finalize_task(t, base, succeeded=False, err="msfconsole not found")
+        return
     rc_path = base / "output" / "handler.rc"
     rc_content = f"""
 use exploit/multi/handler
@@ -1638,7 +1648,6 @@ set ExitOnSession false
 exploit -j -z
 """.strip()
     _write_file(rc_path, rc_content)
-    run_log = base / "logs" / "run.log"
     cmd = [
         "msfconsole", "-qx", f"resource {rc_path}; sleep 2; jobs; exit -y"
     ]
@@ -1646,7 +1655,7 @@ exploit -j -z
         t.state = TaskStatus.RUNNING
         t.started_at = time.time()
         t.logs["run"] = str(run_log)
-    rc = _spawn(cmd, run_log)
+    rc = _spawn(cmd, run_log) if not USE_DOCKER else _spawn_container_sh("msfconsole -qx 'resource output/handler.rc; sleep 2; jobs; exit -y'", run_log, base)
     _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole rc={rc}")
 
 

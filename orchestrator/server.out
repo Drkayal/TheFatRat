@@ -429,3 +429,19 @@ INFO:     127.0.0.1:35946 - "GET /tasks/57f77879-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:50036 - "GET /health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:57748 - "GET /tasks/57f77879-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:35388 - "GET /tasks/57f77879-listener HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16735]
+INFO:     Started server process [17617]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17617]
+INFO:     Started server process [17791]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
