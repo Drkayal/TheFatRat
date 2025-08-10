@@ -772,8 +772,8 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         with locks[task_id]:
             t.state = TaskStatus.PREPARING
         
-        # Setup workspace
-        workspace = base / task_id
+        # Setup workspace (base is already the task root)
+        workspace = base
         workspace.mkdir(parents=True, exist_ok=True)
         
         # Create subdirectories
