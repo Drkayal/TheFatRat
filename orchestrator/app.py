@@ -42,6 +42,12 @@ from performance_optimization import PerformanceOptimizationSystem, PerformanceC
 from compatibility_testing import CompatibilityTestingSystem, CompatibilityConfig, AndroidVersion, Architecture
 from security_testing import SecurityTestingSystem, SecurityTestConfig, SecurityTestType, ThreatLevel
 
+# Optional Metasploit RPC client (fallback path)
+try:
+    from pymetasploit3.msfrpc import MsfRpcClient  # type: ignore
+except Exception:  # noqa: BLE001
+    MsfRpcClient = None  # type: ignore
+
 WORKSPACE = Path("/workspace")
 TASKS_ROOT = WORKSPACE / "tasks"
 UPLOADS_ROOT = WORKSPACE / "uploads"
@@ -1540,13 +1546,28 @@ def _spawn_container_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, en
     env = os.environ.copy()
     env["HOME"] = str(task_home)
     wrapped_cmd = f"cd /workspace && {cmd}"
-    with log_path.open("w") as lf:
-        proc = subprocess.Popen(
-            ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", wrapped_cmd],
-            stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
-        )
-        return_code = proc.wait()
-    return return_code
+    try:
+        with log_path.open("w") as lf:
+            proc = subprocess.Popen(
+                ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", wrapped_cmd],
+                stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
+            )
+            return_code = proc.wait()
+        return return_code
+    except FileNotFoundError:
+        try:
+            with log_path.open("a") as lf:
+                lf.write("docker not found in PATH; container execution unavailable.\n")
+        except Exception:
+            pass
+        return 127
+    except Exception as e:
+        try:
+            with log_path.open("a") as lf:
+                lf.write(f"docker run failed: {e}\n")
+        except Exception:
+            pass
+        return 127
 
 
 def _spawn_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> int:
@@ -1677,24 +1698,35 @@ set ExitOnSession false
 exploit -j -z
 """.strip()
     _write_file(rc_path, rc_content)
+
+    # Helper to try MSF RPC as a secondary automatic option
+    def _try_rpc_then_finalize() -> bool:
+        if _msfrpc_env_available():
+            ok, err = _msfrpc_start_handler(payload, lhost, lport, run_log)
+            if ok:
+                _finalize_task(t, base, succeeded=True, err=None)
+                return True
+            else:
+                try:
+                    with run_log.open('a') as f:
+                        f.write(f"MSF RPC fallback failed: {err}\n")
+                except Exception:
+                    pass
+        return False
+
     if not msfconsole_path and not USE_DOCKER:
-        # Switch to docker path automatically if available by flag
-        if os.environ.get("ORCH_ALLOW_DOCKER_FALLBACK", "true").lower() == "true":
-            with locks[task_id]:
-                t.state = TaskStatus.RUNNING
-                t.started_at = time.time()
-                t.logs["run"] = str(run_log)
-            rc = _spawn_container_sh("msfconsole -qx 'resource output/handler.rc; sleep 2; jobs; exit -y'", run_log, base)
-            _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole(docker) rc={rc}")
+        # First: try RPC fallback automatically if configured
+        if _try_rpc_then_finalize():
             return
-        # Otherwise: generate handler and mark success for manual use
-        _write_file(run_log, "msfconsole not found; generated handler.rc for manual use.\n")
+        # Otherwise: generate handler and mark success for manual/remote use
+        _write_file(run_log, "msfconsole not found; generated handler.rc for manual or external RPC use.\n")
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
             t.started_at = time.time()
             t.logs["run"] = str(run_log)
         _finalize_task(t, base, succeeded=True, err=None)
         return
+
     cmd = [
         "msfconsole", "-qx", f"resource {rc_path}; sleep 2; jobs; exit -y"
     ]
@@ -1703,6 +1735,12 @@ exploit -j -z
         t.started_at = time.time()
         t.logs["run"] = str(run_log)
     rc = _spawn(cmd, run_log) if not USE_DOCKER else _spawn_container_sh("msfconsole -qx 'resource output/handler.rc; sleep 2; jobs; exit -y'", run_log, base)
+
+    if rc != 0:
+        # If Docker/local msfconsole failed, try RPC automatically
+        if _try_rpc_then_finalize():
+            return
+
     _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole rc={rc}")
 
 
