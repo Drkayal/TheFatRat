@@ -655,3 +655,5 @@ INFO:     Finished server process [24010]
 INFO:     Started server process [24033]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:45772 - "GET /tasks/f60cf12f-listener HTTP/1.1" 404 Not Found

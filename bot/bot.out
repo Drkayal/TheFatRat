@@ -665,3 +665,38 @@ For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/St
 2025-08-10 02:57:33,861 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
 2025-08-10 02:57:43,949 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
 2025-08-10 02:57:54,037 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 02:58:04,128 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 02:58:14,217 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 02:58:24,305 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 02:58:34,393 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 02:58:39,480 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/f60cf12f-listener "HTTP/1.1 404 Not Found"
+2025-08-10 02:58:39,481 ERROR No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/telegram/ext/_application.py", line 1335, in process_update
+    await coroutine
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/telegram/ext/_handlers/conversationhandler.py", line 857, in handle_update
+    new_state: object = await handler.handle_update(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        update, application, handler_check_result, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/telegram/ext/_handlers/basehandler.py", line 158, in handle_update
+    return await self.callback(update, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/bot/bot.py", line 752, in params_handler
+    await poll_and_send(update, context, sess)
+  File "/workspace/bot/bot.py", line 765, in poll_and_send
+    r.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/httpx/_models.py", line 763, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'http://127.0.0.1:8000/tasks/f60cf12f-listener'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-08-10 02:58:39,483 INFO /start received from user_id=985612253
+2025-08-10 02:58:39,780 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 02:58:39,884 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 02:58:40,018 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 02:58:40,018 INFO /start received from user_id=985612253
+2025-08-10 02:58:40,128 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 02:58:44,482 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
