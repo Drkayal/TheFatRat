@@ -447,3 +447,41 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
 INFO:     127.0.0.1:35198 - "GET /tasks/57f77879-listener HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41946 - "POST /tasks HTTP/1.1" 200 OK
+Exception in thread Thread-2 (runner):
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/threading.py", line 1041, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/usr/lib/python3.13/threading.py", line 992, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/orchestrator/app.py", line 2020, in runner
+    run_listener_task(t.id, base, t.params)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/orchestrator/app.py", line 1658, in run_listener_task
+    rc = _spawn(cmd, run_log) if not USE_DOCKER else _spawn_container_sh("msfconsole -qx 'resource output/handler.rc; sleep 2; jobs; exit -y'", run_log, base)
+                                                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/orchestrator/app.py", line 1542, in _spawn_container_sh
+    proc = subprocess.Popen(
+        ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", cmd],
+        stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
+    )
+  File "/usr/lib/python3.13/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 1969, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'docker'
+INFO:     127.0.0.1:41958 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41958 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41958 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45582 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42462 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
