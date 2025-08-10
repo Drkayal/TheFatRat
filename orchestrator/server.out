@@ -250,3 +250,43 @@ W: /workspace/tasks/20250810/b3754d06-upload_apk/injection_20250810_053114/extra
 W: /workspace/tasks/20250810/b3754d06-upload_apk/injection_20250810_053114/extracted/res/drawable-mdpi-v4/ic_application.png: error: file failed to compile.
 brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_21722030856609340889102246247558607419.tmp, compile, --dir, /workspace/tasks/20250810/b3754d06-upload_apk/injection_20250810_053114/extracted/res, --legacy, -o, /workspace/tasks/20250810/b3754d06-upload_apk/injection_20250810_053114/extracted/build/resources.zip]
 INFO:     127.0.0.1:45732 - "GET /tasks/b3754d06-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37966 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37976 - "GET /tasks/5e46b537-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37976 - "GET /tasks/5e46b537-upload_apk HTTP/1.1" 200 OK
+Replaced 4 invalid PNGs with placeholders to satisfy aapt
+INFO:     127.0.0.1:37976 - "GET /tasks/5e46b537-upload_apk HTTP/1.1" 200 OK
+Repaired 2 PNGs from apktool log; retrying build
+apktool build failed; retrying with --use-aapt2
+Recompilation failed
+I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: libpng error: IDAT: incorrect data check
+W: libpng error: IDAT: incorrect data check
+W: ERROR: Failure processing PNG image /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-hdpi-v4/ic_application.png
+W: ERROR: Failure processing PNG image /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-mdpi-v4/ic_application.png
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_1434159493861569252408277585331463523.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL14229262894634366523.tmp, -e, /tmp/APKTOOL13387395388030361335.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res, -M, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/AndroidManifest.xml]
+I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: libpng error: IDAT: incorrect data check
+W: ERROR: Failure processing PNG image /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-mdpi-v4/ic_application.png
+W: libpng error: IDAT: incorrect data check
+W: ERROR: Failure processing PNG image /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-hdpi-v4/ic_application.png
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_83781822446623227793750103054021500729.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL17482756515927320946.tmp, -e, /tmp/APKTOOL11226761913599860502.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res, -M, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/AndroidManifest.xml]
+I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-hdpi-v4/ic_application.png: error: IDAT: incorrect data check.
+W: /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-hdpi-v4/ic_application.png: error: file failed to compile.
+W: /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-mdpi-v4/ic_application.png: error: IDAT: incorrect data check.
+W: /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-mdpi-v4/ic_application.png: error: file failed to compile.
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_60145421970705599224784162573575961190.tmp, compile, --dir, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res, --legacy, -o, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/build/resources.zip]
+INFO:     127.0.0.1:42088 - "GET /tasks/5e46b537-upload_apk HTTP/1.1" 200 OK
