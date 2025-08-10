@@ -775,6 +775,9 @@ def main():
     if not token:
         print("Please set TELEGRAM_BOT_TOKEN in environment.")
         return
+    if REQUIRE_OWNER_ID and OWNER_ID == 0:
+        print("REQUIRE_OWNER_ID is enabled but TELEGRAM_OWNER_ID is not set. Exiting.")
+        return
     application = Application.builder().token(token).build()
     conv = ConversationHandler(
         entry_points=[CommandHandler("start", start), CommandHandler("menu", start)],

