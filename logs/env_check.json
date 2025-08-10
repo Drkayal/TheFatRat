@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-08-10T05:24:41.464670",
+  "timestamp": "2025-08-10T06:57:09.780750",
   "java": {
     "found": true,
     "info": "openjdk version \"21.0.7\" 2025-04-15 | OpenJDK Runtime Environment (build 21.0.7+6-Ubuntu-0ubuntu125.04)"
@@ -27,7 +27,7 @@
   },
   "flags": {
     "ENABLE_APKSIGNER": false,
-    "ENABLE_HTTP_ARTIFACTS": true,
+    "ENABLE_HTTP_ARTIFACTS": false,
     "ORCH_AUTH_TOKEN_REQUIRED": false,
     "ENABLE_FALLBACK_BACKDOOR_APK": false
   }
