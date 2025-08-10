@@ -1970,7 +1970,7 @@ exploit
 # API models
 class CreateTaskRequest(BaseModel):
     kind: str  # payload|listener|android|winexe|pdf|office|deb|autorun|postex
-    params: Dict[str, str] = {}
+    params: Dict[str, Any] = {}
 
 class TaskResponse(BaseModel):
     task: Task

