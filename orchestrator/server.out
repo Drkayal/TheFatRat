@@ -43,3 +43,10 @@ INFO:     Finished server process [50749]
 INFO:     Started server process [51756]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:47194 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47204 - "GET /tasks/e72d5add-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47204 - "GET /tasks/e72d5add-upload_apk HTTP/1.1" 200 OK
+Replaced 2 invalid PNGs with placeholders to satisfy aapt
+apktool build failed; retrying with --use-aapt2
+INFO:     127.0.0.1:47204 - "GET /tasks/e72d5add-upload_apk HTTP/1.1" 200 OK
