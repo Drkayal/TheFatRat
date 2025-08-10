@@ -721,7 +721,6 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         use_https=True,
         domain_fronting_enabled=True,
         tor_enabled=True,
-        encryption_enabled=True,
         heartbeat_interval=60
     )
     
