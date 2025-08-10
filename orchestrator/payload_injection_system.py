@@ -1094,6 +1094,16 @@ class MultiVectorInjector:
         # Build unsigned APK
         apktool_path = str(self.apktool_jar)
         ok, out = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
+        if not ok or not output_path.exists():
+            # Attempt targeted repair based on apktool diagnostics, then retry
+            try:
+                repaired = self._repair_pngs_from_log(out, extract_dir)
+                if repaired:
+                    print(f"Repaired {repaired} PNGs from apktool log; retrying build")
+                    ok, out2 = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
+                    out = out + "\n" + out2
+            except Exception:
+                pass
         if (not ok or not output_path.exists()) and self.aapt2:
             # Retry with aapt2
             print("apktool build failed; retrying with --use-aapt2")
@@ -1186,6 +1196,43 @@ class MultiVectorInjector:
                 continue
         if fixed:
             print(f"Replaced {fixed} invalid PNGs with placeholders to satisfy aapt")
+
+    def _repair_pngs_from_log(self, log_text: str, extract_dir: Path) -> int:
+        """Parse apktool/aapt output for problematic PNG paths and replace them with a tiny valid PNG.
+        Returns number of files repaired.
+        """
+        if not log_text:
+            return 0
+        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/woAAgMBgWn3mXQAAAAASUVORK5CYII="
+        tiny_png = base64.b64decode(tiny_png_b64)
+        repaired = 0
+        candidates: set[Path] = set()
+        for line in log_text.splitlines():
+            if ".png" in line and "/res/" in line:
+                # Extract path-like token ending with .png
+                parts = line.split()
+                for token in parts:
+                    if token.endswith(".png") and "/res/" in token:
+                        candidates.add(Path(token.strip()))
+        for raw in candidates:
+            try:
+                p = raw
+                if not p.is_absolute():
+                    p = extract_dir / p
+                if p.exists() and p.suffix.lower() == ".png":
+                    # backup
+                    try:
+                        backup = p.with_suffix(p.suffix + ".orig")
+                        if not backup.exists():
+                            shutil.copy2(p, backup)
+                    except Exception:
+                        pass
+                    with open(p, "wb") as f:
+                        f.write(tiny_png)
+                    repaired += 1
+            except Exception:
+                continue
+        return repaired
 
 # Export main classes
 __all__ = [
