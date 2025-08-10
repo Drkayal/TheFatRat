@@ -78,6 +78,55 @@ AAPT2_PATH = ANDROID_SDK_DIR / "aapt2"
 ZIPALIGN_PATH = ANDROID_SDK_DIR / "zipalign"
 APKSIGNER_PATH = ANDROID_SDK_DIR / "apksigner"
 
+# Redaction helpers (Phase 9)
+SENSITIVE_KEYS = {
+    "upload_file_path", "keystore_path", "keystore_password", "key_password", "key_alias",
+    "ORCH_AUTH_TOKEN", "Authorization", "token",
+}
+
+ALLOWED_PARAM_KEYS = {
+    "lhost", "lport", "output_name", "payload", "kind", "mode",
+    "suite_target", "arch", "encoders", "upx", "deb_path",
+}
+
+def _redact_params(obj: Any) -> Any:
+    try:
+        if isinstance(obj, dict):
+            red: Dict[str, Any] = {}
+            for k, v in obj.items():
+                if k in SENSITIVE_KEYS:
+                    red[k] = "[redacted]"
+                elif k in ("file_info",):
+                    # keep only minimal identifiers
+                    if isinstance(v, dict):
+                        minimal = {}
+                        if "file_id" in v:
+                            minimal["file_id"] = v["file_id"]
+                        if "checksum" in v:
+                            minimal["checksum"] = v["checksum"]
+                        if "original_name" in v:
+                            minimal["original_name"] = v["original_name"]
+                        red[k] = minimal
+                    else:
+                        red[k] = "[redacted]"
+                elif k in ALLOWED_PARAM_KEYS:
+                    red[k] = v
+                else:
+                    # default: keep scalar safe types, redact suspicious strings that look like absolute paths
+                    if isinstance(v, str) and v.startswith("/"):
+                        red[k] = "[path]"
+                    else:
+                        red[k] = v
+            return red
+        elif isinstance(obj, list):
+            return [_redact_params(x) for x in obj]
+        else:
+            if isinstance(obj, str) and obj.startswith("/"):
+                return "[path]"
+            return obj
+    except Exception:
+        return "[redacted]"
+
 
 def _check_exec(cmd: list[str] | str) -> tuple[bool, str]:
     try:
@@ -1409,12 +1458,13 @@ def _audit(event: str, t: Any, extra: Optional[Dict[str, Any]] = None) -> None:
             "date": t.date,
             "kind": t.kind,
             "state": t.state,
-            "params": t.params,
+            "params": _redact_params(t.params),
         }
         if extra:
-            rec.update(extra)
+            # sanitize extras as well
+            rec.update(_redact_params(extra))
         with AUDIT_LOG.open("a") as f:
-            f.write(json.dumps(rec) + "\n")
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
     except Exception:
         pass
 
