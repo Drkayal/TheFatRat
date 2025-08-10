@@ -52,7 +52,7 @@ ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
 ENABLE_HTTP_ARTIFACTS = os.environ.get("ENABLE_HTTP_ARTIFACTS", "false").lower() == "true"
 
 # File upload configuration
-MAX_FILE_SIZE = 200 * 1024 * 1024  # 200MB
+MAX_FILE_SIZE = 1024 * 1024 * 1024  # 1GB
 ALLOWED_EXTENSIONS = ['.apk']
 UPLOAD_DIR = Path("/workspace/uploads")
 TEMP_DIR = Path("/workspace/temp")
