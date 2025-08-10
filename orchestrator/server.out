@@ -1158,3 +1158,9 @@ INFO:     127.0.0.1:49682 - "GET /tasks/5d0421ba-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:49682 - "GET /tasks/5d0421ba-upload_apk HTTP/1.1" 200 OK
 Recompilation failed
 INFO:     127.0.0.1:49682 - "GET /tasks/5d0421ba-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44896 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44908 - "GET /tasks/71758f6f-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44920 - "GET /tasks/5d0421ba-upload_apk/logs/build HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:44908 - "GET /tasks/71758f6f-upload_apk HTTP/1.1" 200 OK
+Recompilation failed
+INFO:     127.0.0.1:44908 - "GET /tasks/71758f6f-upload_apk HTTP/1.1" 200 OK
