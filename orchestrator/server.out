@@ -1139,3 +1139,11 @@ INFO:     127.0.0.1:56410 - "GET /tasks/b14a2b58-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:39596 - "GET /tasks/b14a2b58-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:42340 - "GET /tasks/b14a2b58-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:33314 - "GET /tasks/b14a2b58-upload_apk HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [39866]
+INFO:     Started server process [44960]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

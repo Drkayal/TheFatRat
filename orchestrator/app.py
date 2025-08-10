@@ -746,10 +746,7 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
     performance_config = PerformanceConfig(
         optimization_level=PerformanceLevel.AGGRESSIVE,
         memory_limit_mb=128,
-        cpu_throttling_enabled=True,
-        network_optimization=True,
-        startup_optimization=True,
-        enable_monitoring=True
+        cpu_throttling_enabled=True
     )
     
     compatibility_config = CompatibilityConfig(
