@@ -1616,7 +1616,7 @@ def _finalize_task(t: Task, base: Path, succeeded: bool, err: Optional[str] = No
     _write_file(base / "logs" / "status.json", json.dumps(status, indent=2))
     _audit("finished", t, {"succeeded": succeeded, "duration_sec": duration, "error": err, "artifacts": [a.name for a in artifacts]})
     # Persist completion in DB (best-effort)
-    if DB_ENABLED and DB:
+    if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
         try:
             DB.update_task_status(t.id, "completed" if succeeded else "failed", success=succeeded, error_message=err, output_files=[a.path for a in artifacts])
         except Exception:

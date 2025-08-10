@@ -863,3 +863,11 @@ NameError: name 'DB_ENABLED' is not defined
 INFO:     127.0.0.1:37232 - "GET /tasks/7926d16a-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:37232 - "GET /tasks/7926d16a-listener/artifacts HTTP/1.1" 200 OK
 INFO:     127.0.0.1:37232 - "GET /tasks/7926d16a-listener/artifacts/handler.rc/download HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [31311]
+INFO:     Started server process [36596]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
