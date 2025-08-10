@@ -290,3 +290,4 @@ W: /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extra
 W: /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res/drawable-mdpi-v4/ic_application.png: error: file failed to compile.
 brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_60145421970705599224784162573575961190.tmp, compile, --dir, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/res, --legacy, -o, /workspace/tasks/20250810/5e46b537-upload_apk/injection_20250810_053257/extracted/build/resources.zip]
 INFO:     127.0.0.1:42088 - "GET /tasks/5e46b537-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50198 - "GET /tasks/5e46b537-upload_apk/logs/build HTTP/1.1" 200 OK
