@@ -38,3 +38,7 @@
 2025-08-10 05:17:51,060 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/e72d5add-upload_apk "HTTP/1.1 200 OK"
 2025-08-10 05:17:55,067 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/e72d5add-upload_apk "HTTP/1.1 200 OK"
 2025-08-10 05:17:58,718 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 05:18:03,077 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/e72d5add-upload_apk "HTTP/1.1 200 OK"
+2025-08-10 05:18:03,363 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 05:18:03,493 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 05:18:08,803 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
