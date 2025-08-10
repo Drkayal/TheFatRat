@@ -486,3 +486,20 @@ INFO:     127.0.0.1:41958 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:45582 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:42462 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:44688 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34350 - "GET /tasks/1d24dce5-listener HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17791]
+INFO:     Started server process [18921]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18921]
+INFO:     Started server process [19095]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

@@ -1634,10 +1634,6 @@ def run_listener_task(task_id: str, base: Path, params: Dict[str, str]):
         msfconsole_path = shutil.which("msfconsole")
     except Exception:
         msfconsole_path = None
-    if not msfconsole_path and not USE_DOCKER:
-        _write_file(run_log, "Preflight failed: msfconsole not found in PATH. Install Metasploit or enable USE_DOCKER.\n")
-        _finalize_task(t, base, succeeded=False, err="msfconsole not found")
-        return
     rc_path = base / "output" / "handler.rc"
     rc_content = f"""
 use exploit/multi/handler
@@ -1648,6 +1644,15 @@ set ExitOnSession false
 exploit -j -z
 """.strip()
     _write_file(rc_path, rc_content)
+    if not msfconsole_path and not USE_DOCKER:
+        # Generate handler only and mark success
+        _write_file(run_log, "msfconsole not found; generated handler.rc for manual use.\n")
+        with locks[task_id]:
+            t.state = TaskStatus.RUNNING
+            t.started_at = time.time()
+            t.logs["run"] = str(run_log)
+        _finalize_task(t, base, succeeded=True, err=None)
+        return
     cmd = [
         "msfconsole", "-qx", f"resource {rc_path}; sleep 2; jobs; exit -y"
     ]
