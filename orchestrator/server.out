@@ -970,3 +970,39 @@ INFO:     Finished server process [37710]
 INFO:     Started server process [37986]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:40412 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /tasks/20b7c333-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /tasks/20b7c333-listener/artifacts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /tasks/20b7c333-listener/artifacts/handler.rc/download HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34448 - "POST /tasks HTTP/1.1" 200 OK
+Exception in thread Thread-3 (runner):
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/threading.py", line 1041, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/usr/lib/python3.13/threading.py", line 992, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/orchestrator/app.py", line 2177, in runner
+    asyncio.run(run_upload_apk_task(t.id, base, t.params))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/workspace/orchestrator/app.py", line 718, in run_upload_apk_task
+    c2_config = C2Config(
+        server_host="192.168.1.100",
+    ...<5 lines>...
+        heartbeat_interval=60
+    )
+TypeError: C2Config.__init__() got an unexpected keyword argument 'encryption_enabled'
+INFO:     127.0.0.1:34454 - "GET /tasks/948973f7-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34454 - "GET /tasks/948973f7-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34454 - "GET /tasks/948973f7-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43412 - "GET /tasks/948973f7-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45204 - "GET /tasks/948973f7-upload_apk HTTP/1.1" 200 OK
