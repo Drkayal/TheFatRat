@@ -696,3 +696,82 @@ NameError: name '_msfrpc_env_available' is not defined
 INFO:     127.0.0.1:56054 - "GET /tasks/c4143bdb-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:56054 - "GET /tasks/c4143bdb-listener HTTP/1.1" 200 OK
 INFO:     127.0.0.1:56054 - "GET /tasks/c4143bdb-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32832 - "GET /tasks/c4143bdb-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43162 - "GET /tasks/c4143bdb-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42440 - "GET /tasks/c4143bdb-listener HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [28619]
+INFO:     Started server process [30363]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:34040 - "GET /tasks/c4143bdb-listener HTTP/1.1" 404 Not Found
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [30363]
+INFO:     Started server process [30570]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:57200 - "POST /tasks HTTP/1.1" 200 OK
+Exception in thread Thread-2 (runner):
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/threading.py", line 1041, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/usr/lib/python3.13/threading.py", line 992, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/orchestrator/app.py", line 2119, in runner
+    run_listener_task(t.id, base, t.params)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/orchestrator/app.py", line 1725, in run_listener_task
+    if _try_rpc_then_finalize():
+       ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/orchestrator/app.py", line 1710, in _try_rpc_then_finalize
+    if _msfrpc_env_available():
+       ^^^^^^^^^^^^^^^^^^^^^
+NameError: name '_msfrpc_env_available' is not defined
+INFO:     127.0.0.1:57212 - "GET /tasks/d4856db8-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57212 - "GET /tasks/d4856db8-listener HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [30570]
+INFO:     Started server process [30648]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:57222 - "GET /tasks/d4856db8-listener HTTP/1.1" 404 Not Found
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [30648]
+INFO:     Started server process [30672]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [30672]
+INFO:     Started server process [30695]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [30695]
+INFO:     Started server process [31311]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:38324 - "POST /tasks HTTP/1.1" 422 Unprocessable Content
