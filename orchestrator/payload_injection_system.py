@@ -1168,6 +1168,17 @@ class MultiVectorInjector:
         if not res_dir.exists():
             return
         fixed = 0
+        # Force-replace known problematic app icon basename across densities
+        for p in res_dir.rglob("ic_application.png"):
+            try:
+                backup = p.with_suffix(p.suffix + ".orig")
+                if not backup.exists():
+                    shutil.copy2(p, backup)
+                with open(p, "wb") as f:
+                    f.write(tiny_png)
+                fixed += 1
+            except Exception:
+                continue
         for p in res_dir.rglob("*.png"):
             try:
                 # First: signature check
