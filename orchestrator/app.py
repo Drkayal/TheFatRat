@@ -762,6 +762,7 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
+            t.logs["build"] = str(build_log)
         
         # Log start
         with build_log.open("w") as log:
@@ -2112,6 +2113,21 @@ def download_artifact(task_id: str, artifact_name: str):
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File missing")
     return FileResponse(path=str(real), filename=artifact_name, media_type="application/octet-stream")
+
+@app.get("/tasks/{task_id}/logs/build", dependencies=AUTH_DEPS)
+def download_build_log(task_id: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    base_logs = TASKS_ROOT / t.date / t.id / "logs"
+    p = base_logs / "build.log"
+    try:
+        real = p.resolve(strict=True)
+        if not str(real).startswith(str(base_logs.resolve())):
+            raise HTTPException(status_code=403, detail="Forbidden")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File missing")
+    return FileResponse(path=str(real), filename="build.log", media_type="text/plain")
 
 if __name__ == "__main__":
     import uvicorn
