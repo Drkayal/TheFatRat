@@ -9,7 +9,7 @@ import hashlib
 import zipfile
 import tempfile
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Callable
 
@@ -62,6 +62,13 @@ ORCH_AUTH_TOKEN_REQUIRED = os.environ.get("ORCH_AUTH_TOKEN_REQUIRED", "false").l
 ENABLE_FALLBACK_BACKDOOR_APK = os.environ.get("ENABLE_FALLBACK_BACKDOOR_APK", "false").lower() == "true"
 ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
 POSTBUILD_GATE_ENABLED = os.environ.get("POSTBUILD_GATE_ENABLED", "true").lower() == "true"
+# Retention settings (Phase 8)
+RETENTION_ENABLED = os.environ.get("RETENTION_ENABLED", "true").lower() == "true"
+RETAIN_UPLOAD_HOURS = int(os.environ.get("RETAIN_UPLOAD_HOURS", "24"))
+RETAIN_TASK_DAYS = int(os.environ.get("RETAIN_TASK_DAYS", "7"))
+RETENTION_CHECK_INTERVAL_MIN = int(os.environ.get("RETENTION_CHECK_INTERVAL_MIN", "60"))
+AUDIT_MAX_BYTES = int(os.environ.get("AUDIT_MAX_BYTES", str(10 * 1024 * 1024)))
+AUDIT_BACKUPS = int(os.environ.get("AUDIT_BACKUPS", "5"))
 
 # Tools paths under repository (preferred when available)
 ANDROID_SDK_DIR = WORKSPACE / "tools" / "android-sdk"
@@ -2250,6 +2257,150 @@ def download_build_log(task_id: str):
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File missing")
     return FileResponse(path=str(real), filename="build.log", media_type="text/plain")
+
+# Recover tasks and start retention
+def recover_tasks_from_disk():
+    try:
+        for date_dir in TASKS_ROOT.iterdir():
+            if not date_dir.is_dir():
+                continue
+            for task_dir in date_dir.iterdir():
+                try:
+                    if not task_dir.is_dir():
+                        continue
+                    # Skip active tasks
+                    if _is_task_active(task_dir):
+                        continue
+                    # Age check: use directory mtime
+                    mtime = datetime.utcfromtimestamp(task_dir.stat().st_mtime)
+                    if mtime < datetime.utcnow() - timedelta(days=RETAIN_TASK_DAYS):
+                        shutil.rmtree(task_dir, ignore_errors=True)
+                except Exception:
+                    continue
+            # Remove empty date directories
+            try:
+                if not any(date_dir.iterdir()):
+                    date_dir.rmdir()
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+def _rotate_audit_log():
+    try:
+        AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        if not AUDIT_LOG.exists():
+            return
+        if AUDIT_LOG.stat().st_size <= AUDIT_MAX_BYTES:
+            return
+        # Rotate: audit.jsonl.N ... audit.jsonl.1
+        for i in range(AUDIT_BACKUPS, 0, -1):
+            src = AUDIT_LOG.with_name(f"audit.jsonl.{i}")
+            dst = AUDIT_LOG.with_name(f"audit.jsonl.{i+1}")
+            if src.exists():
+                if i == AUDIT_BACKUPS:
+                    try:
+                        src.unlink()
+                    except Exception:
+                        pass
+                else:
+                    try:
+                        src.rename(dst)
+                    except Exception:
+                        pass
+        # Move current to .1 and recreate empty
+        try:
+            AUDIT_LOG.rename(AUDIT_LOG.with_name("audit.jsonl.1"))
+        except Exception:
+            return
+        try:
+            AUDIT_LOG.touch()
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+def _is_task_active(task_dir: Path) -> bool:
+    try:
+        status_path = task_dir / "logs" / "status.json"
+        if not status_path.exists():
+            return True  # conservatively treat as active if no status
+        data = json.loads(status_path.read_text())
+        state = data.get("state", "")
+        return state in (TaskStatus.SUBMITTED, TaskStatus.PREPARING, TaskStatus.RUNNING)
+    except Exception:
+        return True
+
+def _cleanup_uploads_and_tasks():
+    now = datetime.utcnow()
+    # Cleanup uploads
+    try:
+        cutoff_upload = now - timedelta(hours=RETAIN_UPLOAD_HOURS)
+        for f in UPLOADS_ROOT.glob("*"):
+            try:
+                if f.is_file():
+                    mtime = datetime.utcfromtimestamp(f.stat().st_mtime)
+                    if mtime < cutoff_upload:
+                        f.unlink()
+            except Exception:
+                continue
+    except Exception:
+        pass
+    # Cleanup tasks
+    try:
+        cutoff_tasks = now - timedelta(days=RETAIN_TASK_DAYS)
+        if TASKS_ROOT.exists():
+            for date_dir in TASKS_ROOT.iterdir():
+                if not date_dir.is_dir():
+                    continue
+                for task_dir in date_dir.iterdir():
+                    try:
+                        if not task_dir.is_dir():
+                            continue
+                        # Skip active tasks
+                        if _is_task_active(task_dir):
+                            continue
+                        # Age check: use directory mtime
+                        mtime = datetime.utcfromtimestamp(task_dir.stat().st_mtime)
+                        if mtime < cutoff_tasks:
+                            shutil.rmtree(task_dir, ignore_errors=True)
+                    except Exception:
+                        continue
+                # Remove empty date directories
+                try:
+                    if not any(date_dir.iterdir()):
+                        date_dir.rmdir()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+def _retention_cycle():
+    if not RETENTION_ENABLED:
+        return
+    _rotate_audit_log()
+    _cleanup_uploads_and_tasks()
+    # Optional: DB cleanup (best-effort)
+    if DB_ENABLED and DB:
+        try:
+            DB.cleanup_old_records(days=max(RETAIN_TASK_DAYS, 7))
+        except Exception:
+            pass
+
+def _start_retention_thread():
+    if not RETENTION_ENABLED:
+        return
+    def loop():
+        while True:
+            try:
+                _retention_cycle()
+            except Exception:
+                pass
+            time.sleep(max(RETENTION_CHECK_INTERVAL_MIN, 5) * 60)
+    threading.Thread(target=loop, daemon=True).start()
+
+recover_tasks_from_disk()
+_start_retention_thread()
 
 if __name__ == "__main__":
     import uvicorn
