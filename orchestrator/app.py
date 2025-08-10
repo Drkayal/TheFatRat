@@ -11,9 +11,9 @@ import tempfile
 import asyncio
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable
 
-from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks
+from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks, Depends, Request
 from pydantic import BaseModel
 from hashlib import sha256
 
@@ -53,6 +53,130 @@ DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
 USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
 
 AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
+
+# Feature flags and auth token (Phase 0: bootstrapping)
+ENABLE_APKSIGNER = os.environ.get("ENABLE_APKSIGNER", "false").lower() == "true"
+ENABLE_HTTP_ARTIFACTS = os.environ.get("ENABLE_HTTP_ARTIFACTS", "false").lower() == "true"
+ORCH_AUTH_TOKEN_REQUIRED = os.environ.get("ORCH_AUTH_TOKEN_REQUIRED", "false").lower() == "true"
+ENABLE_FALLBACK_BACKDOOR_APK = os.environ.get("ENABLE_FALLBACK_BACKDOOR_APK", "false").lower() == "true"
+ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
+
+# Tools paths under repository (preferred when available)
+ANDROID_SDK_DIR = WORKSPACE / "tools" / "android-sdk"
+APKTOOL_JAR = WORKSPACE / "tools" / "apktool" / "apktool.jar"
+AAPT_PATH = ANDROID_SDK_DIR / "aapt"
+AAPT2_PATH = ANDROID_SDK_DIR / "aapt2"
+ZIPALIGN_PATH = ANDROID_SDK_DIR / "zipalign"
+APKSIGNER_PATH = ANDROID_SDK_DIR / "apksigner"
+
+
+def _check_exec(cmd: list[str] | str) -> tuple[bool, str]:
+    try:
+        if isinstance(cmd, list):
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10)
+        else:
+            proc = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10)
+        ok = proc.returncode == 0
+        out = (proc.stdout or proc.stderr).strip().splitlines()[:2]
+        return ok, " | ".join(out)
+    except Exception as e:
+        return False, str(e)
+
+
+def _file_exists(p: Path) -> bool:
+    try:
+        return p.exists() and p.is_file()
+    except Exception:
+        return False
+
+
+def _which(name: str) -> str | None:
+    try:
+        return shutil.which(name)
+    except Exception:
+        return None
+
+
+def run_env_checks() -> Dict[str, Any]:
+    """Run concise environment checks for critical tools. Never raises.
+    Writes results to /workspace/logs/env_check.json
+    """
+    results: Dict[str, Any] = {"timestamp": datetime.utcnow().isoformat()}
+
+    # java
+    ok_java, java_ver = _check_exec(["java", "-version"])  # prints to stderr usually
+    results["java"] = {"found": ok_java, "info": java_ver}
+
+    # aapt / aapt2
+    has_aapt_repo = _file_exists(AAPT_PATH)
+    has_aapt2_repo = _file_exists(AAPT2_PATH)
+    aapt_sys = _which("aapt")
+    aapt2_sys = _which("aapt2")
+    results["aapt"] = {"found": has_aapt_repo or bool(aapt_sys), "path": str(AAPT_PATH if has_aapt_repo else (aapt_sys or ""))}
+    results["aapt2"] = {"found": has_aapt2_repo or bool(aapt2_sys), "path": str(AAPT2_PATH if has_aapt2_repo else (aapt2_sys or ""))}
+
+    # zipalign
+    has_zipalign_repo = _file_exists(ZIPALIGN_PATH)
+    zipalign_sys = _which("zipalign")
+    results["zipalign"] = {"found": has_zipalign_repo or bool(zipalign_sys), "path": str(ZIPALIGN_PATH if has_zipalign_repo else (zipalign_sys or ""))}
+
+    # apksigner
+    has_apksigner_repo = _file_exists(APKSIGNER_PATH)
+    apksigner_sys = _which("apksigner")
+    apksigner_found = has_apksigner_repo or bool(apksigner_sys)
+    apksigner_path = str(APKSIGNER_PATH if has_apksigner_repo else (apksigner_sys or ""))
+    apksigner_info = ""
+    if apksigner_found:
+        ok_signer, signer_ver = _check_exec([apksigner_path, "version"]) if apksigner_sys else (True, "embedded")
+        apksigner_info = signer_ver
+    results["apksigner"] = {"found": apksigner_found, "path": apksigner_path, "info": apksigner_info}
+
+    # apktool
+    results["apktool"] = {"found": _file_exists(APKTOOL_JAR), "path": str(APKTOOL_JAR)}
+
+    # Flags status
+    results["flags"] = {
+        "ENABLE_APKSIGNER": ENABLE_APKSIGNER,
+        "ENABLE_HTTP_ARTIFACTS": ENABLE_HTTP_ARTIFACTS,
+        "ORCH_AUTH_TOKEN_REQUIRED": ORCH_AUTH_TOKEN_REQUIRED,
+        "ENABLE_FALLBACK_BACKDOOR_APK": ENABLE_FALLBACK_BACKDOOR_APK,
+    }
+
+    # Persist to logs
+    try:
+        (WORKSPACE / "logs").mkdir(parents=True, exist_ok=True)
+        with (WORKSPACE / "logs" / "env_check.json").open("w") as f:
+            json.dump(results, f, indent=2)
+    except Exception:
+        pass
+
+    # Concise console summary
+    try:
+        summary = []
+        for k in ("java", "aapt", "aapt2", "zipalign", "apksigner", "apktool"):
+            v = results.get(k, {})
+            mark = "✔" if v.get("found") else "✖"
+            summary.append(f"{k}:{mark}")
+        print("ENV-CHECK:", ", ".join(summary))
+    except Exception:
+        pass
+
+    return results
+
+
+# Optional auth dependency when enabled
+from fastapi import Depends
+from typing import Callable
+
+def verify_auth(request: Request):
+    if not ORCH_AUTH_TOKEN_REQUIRED:
+        return
+    auth = request.headers.get("Authorization", "")
+    expected = f"Bearer {ORCH_AUTH_TOKEN}" if ORCH_AUTH_TOKEN else None
+    if not expected or auth != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+AUTH_DEPS = [Depends(verify_auth)] if ORCH_AUTH_TOKEN_REQUIRED else []
 
 class APKFileInfo(BaseModel):
     file_id: str
@@ -1724,7 +1848,7 @@ class TaskResponse(BaseModel):
     task: Task
 
 
-@app.post("/tasks", response_model=TaskResponse)
+@app.post("/tasks", response_model=TaskResponse, dependencies=AUTH_DEPS)
 def create_task(req: CreateTaskRequest):
     if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex", "upload_apk"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
@@ -1764,7 +1888,7 @@ def create_task(req: CreateTaskRequest):
     return TaskResponse(task=t)
 
 
-@app.get("/tasks/{task_id}", response_model=TaskResponse)
+@app.get("/tasks/{task_id}", response_model=TaskResponse, dependencies=AUTH_DEPS)
 def get_task(task_id: str):
     t = tasks.get(task_id)
     if not t:
@@ -1772,7 +1896,7 @@ def get_task(task_id: str):
     return TaskResponse(task=t)
 
 
-@app.get("/tasks/{task_id}/artifacts", response_model=List[Artifact])
+@app.get("/tasks/{task_id}/artifacts", response_model=List[Artifact], dependencies=AUTH_DEPS)
 def list_artifacts(task_id: str):
     t = tasks.get(task_id)
     if not t:
@@ -1780,7 +1904,7 @@ def list_artifacts(task_id: str):
     return t.artifacts
 
 
-@app.post("/tasks/{task_id}/cancel", response_model=TaskResponse)
+@app.post("/tasks/{task_id}/cancel", response_model=TaskResponse, dependencies=AUTH_DEPS)
 def cancel_task(task_id: str):
     t = tasks.get(task_id)
     if not t:
@@ -1922,6 +2046,14 @@ def health():
 def version():
     return {"app": "orchestrator", "version": app.version}
 
+
+# Run environment checks at startup (non-fatal)
+ENV_CHECKS = run_env_checks()
+
+# Optional: Expose concise environment status (no auth)
+@app.get("/env")
+def env_status():
+    return {"env": {k: {kk: vv for kk, vv in v.items() if kk in ("found", "path", "info")} for k, v in ENV_CHECKS.items() if k != "flags"}, "flags": ENV_CHECKS.get("flags", {})}
 
 if __name__ == "__main__":
     import uvicorn
