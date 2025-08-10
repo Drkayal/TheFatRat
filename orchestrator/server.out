@@ -861,3 +861,4 @@ brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not
 [2025-08-10 07:29:47] [ERROR] Rebuild failed after 3 attempts
 [2025-08-10 07:29:47] [INFO] Temporary workspace cleaned up
 INFO:     127.0.0.1:37554 - "GET /tasks/e3b5d06a-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42066 - "GET /tasks/e3b5d06a-upload_apk/logs/build HTTP/1.1" 200 OK
