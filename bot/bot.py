@@ -332,19 +332,37 @@ async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYP
             await update.message.reply_text("تم رفض الوصول.")
             return ConversationHandler.END
     
-    if not update.message.document:
-        await update.message.reply_text("يرجى إرسال ملف APK صحيح.")
+    # Accept either a Telegram document or a direct HTTP(S) URL in the message text
+    document = update.message.document if update.message else None
+    text_msg = update.message.text.strip() if update.message and update.message.text else ""
+    is_url = text_msg.lower().startswith(("http://", "https://"))
+    
+    if not document and not is_url:
+        await update.message.reply_text("يرجى إرسال ملف APK صحيح أو رابط تنزيل مباشر (http/https) لملف APK.")
         return UPLOAD_APK
     
-    document = update.message.document
+    # Determine source and filename
+    source_label = "telegram"
+    original_name = None
+    if document:
+        original_name = document.file_name
+    else:
+        # Derive name from URL
+        try:
+            original_name = Path(text_msg).name or "upload.apk"
+        except Exception:
+            original_name = "upload.apk"
+        if not original_name.lower().endswith('.apk'):
+            original_name = "upload.apk"
+        source_label = "url"
     
-    # Check file extension
-    if not document.file_name.lower().endswith('.apk'):
+    # Extension check only if we have a concrete name
+    if original_name and not original_name.lower().endswith('.apk'):
         await update.message.reply_text("الملف يجب أن يكون بصيغة APK.")
         return UPLOAD_APK
     
-    # Check file size
-    if document.file_size > MAX_FILE_SIZE:
+    # Size check for telegram document (URL size will be validated after download)
+    if document and document.file_size > MAX_FILE_SIZE:
         await update.message.reply_text(f"حجم الملف كبير جداً. الحد الأقصى: {MAX_FILE_SIZE // (1024*1024)}MB")
         return UPLOAD_APK
     
@@ -352,12 +370,15 @@ async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYP
         # Send progress message
         progress_msg = await update.message.reply_text("🔄 جاري تحميل الملف...")
         
-        # Download file
-        file = await context.bot.get_file(document.file_id)
-        temp_path = TEMP_DIR / f"temp_{document.file_id}.apk"
-        
-        # Download with progress tracking
-        await download_file_with_progress(file.file_path, temp_path, progress_msg, context.bot, update.effective_chat.id)
+        # Download to temp
+        if document:
+            file = await context.bot.get_file(document.file_id)
+            temp_path = TEMP_DIR / f"temp_{document.file_id}.apk"
+            await download_file_with_progress(file.file_path, temp_path, progress_msg, context.bot, update.effective_chat.id)
+        else:
+            # From URL
+            temp_path = TEMP_DIR / f"temp_url_{hashlib.sha256(text_msg.encode()).hexdigest()[:8]}.apk"
+            await download_file_with_progress(text_msg, temp_path, progress_msg, context.bot, update.effective_chat.id)
         
         # Validate APK
         await progress_msg.edit_text("🔍 جاري فحص ملف APK...")
@@ -377,7 +398,7 @@ async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYP
         file_info = await SecureFileManager.save_uploaded_file(
             str(temp_path), 
             update.effective_user.id, 
-            document.file_name
+            original_name or "upload.apk"
         )
         
         # Store in session
@@ -396,7 +417,7 @@ async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYP
         # Show file info and ask for parameters
         info_text = (
             f"✅ تم رفع الملف بنجاح!\n\n"
-            f"📱 اسم التطبيق: {document.file_name}\n"
+            f"📱 اسم التطبيق: {file_info.file_name}\n"
             f"📏 حجم الملف: {file_info.file_size / (1024*1024):.2f} MB\n"
             f"🔐 المعرف: {file_info.file_id}\n"
             f"📊 عدد الملفات: {metadata.get('total_files', 'غير معروف')}\n"
@@ -415,6 +436,10 @@ async def handle_uploaded_file(update: Update, context: ContextTypes.DEFAULT_TYP
         
     except Exception as e:
         logger.error(f"Error handling uploaded file: {e}")
+        # Friendly guidance if Telegram size limit blocks download
+        if "File is too big" in str(e):
+            await update.message.reply_text("❌ الملف أكبر من حد تيليجرام. أرسل رابط تنزيل مباشر (http/https) للـ APK وسنتولى تنزيله ومعالجته هنا.")
+            return UPLOAD_APK
         await update.message.reply_text(f"❌ خطأ في معالجة الملف: {str(e)}")
         return UPLOAD_APK
 
