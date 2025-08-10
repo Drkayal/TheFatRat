@@ -1019,3 +1019,5 @@ INFO:     Finished server process [37986]
 INFO:     Started server process [39866]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:59894 - "GET /tasks/948973f7-upload_apk HTTP/1.1" 404 Not Found
