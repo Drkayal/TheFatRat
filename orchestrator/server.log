@@ -2,3 +2,7 @@ INFO:     Started server process [39932]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+Sun Aug 10 06:27:55 AM UTC 2025: Checking server status
+Sun Aug 10 06:27:59 AM UTC 2025: Server is running and monitoring
+Sun Aug 10 06:28:02 AM UTC 2025: Ready for bot testing
+Sun Aug 10 06:28:04 AM UTC 2025: Monitoring system status...
