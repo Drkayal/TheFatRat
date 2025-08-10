@@ -763,6 +763,12 @@ async def run_upload_apk_task(task_id: str, base: Path, params: Dict[str, str]):
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
             t.logs["build"] = str(build_log)
+        # Persist running status
+        if DB_ENABLED and DB:
+            try:
+                DB.update_task_status(task_id, "running")
+            except Exception:
+                pass
         
         # Log start
         with build_log.open("w") as log:
@@ -1497,6 +1503,12 @@ def _finalize_task(t: Task, base: Path, succeeded: bool, err: Optional[str] = No
         status["duration_sec"] = duration
     _write_file(base / "logs" / "status.json", json.dumps(status, indent=2))
     _audit("finished", t, {"succeeded": succeeded, "duration_sec": duration, "error": err, "artifacts": [a.name for a in artifacts]})
+    # Persist completion in DB (best-effort)
+    if DB_ENABLED and DB:
+        try:
+            DB.update_task_status(t.id, "completed" if succeeded else "failed", success=succeeded, error_message=err, output_files=[a.path for a in artifacts])
+        except Exception:
+            pass
 
 
 # Background runners for three kinds
@@ -1880,6 +1892,19 @@ def create_task(req: CreateTaskRequest):
     if req.kind not in ("payload", "listener", "android", "winexe", "pdf", "office", "deb", "autorun", "postex", "upload_apk"):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
+    # Persist creation in DB (best-effort)
+    if DB_ENABLED and DB:
+        try:
+            DB.record_task_execution(TaskExecution(
+                task_id=t.id,
+                task_kind=t.kind,
+                user_id=None,
+                parameters=t.params,
+                status="created",
+                created_timestamp=datetime.utcnow(),
+            ))
+        except Exception:
+            pass
     # seed defaults
     if req.kind == "android":
         # copy a sample APK if none provided
