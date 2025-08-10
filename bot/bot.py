@@ -43,6 +43,7 @@ OWNER_ID = int(os.environ.get("TELEGRAM_OWNER_ID", "0"))
 # Phase 0 flags
 REQUIRE_OWNER_ID = os.environ.get("REQUIRE_OWNER_ID", "false").lower() == "true"
 ORCH_AUTH_TOKEN = os.environ.get("ORCH_AUTH_TOKEN", "")
+ENABLE_HTTP_ARTIFACTS = os.environ.get("ENABLE_HTTP_ARTIFACTS", "false").lower() == "true"
 
 # File upload configuration
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
@@ -720,11 +721,28 @@ async def poll_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE, sess
                     artifacts = arts.json()
                     if artifacts:
                         for a in artifacts:
-                            p = a["path"]
                             name = a["name"]
+                            path_or_url = a["path"]
                             try:
-                                with open(p, "rb") as f:
-                                    await context.bot.send_document(chat_id, document=InputFile(f, filename=name), caption="الملف الناتج")
+                                if ENABLE_HTTP_ARTIFACTS and path_or_url.startswith("/tasks/"):
+                                    # Download over HTTP
+                                    url = f"{ORCH_URL}{path_or_url}"
+                                    async with client.stream("GET", url) as resp:
+                                        resp.raise_for_status()
+                                        tmpf = TEMP_DIR / f"{sess.task_id}_{name}"
+                                        async with aiofiles.open(tmpf, "wb") as f:
+                                            async for chunk in resp.aiter_bytes():
+                                                await f.write(chunk)
+                                    async with aiofiles.open(tmpf, "rb") as f:
+                                        await context.bot.send_document(chat_id, document=InputFile(tmpf.open("rb"), filename=name), caption="الملف الناتج")
+                                    try:
+                                        tmpf.unlink()
+                                    except Exception:
+                                        pass
+                                else:
+                                    # Legacy local path
+                                    with open(path_or_url, "rb") as f:
+                                        await context.bot.send_document(chat_id, document=InputFile(f, filename=name), caption="الملف الناتج")
                             except Exception as e:
                                 await context.bot.send_message(chat_id, f"تعذّر إرسال {name}: {e}")
                 else:

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any, Callable
 
 from fastapi import FastAPI, HTTPException, File, UploadFile, BackgroundTasks, Depends, Request
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from hashlib import sha256
 
@@ -1906,6 +1907,13 @@ def list_artifacts(task_id: str):
     t = tasks.get(task_id)
     if not t:
         raise HTTPException(status_code=404, detail="Not found")
+    if ENABLE_HTTP_ARTIFACTS:
+        # Return sanitized list with URL path instead of filesystem path
+        sanitized: List[Artifact] = []
+        for a in t.artifacts:
+            url_path = f"/tasks/{task_id}/artifacts/{a.name}/download"
+            sanitized.append(Artifact(name=a.name, path=url_path, size_bytes=a.size_bytes, sha256=a.sha256))
+        return sanitized
     return t.artifacts
 
 
@@ -2059,6 +2067,31 @@ ENV_CHECKS = run_env_checks()
 @app.get("/env")
 def env_status():
     return {"env": {k: {kk: vv for kk, vv in v.items() if kk in ("found", "path", "info")} for k, v in ENV_CHECKS.items() if k != "flags"}, "flags": ENV_CHECKS.get("flags", {})}
+
+@app.get("/tasks/{task_id}/artifacts/{artifact_name}/download", dependencies=AUTH_DEPS)
+def download_artifact(task_id: str, artifact_name: str):
+    t = tasks.get(task_id)
+    if not t:
+        raise HTTPException(status_code=404, detail="Not found")
+    # Find artifact by name
+    target: Optional[Artifact] = None
+    for a in t.artifacts:
+        if a.name == artifact_name:
+            target = a
+            break
+    if not target:
+        raise HTTPException(status_code=404, detail="Artifact not found")
+    # Ensure path resolves under expected task output directory
+    base_out = TASKS_ROOT / t.date / t.id / "output"
+    p = Path(target.path)
+    try:
+        rp = p if p.is_absolute() else (base_out / p)
+        real = rp.resolve(strict=True)
+        if not str(real).startswith(str(base_out.resolve())):
+            raise HTTPException(status_code=403, detail="Forbidden")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File missing")
+    return FileResponse(path=str(real), filename=artifact_name, media_type="application/octet-stream")
 
 if __name__ == "__main__":
     import uvicorn
