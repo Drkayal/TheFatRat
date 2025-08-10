@@ -580,3 +580,19 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
 INFO:     127.0.0.1:33184 - "GET /tasks/6cea5a49-listener HTTP/1.1" 404 Not Found
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [20642]
+INFO:     Started server process [21776]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [21776]
+INFO:     Started server process [21950]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

