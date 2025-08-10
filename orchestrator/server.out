@@ -1192,3 +1192,36 @@ INFO:     Finished server process [44960]
 INFO:     Started server process [47535]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:48946 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48952 - "GET /tasks/7aada9fd-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48952 - "GET /tasks/7aada9fd-listener/artifacts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48952 - "GET /tasks/7aada9fd-listener/artifacts/handler.rc/download HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49546 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49560 - "GET /tasks/d0b56b18-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49560 - "GET /tasks/d0b56b18-upload_apk HTTP/1.1" 200 OK
+apktool build failed; retrying with --use-aapt2
+INFO:     127.0.0.1:49560 - "GET /tasks/d0b56b18-upload_apk HTTP/1.1" 200 OK
+Recompilation failed
+I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: libpng error: Not a PNG file
+W: ERROR: Failure processing PNG image /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res/drawable-mdpi-v4/ic_application.png
+W: libpng error: Not a PNG file
+W: ERROR: Failure processing PNG image /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res/drawable-hdpi-v4/ic_application.png
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_132746428310917893894267477025700814282.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL5999049708282641666.tmp, -e, /tmp/APKTOOL2360952076215405161.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res, -M, /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/AndroidManifest.xml]
+I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res/drawable-hdpi-v4/ic_application.png: error: failed to read PNG signature: file does not start with PNG signature.
+W: /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res/drawable-hdpi-v4/ic_application.png: error: file failed to compile.
+W: /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res/drawable-mdpi-v4/ic_application.png: error: failed to read PNG signature: file does not start with PNG signature.
+W: /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res/drawable-mdpi-v4/ic_application.png: error: file failed to compile.
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_58500796835773328218193501848360519109.tmp, compile, --dir, /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/res, --legacy, -o, /workspace/tasks/20250810/d0b56b18-upload_apk/injection_20250810_045317/extracted/build/resources.zip]
+INFO:     127.0.0.1:42590 - "GET /tasks/d0b56b18-upload_apk HTTP/1.1" 200 OK
