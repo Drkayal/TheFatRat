@@ -4,3 +4,569 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
 INFO:     127.0.0.1:33712 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53946 - "POST /tasks HTTP/1.1" 200 OK
+2025-08-10 07:04:10,408 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_070405_ccab26e6_base.apk
+2025-08-10 07:04:10,408 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410
+[2025-08-10 07:04:10] [INFO] Starting payload injection for: 20250810_070405_ccab26e6_base.apk
+[2025-08-10 07:04:10] [INFO] Created workspace: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410
+INFO:     127.0.0.1:53954 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53954 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:04:14,398 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:04:14,399 - MultiVectorInjector - INFO - Starting PNG repair process
+[2025-08-10 07:04:14] [INFO] APK extraction completed
+[2025-08-10 07:04:14] [INFO] Starting PNG repair process
+INFO:     127.0.0.1:53954 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:04:17,451 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/drawable-hdpi-v4/ic_application.png
+2025-08-10 07:04:20,449 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/drawable-mdpi-v4/ic_application.png
+2025-08-10 07:04:21,564 - MultiVectorInjector - INFO - Fixed 2 critical icons and 899 general PNGs
+2025-08-10 07:04:21,564 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:04:21,564 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:04:21,564 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+[2025-08-10 07:04:17] [INFO] Repaired icon with external tool: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/drawable-hdpi-v4/ic_application.png
+[2025-08-10 07:04:20] [INFO] Repaired icon with external tool: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/drawable-mdpi-v4/ic_application.png
+[2025-08-10 07:04:21] [INFO] Fixed 2 critical icons and 899 general PNGs
+[2025-08-10 07:04:21] [INFO] Manifest modifications completed
+[2025-08-10 07:04:21] [INFO] Starting APK rebuild process
+[2025-08-10 07:04:21] [INFO] Rebuild attempt 1: with aapt2
+[2025-08-10 07:04:21] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted -o /workspace/tasks/20250810/ab210f6b-upload_apk/temp/injected.apk --use-aapt2
+INFO:     127.0.0.1:44328 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:04:31,216 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml:1: error: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_57792042351469140898104775911045610004.tmp, link, -o, /tmp/APKTOOL1657475832736230789.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, -e, /tmp/APKTOOL2037935090947695117.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/build/resources.zip]
+2025-08-10 07:04:31,216 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:04:31,216 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+[2025-08-10 07:04:31] [ERROR] Command failed: I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml:1: error: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_57792042351469140898104775911045610004.tmp, link, -o, /tmp/APKTOOL1657475832736230789.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, -e, /tmp/APKTOOL2037935090947695117.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/build/resources.zip]
+[2025-08-10 07:04:31] [WARNING] Rebuild failed on attempt 1
+[2025-08-10 07:04:31] [INFO] Rebuild attempt 2: without aapt2
+[2025-08-10 07:04:31] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted -o /workspace/tasks/20250810/ab210f6b-upload_apk/temp/injected.apk
+[2025-08-10 07:04:35] [ERROR] Command failed: I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: warning: string 'alternates_for_ג' has no default translation.
+W: warning: string 'alternates_for_ד' has no default translation.
+W: warning: string 'alternates_for_ח' has no default translation.
+W: warning: string 'alternates_for_י' has no default translation.
+W: warning: string 'alternates_for_ך' has no default translation.
+W: warning: string 'alternates_for_כ' has no default translation.
+W: warning: string 'alternates_for_ל' has no default translation.
+W: warning: string 'alternates_for_ע' has no default translation.
+W: warning: string 'alternates_for_ף' has no default translation.
+W: warning: string 'alternates_for_ש' has no default translation.
+W: warning: string 'download_full' has no default translation.
+W: warning: string 'font_symbol_black' has no default translation.
+W: warning: string 'font_symbol_white' has no default translation.
+W: warning: string 'smiley0' has no default translation.
+W: warning: string 'smiley1' has no default translation.
+W: warning: string 'smiley10' has no default translation.
+W: warning: string 'smiley11' has no default translation.
+W: warning: string 'smiley12' has no default translation.
+W: warning: string 'smiley13' has no default translation.
+W: warning: string 'smiley14' has no default translation.
+W: warning: string 'smiley2' has no default translation.
+W: warning: string 'smiley3' has no default translation.
+W: warning: string 'smiley4' has no default translation.
+W: warning: string 'smiley5' has no default translation.
+W: warning: string 'smiley6' has no default translation.
+W: warning: string 'smiley7' has no default translation.
+W: warning: string 'smiley8' has no default translation.
+W: warning: string 'smiley9' has no default translation.
+W: warning: string 'twitter2' has no default translation.
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic_highcontrast.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyPreviewLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'symbolColorScheme' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_78078004641725896841963797546882832133.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL13618915320115516771.tmp, -e, /tmp/APKTOOL3787857051785043878.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res, -M, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml]2025-08-10 07:04:35,508 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.6.0
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: warning: string 'alternates_for_ג' has no default translation.
+W: warning: string 'alternates_for_ד' has no default translation.
+W: warning: string 'alternates_for_ח' has no default translation.
+W: warning: string 'alternates_for_י' has no default translation.
+W: warning: string 'alternates_for_ך' has no default translation.
+W: warning: string 'alternates_for_כ' has no default translation.
+W: warning: string 'alternates_for_ל' has no default translation.
+W: warning: string 'alternates_for_ע' has no default translation.
+W: warning: string 'alternates_for_ף' has no default translation.
+W: warning: string 'alternates_for_ש' has no default translation.
+W: warning: string 'download_full' has no default translation.
+W: warning: string 'font_symbol_black' has no default translation.
+W: warning: string 'font_symbol_white' has no default translation.
+W: warning: string 'smiley0' has no default translation.
+W: warning: string 'smiley1' has no default translation.
+W: warning: string 'smiley10' has no default translation.
+W: warning: string 'smiley11' has no default translation.
+W: warning: string 'smiley12' has no default translation.
+W: warning: string 'smiley13' has no default translation.
+W: warning: string 'smiley14' has no default translation.
+W: warning: string 'smiley2' has no default translation.
+W: warning: string 'smiley3' has no default translation.
+W: warning: string 'smiley4' has no default translation.
+W: warning: string 'smiley5' has no default translation.
+W: warning: string 'smiley6' has no default translation.
+W: warning: string 'smiley7' has no default translation.
+W: warning: string 'smiley8' has no default translation.
+W: warning: string 'smiley9' has no default translation.
+W: warning: string 'twitter2' has no default translation.
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic_highcontrast.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyPreviewLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'symbolColorScheme' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_78078004641725896841963797546882832133.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL13618915320115516771.tmp, -e, /tmp/APKTOOL3787857051785043878.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res, -M, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml]
+2025-08-10 07:04:35,508 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:04:35,508 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+
+[2025-08-10 07:04:35] [WARNING] Rebuild failed on attempt 2
+[2025-08-10 07:04:35] [INFO] Rebuild attempt 3: forcing all
+[2025-08-10 07:04:35] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted -o /workspace/tasks/20250810/ab210f6b-upload_apk/temp/injected.apk --force-all
+INFO:     127.0.0.1:40552 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
+[2025-08-10 07:04:40] [ERROR] Command failed: I: Using Apktool 2.6.0
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: warning: string 'alternates_for_ג' has no default translation.
+W: warning: string 'alternates_for_ד' has no default translation.
+W: warning: string 'alternates_for_ח' has no default translation.
+W: warning: string 'alternates_for_י' has no default translation.
+W: warning: string 'alternates_for_ך' has no default translation.
+W: warning: string 'alternates_for_כ' has no default translation.
+W: warning: string 'alternates_for_ל' has no default translation.
+W: warning: string 'alternates_for_ע' has no default translation.
+W: warning: string 'alternates_for_ף' has no default translation.
+W: warning: string 'alternates_for_ש' has no default translation.
+W: warning: string 'download_full' has no default translation.
+W: warning: string 'font_symbol_black' has no default translation.
+W: warning: string 'font_symbol_white' has no default translation.
+W: warning: string 'smiley0' has no default translation.
+W: warning: string 'smiley1' has no default translation.
+W: warning: string 'smiley10' has no default translation.
+W: warning: string 'smiley11' has no default translation.
+W: warning: string 'smiley12' has no default translation.
+W: warning: string 'smiley13' has no default translation.
+W: warning: string 'smiley14' has no default translation.
+W: warning: string 'smiley2' has no default translation.
+W: warning: string 'smiley3' has no default translation.
+W: warning: string 'smiley4' has no default translation.
+W: warning: string 'smiley5' has no default translation.
+W: warning: string 'smiley6' has no default translation.
+W: warning: string 'smiley7' has no default translation.
+W: warning: string 'smiley8' has no default translation.
+W: warning: string 'smiley9' has no default translation.
+W: warning: string 'twitter2' has no default translation.
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic_highcontrast.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyPreviewLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'symbolColorScheme' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_69276513741239732048127485333361516195.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL2663000260499685990.tmp, -e, /tmp/APKTOOL14049420187009855042.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res, -M, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml]2025-08-10 07:04:40,681 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.6.0
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: warning: string 'alternates_for_ג' has no default translation.
+W: warning: string 'alternates_for_ד' has no default translation.
+W: warning: string 'alternates_for_ח' has no default translation.
+W: warning: string 'alternates_for_י' has no default translation.
+W: warning: string 'alternates_for_ך' has no default translation.
+W: warning: string 'alternates_for_כ' has no default translation.
+W: warning: string 'alternates_for_ל' has no default translation.
+W: warning: string 'alternates_for_ע' has no default translation.
+W: warning: string 'alternates_for_ף' has no default translation.
+W: warning: string 'alternates_for_ש' has no default translation.
+W: warning: string 'download_full' has no default translation.
+W: warning: string 'font_symbol_black' has no default translation.
+W: warning: string 'font_symbol_white' has no default translation.
+W: warning: string 'smiley0' has no default translation.
+W: warning: string 'smiley1' has no default translation.
+W: warning: string 'smiley10' has no default translation.
+W: warning: string 'smiley11' has no default translation.
+W: warning: string 'smiley12' has no default translation.
+W: warning: string 'smiley13' has no default translation.
+W: warning: string 'smiley14' has no default translation.
+W: warning: string 'smiley2' has no default translation.
+W: warning: string 'smiley3' has no default translation.
+W: warning: string 'smiley4' has no default translation.
+W: warning: string 'smiley5' has no default translation.
+W: warning: string 'smiley6' has no default translation.
+W: warning: string 'smiley7' has no default translation.
+W: warning: string 'smiley8' has no default translation.
+W: warning: string 'smiley9' has no default translation.
+W: warning: string 'twitter2' has no default translation.
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_basic_highcontrast.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_gingerbread.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_honeycomb.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_htc.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyPreviewLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_ics_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_iphone.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_silicon_light.xml:2: error: No resource identifier found for attribute 'keyTextStyle' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_normal.xml:2: error: No resource identifier found for attribute 'symbolColorScheme' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/input_stone_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyTextColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'popupLayout' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup.xml:4: error: No resource identifier found for attribute 'shadowColor' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyBackground' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'keyHysteresisDistance' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+W: /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res/layout/keyboard_popup_iphone.xml:4: error: No resource identifier found for attribute 'verticalCorrection' in package 'inputmethod.latin.perfectkeyboarg'
+W: 
+brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_69276513741239732048127485333361516195.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-version-vectors, -F, /tmp/APKTOOL2663000260499685990.tmp, -e, /tmp/APKTOOL14049420187009855042.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, -S, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/res, -M, /workspace/tasks/20250810/ab210f6b-upload_apk/injection_20250810_070410/extracted/AndroidManifest.xml]
+2025-08-10 07:04:40,681 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:04:40,682 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:04:40,727 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+
+[2025-08-10 07:04:40] [WARNING] Rebuild failed on attempt 3
+[2025-08-10 07:04:40] [ERROR] Rebuild failed after 3 attempts
+[2025-08-10 07:04:40] [INFO] Temporary workspace cleaned up
+INFO:     127.0.0.1:37244 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
