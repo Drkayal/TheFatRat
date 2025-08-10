@@ -571,3 +571,69 @@ brut.androlib.AndrolibException: brut.common.BrutException: could not exec (exit
 [2025-08-10 07:04:40] [INFO] Temporary workspace cleaned up
 INFO:     127.0.0.1:37244 - "GET /tasks/ab210f6b-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:53132 - "GET /tasks/ab210f6b-upload_apk/logs/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53650 - "POST /tasks HTTP/1.1" 200 OK
+2025-08-10 07:11:26,467 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_071121_6b628b97_(كيبورد سِســِيف).apk
+2025-08-10 07:11:26,467 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_071121_6b628b97_(كيبورد سِســِيف).apk
+2025-08-10 07:11:26,467 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/323aabe5-upload_apk/injection_20250810_071126
+2025-08-10 07:11:26,467 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/323aabe5-upload_apk/injection_20250810_071126
+[2025-08-10 07:11:26] [INFO] Starting payload injection for: 20250810_071121_6b628b97_(كيبورد سِســِيف).apk
+[2025-08-10 07:11:26] [INFO] Created workspace: /workspace/tasks/20250810/323aabe5-upload_apk/injection_20250810_071126
+INFO:     127.0.0.1:53658 - "GET /tasks/323aabe5-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:11:26,628 - MultiVectorInjector - ERROR - Error in inject_payload: APK extraction failed: Exception in thread "main" java.lang.ClassCastException: class brut.androlib.res.data.value.ResStringValue cannot be cast to class brut.androlib.res.data.value.ResIntValue (brut.androlib.res.data.value.ResStringValue and brut.androlib.res.data.value.ResIntValue are in unnamed module of loader 'app')
+	at brut.androlib.res.data.value.ResAttr.factory(ResAttr.java:69)
+	at brut.androlib.res.data.value.ResValueFactory.bagFactory(ResValueFactory.java:91)
+	at brut.androlib.res.decoder.ARSCDecoder.readComplexEntry(ARSCDecoder.java:356)
+	at brut.androlib.res.decoder.ARSCDecoder.readEntryData(ARSCDecoder.java:285)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableType(ARSCDecoder.java:261)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableTypeSpec(ARSCDecoder.java:184)
+	at brut.androlib.res.decoder.ARSCDecoder.readTablePackage(ARSCDecoder.java:135)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableHeader(ARSCDecoder.java:84)
+	at brut.androlib.res.decoder.ARSCDecoder.decode(ARSCDecoder.java:50)
+	at brut.androlib.res.AndrolibResources.getResPackagesFromApk(AndrolibResources.java:783)
+	at brut.androlib.res.AndrolibResources.loadMainPkg(AndrolibResources.java:64)
+	at brut.androlib.res.AndrolibResources.getResTable(AndrolibResources.java:56)
+	at brut.androlib.Androlib.getResTable(Androlib.java:69)
+	at brut.androlib.ApkDecoder.getResTable(ApkDecoder.java:247)
+	at brut.androlib.ApkDecoder.decode(ApkDecoder.java:109)
+	at brut.apktool.Main.cmdDecode(Main.java:175)
+	at brut.apktool.Main.main(Main.java:78)
+
+2025-08-10 07:11:26,628 - MultiVectorInjector - ERROR - Error in inject_payload: APK extraction failed: Exception in thread "main" java.lang.ClassCastException: class brut.androlib.res.data.value.ResStringValue cannot be cast to class brut.androlib.res.data.value.ResIntValue (brut.androlib.res.data.value.ResStringValue and brut.androlib.res.data.value.ResIntValue are in unnamed module of loader 'app')
+	at brut.androlib.res.data.value.ResAttr.factory(ResAttr.java:69)
+	at brut.androlib.res.data.value.ResValueFactory.bagFactory(ResValueFactory.java:91)
+	at brut.androlib.res.decoder.ARSCDecoder.readComplexEntry(ARSCDecoder.java:356)
+	at brut.androlib.res.decoder.ARSCDecoder.readEntryData(ARSCDecoder.java:285)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableType(ARSCDecoder.java:261)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableTypeSpec(ARSCDecoder.java:184)
+	at brut.androlib.res.decoder.ARSCDecoder.readTablePackage(ARSCDecoder.java:135)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableHeader(ARSCDecoder.java:84)
+	at brut.androlib.res.decoder.ARSCDecoder.decode(ARSCDecoder.java:50)
+	at brut.androlib.res.AndrolibResources.getResPackagesFromApk(AndrolibResources.java:783)
+	at brut.androlib.res.AndrolibResources.loadMainPkg(AndrolibResources.java:64)
+	at brut.androlib.res.AndrolibResources.getResTable(AndrolibResources.java:56)
+	at brut.androlib.Androlib.getResTable(Androlib.java:69)
+	at brut.androlib.ApkDecoder.getResTable(ApkDecoder.java:247)
+	at brut.androlib.ApkDecoder.decode(ApkDecoder.java:109)
+	at brut.apktool.Main.cmdDecode(Main.java:175)
+	at brut.apktool.Main.main(Main.java:78)
+
+[2025-08-10 07:11:26] [ERROR] Error in inject_payload: APK extraction failed: Exception in thread "main" java.lang.ClassCastException: class brut.androlib.res.data.value.ResStringValue cannot be cast to class brut.androlib.res.data.value.ResIntValue (brut.androlib.res.data.value.ResStringValue and brut.androlib.res.data.value.ResIntValue are in unnamed module of loader 'app')
+	at brut.androlib.res.data.value.ResAttr.factory(ResAttr.java:69)
+	at brut.androlib.res.data.value.ResValueFactory.bagFactory(ResValueFactory.java:91)
+	at brut.androlib.res.decoder.ARSCDecoder.readComplexEntry(ARSCDecoder.java:356)
+	at brut.androlib.res.decoder.ARSCDecoder.readEntryData(ARSCDecoder.java:285)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableType(ARSCDecoder.java:261)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableTypeSpec(ARSCDecoder.java:184)
+	at brut.androlib.res.decoder.ARSCDecoder.readTablePackage(ARSCDecoder.java:135)
+	at brut.androlib.res.decoder.ARSCDecoder.readTableHeader(ARSCDecoder.java:84)
+	at brut.androlib.res.decoder.ARSCDecoder.decode(ARSCDecoder.java:50)
+	at brut.androlib.res.AndrolibResources.getResPackagesFromApk(AndrolibResources.java:783)
+	at brut.androlib.res.AndrolibResources.loadMainPkg(AndrolibResources.java:64)
+	at brut.androlib.res.AndrolibResources.getResTable(AndrolibResources.java:56)
+	at brut.androlib.Androlib.getResTable(Androlib.java:69)
+	at brut.androlib.ApkDecoder.getResTable(ApkDecoder.java:247)
+	at brut.androlib.ApkDecoder.decode(ApkDecoder.java:109)
+	at brut.apktool.Main.cmdDecode(Main.java:175)
+	at brut.apktool.Main.main(Main.java:78)
+
+INFO:     127.0.0.1:53658 - "GET /tasks/323aabe5-upload_apk HTTP/1.1" 200 OK
