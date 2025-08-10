@@ -50,7 +50,7 @@ TEMP_ROOT = WORKSPACE / "temp"
 UPLOADS_ROOT.mkdir(exist_ok=True)
 TEMP_ROOT.mkdir(exist_ok=True)
 
-DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "orchestrator-tools:latest")
+DOCKER_IMAGE = os.environ.get("ORCH_DOCKER_IMAGE", "metasploitframework/metasploit-framework:latest")
 USE_DOCKER = os.environ.get("ORCH_USE_DOCKER", "true").lower() == "true"
 
 AUDIT_LOG = WORKSPACE / "logs" / "audit.jsonl"
@@ -1538,9 +1538,10 @@ def _spawn_container_sh(cmd: str, log_path: Path, cwd: Optional[Path] = None, en
     task_home = cwd if cwd else Path.home()
     env = os.environ.copy()
     env["HOME"] = str(task_home)
+    wrapped_cmd = f"cd /workspace && {cmd}"
     with log_path.open("w") as lf:
         proc = subprocess.Popen(
-            ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", cmd],
+            ["docker", "run", "--rm", "-v", f"{task_home}:/workspace", "-v", f"{log_path.parent}:/logs", DOCKER_IMAGE, "bash", "-lc", wrapped_cmd],
             stdout=lf, stderr=subprocess.STDOUT, cwd=str(cwd) if cwd else None, env=env
         )
         return_code = proc.wait()
@@ -1645,7 +1646,16 @@ exploit -j -z
 """.strip()
     _write_file(rc_path, rc_content)
     if not msfconsole_path and not USE_DOCKER:
-        # Generate handler only and mark success
+        # Switch to docker path automatically if available by flag
+        if os.environ.get("ORCH_ALLOW_DOCKER_FALLBACK", "true").lower() == "true":
+            with locks[task_id]:
+                t.state = TaskStatus.RUNNING
+                t.started_at = time.time()
+                t.logs["run"] = str(run_log)
+            rc = _spawn_container_sh("msfconsole -qx 'resource output/handler.rc; sleep 2; jobs; exit -y'", run_log, base)
+            _finalize_task(t, base, succeeded=(rc == 0), err=None if rc == 0 else f"msfconsole(docker) rc={rc}")
+            return
+        # Otherwise: generate handler and mark success for manual use
         _write_file(run_log, "msfconsole not found; generated handler.rc for manual use.\n")
         with locks[task_id]:
             t.state = TaskStatus.RUNNING
