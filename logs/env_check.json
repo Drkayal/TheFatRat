@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-08-10T01:46:08.581001",
+  "java": {
+    "found": true,
+    "info": "openjdk version \"21.0.7\" 2025-04-15 | OpenJDK Runtime Environment (build 21.0.7+6-Ubuntu-0ubuntu125.04)"
+  },
+  "aapt": {
+    "found": true,
+    "path": "/workspace/tools/android-sdk/aapt"
+  },
+  "aapt2": {
+    "found": true,
+    "path": "/workspace/tools/android-sdk/aapt2"
+  },
+  "zipalign": {
+    "found": true,
+    "path": "/workspace/tools/android-sdk/zipalign"
+  },
+  "apksigner": {
+    "found": true,
+    "path": "/workspace/tools/android-sdk/apksigner",
+    "info": "embedded"
+  },
+  "apktool": {
+    "found": true,
+    "path": "/workspace/tools/apktool/apktool.jar"
+  },
+  "flags": {
+    "ENABLE_APKSIGNER": false,
+    "ENABLE_HTTP_ARTIFACTS": true,
+    "ORCH_AUTH_TOKEN_REQUIRED": false,
+    "ENABLE_FALLBACK_BACKDOOR_APK": false
+  }
+}

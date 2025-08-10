@@ -1,0 +1,8 @@
+INFO:     Will watch for changes in these directories: ['/workspace/orchestrator']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [9765] using WatchFiles
+INFO:     Started server process [9768]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:43722 - "GET /health HTTP/1.1" 200 OK

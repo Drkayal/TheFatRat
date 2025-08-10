@@ -1,0 +1,10 @@
+2025-08-10 01:47:25,447 INFO BOT-ENV: owner_set=True, flags={'REQUIRE_OWNER_ID': True, 'ORCH_AUTH_TOKEN': False}, orch_url=http://127.0.0.1:8000
+/workspace/bot/bot.py:816: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  conv = ConversationHandler(
+2025-08-10 01:47:25,458 INFO Starting polling...
+2025-08-10 01:47:25,715 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getMe "HTTP/1.1 200 OK"
+2025-08-10 01:47:25,798 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/deleteWebhook "HTTP/1.1 200 OK"
+2025-08-10 01:47:25,799 INFO Application started
+2025-08-10 01:47:36,055 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 01:47:46,140 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 01:47:56,224 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"

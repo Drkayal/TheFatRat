@@ -3,7 +3,12 @@ import json
 import os
 import logging
 import hashlib
-import magic
+try:
+    import magic  # libmagic-based
+    _USE_MAGIC = True
+except Exception:
+    magic = None
+    _USE_MAGIC = False
 import zipfile
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -12,7 +17,6 @@ from pathlib import Path
 import aiofiles
 import aiohttp
 from datetime import datetime, timedelta
-import ipaddress
 
 import httpx
 from dotenv import load_dotenv
@@ -137,29 +141,37 @@ class APKValidator:
                 return result
             
             # Check MIME type
-            mime_type = magic.from_file(str(file_path), mime=True)
-            if mime_type not in ['application/vnd.android.package-archive', 'application/zip']:
-                result["errors"].append(f"Invalid MIME type: {mime_type}")
-                return result
+            mime_type = None
+            if _USE_MAGIC:
+                try:
+                    mime_type = magic.from_file(str(file_path), mime=True)
+                except Exception:
+                    mime_type = None
+            if not mime_type:
+                try:
+                    import filetype
+                    kind = filetype.guess(str(file_path))
+                    if kind:
+                        mime_type = kind.mime
+                except Exception:
+                    mime_type = None
+            if mime_type not in ['application/vnd.android.package-archive', 'application/zip', None]:
+                result["warnings"].append(f"Unexpected MIME type: {mime_type}")
             
             # Validate ZIP structure
             try:
                 with zipfile.ZipFile(file_path, 'r') as apk_zip:
                     file_list = apk_zip.namelist()
-                    
                     # Check required APK files
                     required_files = ['AndroidManifest.xml', 'classes.dex']
                     missing_files = [f for f in required_files if f not in file_list]
-                    
                     if missing_files:
                         result["errors"].append(f"Missing required files: {missing_files}")
                         return result
-                    
                     # Extract basic info
                     result["info"]["file_count"] = len(file_list)
                     result["info"]["has_native_libs"] = any(f.startswith('lib/') for f in file_list)
                     result["info"]["has_resources"] = 'resources.arsc' in file_list
-                    
             except zipfile.BadZipFile:
                 result["errors"].append("Corrupted ZIP/APK file")
                 return result
@@ -248,7 +260,7 @@ class SecureFileManager:
         
         # Get file info
         file_size = secure_path.stat().st_size
-        mime_type = magic.from_file(str(secure_path), mime=True)
+        mime_type = magic.from_file(str(secure_path), mime=True) if _USE_MAGIC else "application/octet-stream"
         
         return FileUploadInfo(
             file_id=file_hash,
