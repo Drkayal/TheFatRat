@@ -1982,7 +1982,7 @@ def create_task(req: CreateTaskRequest):
         raise HTTPException(status_code=400, detail="Unsupported kind")
     t, base = _prepare_task(req.kind, req.params)
     # Persist creation in DB (best-effort)
-    if DB_ENABLED and DB:
+    if 'DB_ENABLED' in globals() and globals().get('DB_ENABLED') and globals().get('DB'):
         try:
             DB.record_task_execution(TaskExecution(
                 task_id=t.id,

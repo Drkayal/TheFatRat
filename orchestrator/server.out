@@ -375,3 +375,19 @@ Traceback (most recent call last):
     if DB_ENABLED and DB:
        ^^^^^^^^^^
 NameError: name 'DB_ENABLED' is not defined
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [15188]
+INFO:     Started server process [16507]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16507]
+INFO:     Started server process [16735]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
