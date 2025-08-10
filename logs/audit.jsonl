@@ -1,0 +1,1 @@
+{"ts": 1754791119.9045663, "event": "submitted", "id": "c9f63869-listener", "date": "20250810", "kind": "listener", "state": "SUBMITTED", "params": {"lhost": "0.0.0.0", "lport": "4444", "payload": "windows/meterpreter/reverse_tcp"}}
