@@ -1,0 +1,53 @@
+{
+  "id": "323aabe5-upload_apk",
+  "date": "20250810",
+  "kind": "upload_apk",
+  "state": "FAILED",
+  "created_at": 1754809885.6900275,
+  "started_at": null,
+  "finished_at": 1754809886.628401,
+  "params": {
+    "mode": "upload_apk",
+    "upload_file_path": "/workspace/uploads/20250810_071121_6b628b97_(\u0643\u064a\u0628\u0648\u0631\u062f \u0633\u0650\u0633\u0640\u0640\u0650\u064a\u0641).apk",
+    "file_info": {
+      "file_id": "6b628b97",
+      "original_name": "(\u0643\u064a\u0628\u0648\u0631\u062f \u0633\u0650\u0633\u0640\u0640\u0650\u064a\u0641).apk",
+      "file_size": 5205387,
+      "checksum": "4a6c79293d8c13b0b3e9e14253c8bf11a118548e389c73149b030c13d261a38a",
+      "metadata": {
+        "total_files": 1193,
+        "compressed_size": 5022161,
+        "uncompressed_size": 7800407,
+        "has_assets": true,
+        "has_res": true,
+        "has_meta_inf": true,
+        "dex_count": 1,
+        "native_architectures": [
+          "x86",
+          "mips",
+          "armeabi",
+          "armeabi-v7a"
+        ]
+      },
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "info": {
+          "file_count": 1193,
+          "has_native_libs": true,
+          "has_resources": true,
+          "checksum": "4a6c79293d8c13b0b3e9e14253c8bf11a118548e389c73149b030c13d261a38a",
+          "file_size": 5205387
+        }
+      }
+    },
+    "output_name": "(\u0643\u064a\u0628\u0648\u0631\u062f \u0633\u0650\u0633\u0640\u0640\u0650\u064a\u0641)_backdoored",
+    "payload": "android/meterpreter/reverse_tcp"
+  },
+  "artifacts": [],
+  "logs": {
+    "build": "/workspace/tasks/20250810/323aabe5-upload_apk/logs/build.log"
+  },
+  "error": "Payload injection failed"
+}
