@@ -862,3 +862,503 @@ brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not
 [2025-08-10 07:29:47] [INFO] Temporary workspace cleaned up
 INFO:     127.0.0.1:37554 - "GET /tasks/e3b5d06a-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:42066 - "GET /tasks/e3b5d06a-upload_apk/logs/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48276 - "POST /tasks HTTP/1.1" 200 OK
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_073725_15504f8a_base.apk
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_073725_15504f8a_base.apk
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_073725_15504f8a_base.apk
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Starting payload injection for: 20250810_073725_15504f8a_base.apk
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732
+2025-08-10 07:37:32,457 - MultiVectorInjector - INFO - Created workspace: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732
+[2025-08-10 07:37:32] [INFO] Starting payload injection for: 20250810_073725_15504f8a_base.apk
+[2025-08-10 07:37:32] [INFO] Created workspace: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732
+INFO:     127.0.0.1:37922 - "GET /tasks/fcc16468-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37922 - "GET /tasks/fcc16468-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - APK extraction completed
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:37:35,426 - MultiVectorInjector - INFO - Starting PNG repair process
+2025-08-10 07:37:38,445 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-hdpi-v4/ic_application.png
+2025-08-10 07:37:38,445 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-hdpi-v4/ic_application.png
+2025-08-10 07:37:38,445 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-hdpi-v4/ic_application.png
+2025-08-10 07:37:38,445 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-hdpi-v4/ic_application.png
+[2025-08-10 07:37:35] [INFO] APK extraction completed
+[2025-08-10 07:37:35] [INFO] Starting PNG repair process
+[2025-08-10 07:37:38] [INFO] Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-hdpi-v4/ic_application.png
+INFO:     127.0.0.1:37922 - "GET /tasks/fcc16468-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:37:41,440 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-mdpi-v4/ic_application.png
+2025-08-10 07:37:41,440 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-mdpi-v4/ic_application.png
+2025-08-10 07:37:41,440 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-mdpi-v4/ic_application.png
+2025-08-10 07:37:41,440 - MultiVectorInjector - INFO - Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-mdpi-v4/ic_application.png
+2025-08-10 07:37:42,556 - MultiVectorInjector - INFO - Fixed 2 critical icons and 899 general PNGs
+2025-08-10 07:37:42,556 - MultiVectorInjector - INFO - Fixed 2 critical icons and 899 general PNGs
+2025-08-10 07:37:42,556 - MultiVectorInjector - INFO - Fixed 2 critical icons and 899 general PNGs
+2025-08-10 07:37:42,556 - MultiVectorInjector - INFO - Fixed 2 critical icons and 899 general PNGs
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Manifest modifications completed
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Starting APK rebuild process
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+2025-08-10 07:37:42,557 - MultiVectorInjector - INFO - Rebuild attempt 1: with aapt2
+[2025-08-10 07:37:41] [INFO] Repaired icon with external tool: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/drawable-mdpi-v4/ic_application.png
+[2025-08-10 07:37:42] [INFO] Fixed 2 critical icons and 899 general PNGs
+[2025-08-10 07:37:42] [INFO] Manifest modifications completed
+[2025-08-10 07:37:42] [INFO] Starting APK rebuild process
+[2025-08-10 07:37:42] [INFO] Rebuild attempt 1: with aapt2
+[2025-08-10 07:37:42] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted -o /workspace/tasks/20250810/fcc16468-upload_apk/temp/injected.apk --use-aapt2
+INFO:     127.0.0.1:36288 - "GET /tasks/fcc16468-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:37:52,362 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_89099453151871139479002663929689231932.tmp, link, -o, /tmp/APKTOOL9170971171346350005.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL4362600129754256911.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:37:52,362 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_89099453151871139479002663929689231932.tmp, link, -o, /tmp/APKTOOL9170971171346350005.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL4362600129754256911.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:37:52,362 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_89099453151871139479002663929689231932.tmp, link, -o, /tmp/APKTOOL9170971171346350005.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL4362600129754256911.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:37:52,362 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_89099453151871139479002663929689231932.tmp, link, -o, /tmp/APKTOOL9170971171346350005.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL4362600129754256911.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:37:52,362 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:37:52,362 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:37:52,362 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:37:52,362 - MultiVectorInjector - WARNING - Rebuild failed on attempt 1
+2025-08-10 07:37:52,362 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+2025-08-10 07:37:52,362 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+2025-08-10 07:37:52,362 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+2025-08-10 07:37:52,362 - MultiVectorInjector - INFO - Rebuild attempt 2: without aapt2
+[2025-08-10 07:37:52] [ERROR] Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_89099453151871139479002663929689231932.tmp, link, -o, /tmp/APKTOOL9170971171346350005.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL4362600129754256911.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+[2025-08-10 07:37:52] [WARNING] Rebuild failed on attempt 1
+[2025-08-10 07:37:52] [INFO] Rebuild attempt 2: without aapt2
+[2025-08-10 07:37:52] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted -o /workspace/tasks/20250810/fcc16468-upload_apk/temp/injected.apk
+[2025-08-10 07:38:01] [ERROR] Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_95782290657543963151221534017730787858.tmp, link, -o, /tmp/APKTOOL9545059229146515272.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL18302410619528051388.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]2025-08-10 07:38:01,349 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_95782290657543963151221534017730787858.tmp, link, -o, /tmp/APKTOOL9545059229146515272.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL18302410619528051388.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:01,349 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_95782290657543963151221534017730787858.tmp, link, -o, /tmp/APKTOOL9545059229146515272.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL18302410619528051388.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:01,349 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_95782290657543963151221534017730787858.tmp, link, -o, /tmp/APKTOOL9545059229146515272.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL18302410619528051388.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:01,349 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Checking whether resources has changed...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_95782290657543963151221534017730787858.tmp, link, -o, /tmp/APKTOOL9545059229146515272.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL18302410619528051388.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:01,349 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:38:01,349 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:38:01,349 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:38:01,349 - MultiVectorInjector - WARNING - Rebuild failed on attempt 2
+2025-08-10 07:38:01,349 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+2025-08-10 07:38:01,349 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+2025-08-10 07:38:01,349 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+2025-08-10 07:38:01,349 - MultiVectorInjector - INFO - Rebuild attempt 3: forcing all
+
+[2025-08-10 07:38:01] [WARNING] Rebuild failed on attempt 2
+[2025-08-10 07:38:01] [INFO] Rebuild attempt 3: forcing all
+[2025-08-10 07:38:01] [DEBUG] Executing command: java -jar /workspace/tools/apktool/apktool.jar b /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted -o /workspace/tasks/20250810/fcc16468-upload_apk/temp/injected.apk --force-all
+INFO:     127.0.0.1:39264 - "GET /tasks/fcc16468-upload_apk HTTP/1.1" 200 OK
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_32300949536404291173266918144342950847.tmp, link, -o, /tmp/APKTOOL12057116686724354659.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL13181169975517754269.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_32300949536404291173266918144342950847.tmp, link, -o, /tmp/APKTOOL12057116686724354659.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL13181169975517754269.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_32300949536404291173266918144342950847.tmp, link, -o, /tmp/APKTOOL12057116686724354659.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL13181169975517754269.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_32300949536404291173266918144342950847.tmp, link, -o, /tmp/APKTOOL12057116686724354659.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL13181169975517754269.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+2025-08-10 07:38:11,061 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:38:11,061 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:38:11,061 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:38:11,061 - MultiVectorInjector - WARNING - Rebuild failed on attempt 3
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:38:11,061 - MultiVectorInjector - ERROR - Rebuild failed after 3 attempts
+2025-08-10 07:38:11,098 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+2025-08-10 07:38:11,098 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+2025-08-10 07:38:11,098 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+2025-08-10 07:38:11,098 - MultiVectorInjector - INFO - Temporary workspace cleaned up
+[2025-08-10 07:38:11] [ERROR] Command failed: I: Using Apktool 2.9.3
+I: Smaling smali folder into classes.dex...
+I: Building resources...
+
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml:1: warn: attribute 'package' in <manifest> tag is not a valid Android package name: 'تعدل الكيبورد اعدل كسمك المطور عبود'.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_basic_highcontrast.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_gingerbread.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_honeycomb.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_htc.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyPreviewLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:keyTextStyle not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics.xml:2: error: attribute inputmethod.latin.perfectkeyboarg:shadowColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyBackground not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyHysteresisDistance not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:keyTextColor not found.
+W: /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/res/layout/input_ics_popup.xml:4: error: attribute inputmethod.latin.perfectkeyboarg:popupLayout not found.
+brut.androlib.exceptions.AndrolibException: brut.common.BrutException: could not exec (exit code = 1): [/tmp/brut_util_Jar_32300949536404291173266918144342950847.tmp, link, -o, /tmp/APKTOOL12057116686724354659.tmp, --package-id, 127, --min-sdk-version, 8, --target-sdk-version, 14, --rename-manifest-package, inputmethod.latin.perfectkeyboarg, --rename-instrumentation-target-package, inputmethod.latin.perfectkeyboarg, --version-code, 52, --version-name, 2.45, --no-auto-version, --no-version-vectors, --no-version-transitions, --no-resource-deduping, --allow-reserved-package-id, --no-compile-sdk-metadata, --warn-manifest-validation, -e, /tmp/APKTOOL13181169975517754269.tmp, -0, arsc, -I, /home/ubuntu/.local/share/apktool/framework/1.apk, --manifest, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/AndroidManifest.xml, /workspace/tasks/20250810/fcc16468-upload_apk/injection_20250810_073732/extracted/build/resources.zip]
+[2025-08-10 07:38:11] [WARNING] Rebuild failed on attempt 3
+[2025-08-10 07:38:11] [ERROR] Rebuild failed after 3 attempts
+[2025-08-10 07:38:11] [INFO] Temporary workspace cleaned up
+INFO:     127.0.0.1:39460 - "GET /tasks/fcc16468-upload_apk HTTP/1.1" 200 OK
