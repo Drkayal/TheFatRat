@@ -1080,8 +1080,14 @@ class MultiVectorInjector:
         # Build unsigned APK
         apktool_path = str(self.apktool_jar)
         ok, out = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "-o", str(output_path)], timeout=900)
+        if (not ok or not output_path.exists()) and self.aapt2:
+            # Retry with aapt2
+            print("apktool build failed; retrying with --use-aapt2")
+            ok2, out2 = self._run(["java", "-jar", apktool_path, "b", str(extract_dir), "--use-aapt2", "-o", str(output_path)], timeout=900)
+            ok = ok2 and output_path.exists()
+            out = out + "\n" + out2
         if not ok or not output_path.exists():
-            print(f"Recompilation failed")
+            print(f"Recompilation failed\n{out}")
             return False
         
         # Ensure keystore exists (debug by default)

@@ -1184,3 +1184,11 @@ INFO:     127.0.0.1:46928 - "GET /tasks/a23eae6a-upload_apk HTTP/1.1" 200 OK
 INFO:     127.0.0.1:46928 - "GET /tasks/a23eae6a-upload_apk HTTP/1.1" 200 OK
 Recompilation failed
 INFO:     127.0.0.1:46928 - "GET /tasks/a23eae6a-upload_apk HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'payload_injection_system.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [44960]
+INFO:     Started server process [47535]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
