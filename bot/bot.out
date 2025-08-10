@@ -68,3 +68,70 @@
 2025-08-10 04:38:01,251 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
 2025-08-10 04:38:11,336 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
 2025-08-10 04:38:21,420 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:38:31,504 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:38:41,589 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:38:51,318 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:38:54,869 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/b14a2b58-upload_apk "HTTP/1.1 404 Not Found"
+2025-08-10 04:38:54,869 ERROR No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/telegram/ext/_application.py", line 1335, in process_update
+    await coroutine
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/telegram/ext/_handlers/conversationhandler.py", line 857, in handle_update
+    new_state: object = await handler.handle_update(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        update, application, handler_check_result, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/telegram/ext/_handlers/basehandler.py", line 158, in handle_update
+    return await self.callback(update, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/bot/bot.py", line 492, in handle_upload_params
+    await poll_and_send(update, context, sess)
+  File "/workspace/bot/bot.py", line 778, in poll_and_send
+    r.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/home/ubuntu/.local/lib/python3.13/site-packages/httpx/_models.py", line 763, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'http://127.0.0.1:8000/tasks/b14a2b58-upload_apk'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-08-10 04:38:54,871 INFO /start received from user_id=985612253
+2025-08-10 04:38:55,141 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:38:57,828 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:38:57,917 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/answerCallbackQuery "HTTP/1.1 200 OK"
+2025-08-10 04:38:58,014 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,151 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,161 INFO HTTP Request: POST http://127.0.0.1:8000/tasks "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,262 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,269 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/9bc3b35f-listener "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,385 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,387 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/9bc3b35f-listener/artifacts "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,501 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,504 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/9bc3b35f-listener/artifacts/handler.rc/download "HTTP/1.1 200 OK"
+2025-08-10 04:39:01,625 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendDocument "HTTP/1.1 200 OK"
+2025-08-10 04:39:03,822 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:03,822 INFO /start received from user_id=985612253
+2025-08-10 04:39:03,922 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:06,380 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:06,472 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/answerCallbackQuery "HTTP/1.1 200 OK"
+2025-08-10 04:39:06,575 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:12,681 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:12,951 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:13,034 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getFile "HTTP/1.1 200 OK"
+2025-08-10 04:39:14,187 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:14,285 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:14,501 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:14,599 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:14,800 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/editMessageText "HTTP/1.1 200 OK"
+2025-08-10 04:39:17,526 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:17,829 INFO HTTP Request: POST http://127.0.0.1:8000/tasks "HTTP/1.1 200 OK"
+2025-08-10 04:39:17,930 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:17,937 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/5d0421ba-upload_apk "HTTP/1.1 200 OK"
+2025-08-10 04:39:18,045 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:20,049 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/5d0421ba-upload_apk "HTTP/1.1 200 OK"
+2025-08-10 04:39:24,057 INFO HTTP Request: GET http://127.0.0.1:8000/tasks/5d0421ba-upload_apk "HTTP/1.1 200 OK"
+2025-08-10 04:39:24,435 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:24,539 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/sendMessage "HTTP/1.1 200 OK"
+2025-08-10 04:39:27,617 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:37,703 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"
+2025-08-10 04:39:47,789 INFO HTTP Request: POST https://api.telegram.org/bot8024375688:AAHYvfceRF22ZVMxlvqkdtfmR4rkWTyQDLo/getUpdates "HTTP/1.1 200 OK"

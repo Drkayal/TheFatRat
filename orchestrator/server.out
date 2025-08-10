@@ -1147,3 +1147,14 @@ INFO:     Finished server process [39866]
 INFO:     Started server process [44960]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+ENV-CHECK: java:✔, aapt:✔, aapt2:✔, zipalign:✔, apksigner:✔, apktool:✔
+INFO:     127.0.0.1:46736 - "GET /tasks/b14a2b58-upload_apk HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:39542 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39552 - "GET /tasks/9bc3b35f-listener HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39552 - "GET /tasks/9bc3b35f-listener/artifacts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39552 - "GET /tasks/9bc3b35f-listener/artifacts/handler.rc/download HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49672 - "POST /tasks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49682 - "GET /tasks/5d0421ba-upload_apk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49682 - "GET /tasks/5d0421ba-upload_apk HTTP/1.1" 200 OK
+Recompilation failed
+INFO:     127.0.0.1:49682 - "GET /tasks/5d0421ba-upload_apk HTTP/1.1" 200 OK
