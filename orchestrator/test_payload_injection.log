@@ -1,0 +1,5 @@
+2025-08-10 06:07:53,506 - environment_manager - WARNING - Missing dependencies: ['apktool']
+2025-08-10 06:07:53,573 - environment_manager - WARNING - Missing dependencies: ['apktool']
+2025-08-10 06:07:53,573 - payload_injection_system - WARNING - Missing dependencies: ['apktool']
+2025-08-10 06:07:53,602 - payload_injection_system - ERROR - Target config validation error: Invalid IP address: invalid.ip
+2025-08-10 06:07:53,629 - environment_manager - WARNING - Missing dependencies: ['apktool']
